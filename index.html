@@ -1,12 +1,97 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-edition="web">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Photo Tournament</title>
+    <title>Favopic – Find your favorite photos</title>
+    <meta
+      name="description"
+      content="Find your favorite photos with Favopic: compare two photos at a time. Your photos stay on your device."
+    />
+    <link rel="stylesheet" href="./landing/landing.css" />
+    <script type="module" src="./landing/landing.js"></script>
   </head>
   <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
+    <header class="site-header">
+      <a class="logo" href="./" aria-label="Favopic – home">
+        <span class="logo__mark" aria-hidden="true">◻</span>
+        <span>Favopic</span>
+      </a>
+
+      <!-- Je nach Edition: Web => App starten, iOS => zum App-Store-Platzhalter -->
+      <a class="btn" data-for="web" href="./app/">Start App</a>
+      <a class="btn" data-for="ios" href="#get-the-app">Get the App</a>
+
+      <div class="edition" role="group" aria-label="Edition">
+        <button type="button" data-edition-option="ios" aria-pressed="false">
+          iOS<span class="edition__long"> Edition</span>
+        </button>
+        <button type="button" data-edition-option="web" aria-pressed="true">
+          Web<span class="edition__long"> Edition</span>
+        </button>
+      </div>
+    </header>
+
+    <main>
+      <section class="section" aria-labelledby="intro-title">
+        <h2 id="intro-title" class="title">Your phone is full of photos that look the same?</h2>
+      </section>
+
+      <section class="section" aria-labelledby="hero-title">
+        <h1 id="hero-title" class="large-title">
+          Find your favorite<br />photos with Favopic
+        </h1>
+        <p class="subtitle">and enjoy your library again!</p>
+      </section>
+
+      <section class="section section--features" aria-labelledby="features-title">
+        <h2 id="features-title" class="headline">Intuitive 1vs1 comparison</h2>
+        <div class="phone" role="img" aria-label="Placeholder for an iPhone screenshot">
+          iPhone placeholder
+        </div>
+        <p class="body-text">
+          Photos stay on your device. No photo is uploaded. <a href="#how">How?</a>
+        </p>
+      </section>
+
+      <section id="how" class="section section--how" aria-labelledby="how-title">
+        <div class="container">
+          <h2 id="how-title" class="headline">How it works</h2>
+        </div>
+        <div class="container how">
+          <div class="placeholder" role="img" aria-label="Placeholder for images">
+            Image placeholder
+          </div>
+          <ul class="how__list">
+            <li>Pick the photos you want to sort.</li>
+            <li>Compare two photos at a time and choose your favorite.</li>
+            <li>Keep going until your top photos are left.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="get-the-app" class="section" aria-labelledby="cta-title">
+        <h2 id="cta-title" class="headline">
+          Gain back control of your library and focus on your best memories!
+        </h2>
+        <a class="btn btn--large" href="./app/">Start App</a>
+        <div class="store-badge" role="img" aria-label="Download on the App Store – coming soon">
+          App Store badge placeholder
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <ul class="footer__links">
+        <li><a href="./terms/">Terms</a></li>
+        <li><a href="./privacy/">Privacy</a></li>
+        <li><a href="./imprint/">Imprint</a></li>
+      </ul>
+      <p class="footer__copy">© 2026 Favopic. All rights reserved.</p>
+      <div class="footer__social">
+        <a class="icon-placeholder" href="#" aria-label="Instagram">IG</a>
+        <a class="icon-placeholder" href="#" aria-label="TikTok">TT</a>
+      </div>
+    </footer>
   </body>
 </html>

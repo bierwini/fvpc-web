@@ -4,14 +4,20 @@ html, body, #root { height: 100%; margin: 0; }
 body { font-family: system-ui, sans-serif; }
 
 .screen { min-height: 100%; padding: 1rem; }
+/* Link im Look eines nativen Buttons */
+.link-button {
+  display: inline-block; padding: .1rem .45rem; font-size: 13.33px; text-decoration: none;
+  color: ButtonText; background: ButtonFace; border: 1px solid ButtonBorder; border-radius: .25rem;
+}
 .legal-caption { font-size: .75rem; opacity: .7; margin: 0; }
 
 /* ---------- Intro & Upload: Spaltenlayout, Footer unten ---------- */
-.screen--intro {
-  display: flex; flex-direction: column; gap: 1rem;
-  max-width: 40rem; margin: 0 auto;
+.screen--intro { display: flex; flex-direction: column; padding: 0; }
+.intro__column {
+  flex: 1; display: flex; flex-direction: column; gap: 1rem;
+  width: 100%; max-width: 40rem; margin: 0 auto; padding: 0 1rem 1rem;
 }
-.screen--intro footer { display: flex; flex-direction: column; gap: .75rem; }
+.intro__column footer { display: flex; flex-direction: column; gap: .75rem; }
 
 /* Intro: Inhalt füllt den freien Platz; bei zu kleinem Fenster scrollt die Seite. */
 .intro__body { flex: 1; display: flex; flex-direction: column; justify-content: space-evenly; gap: 2rem; }
