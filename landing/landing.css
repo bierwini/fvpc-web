@@ -7,7 +7,7 @@
 /* Plain Styles wie in der Web-App (Systemschrift, native Controls). Das Design folgt später. */
 * { box-sizing: border-box; }
 :root {
-  --header-h: 3.5rem;
+  --header-h: 4.5rem;
   --gutter: clamp(1rem, 4vw, 3rem);
   /* Ein "Screen": Fensterhöhe, mindestens 34rem. */
   --screen: 100vh;
@@ -17,7 +17,7 @@
   /* Abstand Intro-Text -> Hero-Text, in Bildschirmhöhen. */
   --hero-gap: .7;
 }
-@media (min-width: 48rem) { :root { --header-h: 4.5rem; } }
+@media (min-width: 48rem) { :root { --header-h: 6rem; } }
 html { scroll-behavior: smooth; }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 body { margin: 0; font-family: system-ui, sans-serif; line-height: 1.4; }
@@ -85,7 +85,8 @@ a { color: inherit; }
 
 /* Features: vier Schritte untereinander, jeder genau ein Screen hoch (Fallback); der Geräte-Platzhalter skaliert mit dem Platz. */
 .feature {
-  height: var(--screen); padding: var(--header-h) var(--gutter);
+  /* Der Header ist hier schon weggescrollt: nur wenig Rand oben und unten, damit der Platzhalter groß wird. */
+  height: var(--screen); padding: 2rem var(--gutter);
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   text-align: center; gap: clamp(1rem, 3vh, 2rem);
 }
