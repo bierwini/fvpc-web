@@ -8,10 +8,6 @@
       name="description"
       content="Find your favorite photos with Favopic: compare two photos at a time. Your photos stay on your device."
     />
-    <!-- Progressive Enhancement: Scroll-Effekte gelten nur mit JavaScript (Klasse "js"). -->
-    <script>
-      document.documentElement.classList.add('js');
-    </script>
     <link rel="stylesheet" href="./landing/landing.css" />
     <script type="module" src="./landing/landing.js"></script>
   </head>
@@ -37,78 +33,64 @@
     </header>
 
     <main>
-      <section class="section snap" aria-labelledby="intro-title">
+      <section class="section" aria-labelledby="intro-title">
         <h2 id="intro-title" class="title">Your phone is full of photos that look the same?</h2>
       </section>
 
-      <section class="section snap" aria-labelledby="hero-title">
+      <section class="section" aria-labelledby="hero-title">
         <h1 id="hero-title" class="large-title">
           Find your favorite<br />photos with Favopic
         </h1>
         <p class="subtitle">and enjoy your library again!</p>
       </section>
 
-      <!--
-        Features: Eine feste Bühne bleibt stehen, beim Scrollen wechselt der aktive Schritt.
-        Alle vier Schritte stehen im HTML (Suchmaschinen, Screenreader, Fallback ohne JS oder bei
-        reduzierter Bewegung: dann stehen sie einfach untereinander).
-      -->
+      <!-- Features: vier Schritte untereinander, je einen Screen hoch. -->
       <section class="features" aria-label="Features">
-        <div class="features__stage">
-          <article class="feature is-active" data-step="0">
-            <h2 class="headline">Intuitive 1vs1 comparison</h2>
-            <div class="phone" role="img" aria-label="Placeholder for an iPhone screenshot">
-              iPhone placeholder<br />1vs1 comparison
-            </div>
-            <p class="body-text">
-              Photos stay on your device. No photo is uploaded.
-              <span class="tip">
-                <button type="button" class="tip__trigger" aria-describedby="blob-tip">How?</button>
-                <span id="blob-tip" role="tooltip" class="tip__bubble">
-                  Your photos are never uploaded. Your browser only creates temporary links to the
-                  files on your device. They exist in memory only and are deleted as soon as you
-                  reset, close the tournament or leave the page.
-                </span>
+        <article class="feature">
+          <h2 class="headline">Intuitive 1vs1 comparison</h2>
+          <div class="phone" role="img" aria-label="Placeholder for an iPhone screenshot">
+            iPhone placeholder<br />1vs1 comparison
+          </div>
+          <p class="body-text">
+            Photos stay on your device. No photo is uploaded.
+            <span class="tip">
+              <button type="button" class="tip__trigger" aria-describedby="blob-tip">How?</button>
+              <span id="blob-tip" role="tooltip" class="tip__bubble">
+                Your photos are never uploaded. Your browser only creates temporary links to the
+                files on your device. They exist in memory only and are deleted as soon as you
+                reset, close the tournament or leave the page.
               </span>
-            </p>
-          </article>
+            </span>
+          </p>
+        </article>
 
-          <article class="feature" data-step="1">
-            <h2 class="headline">Rankings with bulk actions</h2>
-            <div class="phone" role="img" aria-label="Placeholder for an iPhone screenshot">
-              iPhone placeholder<br />Rankings
-            </div>
-            <p class="body-text">Placeholder text for rankings with bulk actions.</p>
-          </article>
+        <article class="feature">
+          <h2 class="headline">Rankings with bulk actions</h2>
+          <div class="phone" role="img" aria-label="Placeholder for an iPhone screenshot">
+            iPhone placeholder<br />Rankings
+          </div>
+          <p class="body-text">Placeholder text for rankings with bulk actions.</p>
+        </article>
 
-          <article class="feature" data-step="2">
-            <h2 class="headline">Intelligent suggestions</h2>
-            <div class="phone" role="img" aria-label="Placeholder for an iPhone screenshot">
-              iPhone placeholder<br />Suggestions
-            </div>
-            <p class="body-text">Placeholder text for intelligent suggestions.</p>
-          </article>
+        <article class="feature">
+          <h2 class="headline">Intelligent suggestions</h2>
+          <div class="phone" role="img" aria-label="Placeholder for an iPhone screenshot">
+            iPhone placeholder<br />Suggestions
+          </div>
+          <p class="body-text">Placeholder text for intelligent suggestions.</p>
+        </article>
 
-          <article class="feature" data-step="3">
-            <h2 class="headline">Clean photos as a habit</h2>
-            <div class="phone" role="img" aria-label="Placeholder for an iPhone screenshot">
-              iPhone placeholder<br />Habit
-            </div>
-            <p class="body-text">Placeholder text for cleaning photos as a habit.</p>
-          </article>
-        </div>
-
-        <!-- Scrollstrecke: je Schritt eine Fensterhöhe (nur mit JS und ohne reduzierte Bewegung) -->
-        <div class="features__steps" aria-hidden="true">
-          <div></div>
-          <div></div>
-          <div></div>
-          <div></div>
-        </div>
+        <article class="feature">
+          <h2 class="headline">Clean photos as a habit</h2>
+          <div class="phone" role="img" aria-label="Placeholder for an iPhone screenshot">
+            iPhone placeholder<br />Habit
+          </div>
+          <p class="body-text">Placeholder text for cleaning photos as a habit.</p>
+        </article>
       </section>
 
       <!-- Footer liegt unten im letzten Screen, der CTA bleibt in der Fenstermitte. -->
-      <div class="last-screen snap">
+      <div class="last-screen">
         <section id="get-the-app" class="section" aria-labelledby="cta-title">
           <h2 id="cta-title" class="headline">
             Gain back control of your library and focus on your best memories!

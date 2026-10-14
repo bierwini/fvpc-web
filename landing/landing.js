@@ -35,36 +35,3 @@ if (tip && tipTrigger) {
     if (e.key === 'Escape') tip.classList.remove('is-open');
   });
 }
-
-/* ---------- Features: aktiver Schritt = der Scroll-Abschnitt, der die Fenstermitte kreuzt ---------- */
-const features = document.querySelector('.features');
-const articles = [...document.querySelectorAll('.feature')];
-const steps = [...document.querySelectorAll('.features__steps > div')];
-// Muss exakt zur Media Query in landing.css passen.
-const pinned = window.matchMedia('(prefers-reduced-motion: no-preference) and (min-height: 34rem)');
-let observer = null;
-
-function activate(index) {
-  articles.forEach((a, i) => {
-    a.classList.toggle('is-active', i === index);
-    // Inaktive Schritte sind visibility:hidden und damit auch für Screenreader ausgeblendet.
-  });
-}
-
-function syncFeatures() {
-  observer?.disconnect();
-  observer = null;
-  if (!features || !pinned.matches) return;
-  observer = new IntersectionObserver(
-    (entries) => {
-      for (const entry of entries) {
-        if (entry.isIntersecting) activate(steps.indexOf(entry.target));
-      }
-    },
-    { rootMargin: '-50% 0px -50% 0px' }, // eine Linie in der Fenstermitte
-  );
-  steps.forEach((s) => observer.observe(s));
-}
-
-syncFeatures();
-pinned.addEventListener('change', syncFeatures);
