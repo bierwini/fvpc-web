@@ -4,9 +4,13 @@ import { RankingScreen } from './screens/RankingScreen';
 import { UploadScreen } from './screens/UploadScreen';
 import { getUpcomingImageIds } from './tournament/engine';
 import { useTournament } from './tournament/useTournament';
+import { useUnloadWarning } from './tournament/useUnloadWarning';
 
 export function App() {
   const { state, currentMatch, ranking, shuffleEnabled, actions } = useTournament();
+
+  // Warnung nur, wenn Bilder geladen sind oder ein Turnier/Ranking läuft (sonst geht nichts verloren).
+  useUnloadWarning(state.imageOrder.length > 0 || state.view === 'match' || state.view === 'ranking');
 
   switch (state.view) {
     case 'intro':
