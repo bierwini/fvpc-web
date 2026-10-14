@@ -2,6 +2,7 @@ import { IntroScreen } from './screens/IntroScreen';
 import { MatchScreen } from './screens/MatchScreen';
 import { RankingScreen } from './screens/RankingScreen';
 import { UploadScreen } from './screens/UploadScreen';
+import { getUpcomingImageIds } from './tournament/engine';
 import { useTournament } from './tournament/useTournament';
 
 export function App() {
@@ -19,7 +20,7 @@ export function App() {
           onShuffleChange={actions.setShuffleEnabled}
           onAddFiles={actions.addFiles}
           onRemoveImage={actions.removeImage}
-          onBack={actions.goToIntro}
+          onBack={actions.resetTournament}
           onStart={actions.startTournament}
         />
       );
@@ -28,7 +29,7 @@ export function App() {
       return currentMatch ? (
         <MatchScreen
           match={currentMatch}
-          nextMatch={state.matchQueue[1] ?? null}
+          preloadIds={getUpcomingImageIds(state)}
           images={state.images}
           completedMatches={state.completedMatches}
           totalMatches={state.totalMatches}

@@ -1,6 +1,12 @@
 import { describe, expect, it, vi } from 'vitest';
 import { BlobRegistry } from './blobRegistry';
-import { advanceToNextRound, buildRound, createInitialState, tournamentReducer } from './engine';
+import {
+  advanceToNextRound,
+  buildRound,
+  createInitialState,
+  getUpcomingImageIds,
+  tournamentReducer,
+} from './engine';
 import { computeRanking } from './ranking';
 import { getStartOrder } from './shuffle';
 import type { TournamentAction, TournamentState } from './types';
@@ -111,7 +117,7 @@ describe('BlobRegistry', () => {
     const create = vi.spyOn(URL, 'createObjectURL').mockImplementation(() => `blob:${++n}`);
     const revoke = vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => {});
     const reg = new BlobRegistry();
-    const a = reg.register(new File([''], 'a.png', { type: 'image/png' }));
+    const a = reg.register(new File([''], 'a.png', { type: 'image/png' }))!;
     reg.register(new File([''], 'b.png', { type: 'image/png' }));
     reg.revoke(a.id);
     reg.revokeAll();
@@ -137,20 +143,47 @@ describe('Startreihenfolge & Abbruch', () => {
     expect(order).toEqual(['a', 'b', 'c', 'd', 'e']);
   });
 
-  it('GO_TO_INTRO behält die geladenen Bilder', () => {
-    const upload = run(
-      createInitialState(),
-      { type: 'GO_TO_UPLOAD' },
-      { type: 'IMAGES_ADDED', images: [{ id: 'x', name: 'x', url: 'blob:x' }] },
-    );
-    const s = run(upload, { type: 'GO_TO_INTRO' }, { type: 'GO_TO_UPLOAD' });
-    expect(s.imageOrder).toEqual(['x']);
-  });
-
   it('RESET verwirft alles', () => {
     const s = run(started(4), { type: 'RESET', view: 'upload' });
     expect(s.view).toBe('upload');
     expect(s.imageOrder).toEqual([]);
     expect(s.matchQueue).toEqual([]);
+  });
+});
+
+describe('Vorladen', () => {
+  it('liefert das nächste Duell der Runde', () => {
+    expect(getUpcomingImageIds(started(4))).toEqual(['i3', 'i4']);
+  });
+
+  it('kennt beim letzten Duell der Runde schon die ersten Kontrahenten der nächsten Runde', () => {
+    // 5 Bilder: nach dem ersten Duell folgt (3,4); danach startet Runde 2 mit [5, Gewinner1, ...]
+    let s = run(started(5), { type: 'PICK_WINNER', winnerId: 'i1' });
+    expect(s.matchQueue).toHaveLength(1);
+    expect(getUpcomingImageIds(s)).toEqual(['i5', 'i1']);
+    s = run(s, { type: 'PICK_WINNER', winnerId: 'i3' });
+    expect(s.matchQueue[0]).toEqual(['i5', 'i1']); // Vorhersage stimmte
+  });
+
+  it('ist im Finale leer', () => {
+    expect(getUpcomingImageIds(started(2))).toEqual([]);
+  });
+});
+
+describe('BlobRegistry Duplikate', () => {
+  it('erzeugt für dieselbe Datei keinen zweiten Blob; nach dem Entfernen ist sie wieder erlaubt', () => {
+    const create = vi.spyOn(URL, 'createObjectURL').mockImplementation(() => 'blob:x');
+    const revoke = vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => {});
+    const reg = new BlobRegistry();
+    const make = () => new File(['abc'], 'a.png', { type: 'image/png', lastModified: 1 });
+    const first = reg.register(make())!;
+    expect(reg.register(make())).toBeNull();
+    expect(create).toHaveBeenCalledTimes(1);
+    // gleicher Name, andere Größe => andere Datei
+    expect(reg.register(new File(['abcd'], 'a.png', { type: 'image/png', lastModified: 1 }))).not.toBeNull();
+    reg.revoke(first.id);
+    expect(reg.register(make())).not.toBeNull();
+    create.mockRestore();
+    revoke.mockRestore();
   });
 });

@@ -3,7 +3,7 @@ import { BlobRegistry } from './blobRegistry';
 import { createInitialState, getCurrentMatch, tournamentReducer } from './engine';
 import { computeRanking } from './ranking';
 import { getStartOrder } from './shuffle';
-import type { ImageId, TournamentImage } from './types';
+import type { AddFilesResult, ImageId, TournamentImage } from './types';
 
 export function useTournament() {
   const [state, dispatch] = useReducer(tournamentReducer, undefined, createInitialState);
@@ -18,12 +18,21 @@ export function useTournament() {
   const goToUpload = useCallback(() => dispatch({ type: 'GO_TO_UPLOAD' }), []);
 
   const addFiles = useCallback(
-    (files: Iterable<File>) => {
+    (files: Iterable<File>): AddFilesResult => {
       const images: TournamentImage[] = [];
+      const result: AddFilesResult = { added: 0, duplicates: 0, skipped: 0 };
       for (const file of files) {
-        if (file.type.startsWith('image/')) images.push(blobs.register(file));
+        if (!file.type.startsWith('image/')) {
+          result.skipped++;
+          continue;
+        }
+        const image = blobs.register(file);
+        if (image) images.push(image);
+        else result.duplicates++;
       }
+      result.added = images.length;
       if (images.length > 0) dispatch({ type: 'IMAGES_ADDED', images });
+      return result;
     },
     [blobs],
   );
@@ -49,8 +58,6 @@ export function useTournament() {
     (imageId: ImageId) => dispatch({ type: 'EXCLUDE_IMAGE', imageId }),
     [],
   );
-
-  const goToIntro = useCallback(() => dispatch({ type: 'GO_TO_INTRO' }), []);
 
   /** Close im Match/Ranking: gibt ALLE Blobs frei, zurück zum Intro. */
   const resetTournament = useCallback(() => {
@@ -83,7 +90,6 @@ export function useTournament() {
       pickWinner,
       excludeCurrentImage,
       setShuffleEnabled,
-      goToIntro,
       resetTournament,
       startNewTournament,
     },

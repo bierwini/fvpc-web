@@ -28,6 +28,18 @@ export function getCurrentMatch(state: TournamentState): Matchup | null {
 }
 
 /**
+ * Bilder des Duells NACH dem aktuellen – zum Vorladen. Beim letzten Duell einer Runde sind
+ * die ersten Kontrahenten der nächsten Runde (geparktes Bild + erste Gewinner) schon bekannt;
+ * nur der Gewinner des aktuellen Duells fehlt, und dessen Bilder sind ohnehin gerade geladen.
+ */
+export function getUpcomingImageIds(state: TournamentState): ImageId[] {
+  const next = state.matchQueue[1];
+  if (next) return [...next];
+  const known = [...(state.autoAdvance !== null ? [state.autoAdvance] : []), ...state.winnersThisRound];
+  return known.slice(0, 2);
+}
+
+/**
  * Teilt Kontrahenten in 2er-Duelle. Bei ungerader Anzahl wird das LETZTE Bild
  * als `autoAdvance` geparkt (Freilos).
  */
@@ -112,9 +124,6 @@ export function tournamentReducer(
   switch (action.type) {
     case 'GO_TO_UPLOAD':
       return { ...state, view: 'upload' };
-
-    case 'GO_TO_INTRO':
-      return state.view === 'upload' ? { ...state, view: 'intro' } : state;
 
     case 'IMAGES_ADDED': {
       if (state.view !== 'upload') return state;

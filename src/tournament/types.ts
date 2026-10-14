@@ -58,8 +58,6 @@ export type TournamentAction =
   | { type: 'START_TOURNAMENT'; order: ImageId[] }
   | { type: 'PICK_WINNER'; winnerId: ImageId }
   | { type: 'EXCLUDE_IMAGE'; imageId: ImageId }
-  /** Upload -> Intro. Geladene Bilder (und Blobs) bleiben erhalten. */
-  | { type: 'GO_TO_INTRO' }
   /** Zurück zum Startzustand. Die Blobs gibt der Aufrufer vorher frei. */
   | { type: 'RESET'; view: 'intro' | 'upload' };
 
@@ -69,4 +67,12 @@ export interface RankingEntry {
   rank: number;
   /** Runde des Ausscheidens; null beim Sieger. */
   eliminatedInRound: number | null;
+}
+
+export interface AddFilesResult {
+  added: number;
+  /** Bereits geladene Dateien (gleicher Name, gleiche Größe, gleiches Änderungsdatum). */
+  duplicates: number;
+  /** Keine Bilddateien. */
+  skipped: number;
 }

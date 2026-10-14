@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import { ConfirmSheet, Sheet } from '../components/Sheet';
+import { ZoomStage } from '../components/ZoomStage';
 import type { ImageId, Matchup, TournamentImage } from '../tournament/types';
 
 interface MatchScreenProps {
   match: Matchup;
-  /** Folgeduell: seine Bilder werden schon jetzt im Hintergrund geladen und dekodiert. */
-  nextMatch: Matchup | null;
+  /** Bilder des Folgeduells: werden schon jetzt im Hintergrund geladen und dekodiert. */
+  preloadIds: ImageId[];
   images: Record<ImageId, TournamentImage>;
   completedMatches: number;
   totalMatches: number;
@@ -22,7 +23,7 @@ function decodeOnMount(el: HTMLImageElement | null) {
 
 export function MatchScreen({
   match,
-  nextMatch,
+  preloadIds,
   images,
   completedMatches,
   totalMatches,
@@ -42,17 +43,16 @@ export function MatchScreen({
   const [closeOpen, setCloseOpen] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
 
-  // Aktuelles + nächstes Duell bleiben dauerhaft im DOM (Key = Bild-ID). Beim Weiterschalten
-  // wird nichts neu eingehängt oder geladen, es ändert sich nur, welches Bild sichtbar ist.
-  const mountedIds = [...match, ...(nextMatch ?? [])];
+  // Nur diese (max. 4) Bilder sind im DOM: beide des aktuellen Duells (für den Instant-Toggle)
+  // plus die des Folgeduells. Key = Bild-ID, damit beim Weiterschalten nichts neu geladen wird.
+  const mountedIds = [...new Set([...match, ...preloadIds])];
 
   return (
     <div className="screen screen--match">
-      <button
-        type="button"
-        className="stage"
-        aria-label={`Showing photo ${activeIndex === 0 ? 'A' : 'B'} – click to switch`}
-        onClick={() => setSelection({ matchKey, index: activeIndex === 0 ? 1 : 0 })}
+      <ZoomStage
+        resetKey={matchKey}
+        label={`Showing photo ${activeIndex === 0 ? 'A' : 'B'} – click to switch, pinch or scroll to zoom`}
+        onTap={() => setSelection({ matchKey, index: activeIndex === 0 ? 1 : 0 })}
       >
         {mountedIds.map((id) => (
           <img
@@ -64,7 +64,7 @@ export function MatchScreen({
             draggable={false}
           />
         ))}
-      </button>
+      </ZoomStage>
 
       <header className="bar bar--top">
         <div className="toolbar-group" role="group" aria-label="Tools">
@@ -120,7 +120,7 @@ export function MatchScreen({
           </button>
         }
       >
-        <p>Click the photo to switch between the two candidates. Choose the one you prefer.</p>
+        <p>Click the photo to switch between the two candidates. Pinch or scroll to zoom, drag to move. Choose the one you prefer.</p>
       </Sheet>
     </div>
   );

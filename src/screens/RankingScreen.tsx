@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { PopupMenu } from '../components/PopupMenu';
 import { ConfirmSheet } from '../components/Sheet';
 import type { ImageId, RankingEntry, TournamentImage } from '../tournament/types';
 
@@ -10,6 +11,8 @@ interface RankingScreenProps {
   /** Next Game (ohne Bestätigung): alles verwerfen, zurück zum leeren Upload. */
   onNextGame: () => void;
 }
+
+type NameMode = 'all' | 'top' | 'none';
 
 /** Größenstufe: #1 groß, #2 mittel, alle weiteren klein. */
 function tierOf(rank: number) {
@@ -23,11 +26,33 @@ function downloadImage(image: TournamentImage) {
   a.click();
 }
 
-export function RankingScreen({ ranking, images, onClose, onNextGame }: RankingScreenProps) {
-  const [hideNames, setHideNames] = useState(false);
-  const [closeOpen, setCloseOpen] = useState(false);
+/** Mehrere Downloads leicht gestaffelt, sonst blockieren manche Browser alle bis auf den ersten. */
+function downloadImages(items: TournamentImage[]) {
+  items.forEach((image, i) => setTimeout(() => downloadImage(image), i * 250));
+}
 
-  const top = ranking[0] ? images[ranking[0].imageId] : undefined;
+export function RankingScreen({ ranking, images, onClose, onNextGame }: RankingScreenProps) {
+  const [nameMode, setNameMode] = useState<NameMode>('top');
+  const [closeOpen, setCloseOpen] = useState(false);
+  const [selecting, setSelecting] = useState(false);
+  const [selected, setSelected] = useState<Set<ImageId>>(new Set());
+
+  const imagesForRanks = (maxRank: number) =>
+    ranking.filter((r) => r.rank <= maxRank).map((r) => images[r.imageId]!);
+
+  const toggleSelected = (id: ImageId) =>
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (!next.delete(id)) next.add(id);
+      return next;
+    });
+
+  const stopSelecting = () => {
+    setSelecting(false);
+    setSelected(new Set());
+  };
+
+  const showName = (rank: number) => nameMode === 'all' || (nameMode === 'top' && rank <= 2);
 
   return (
     <div className="screen screen--ranking">
@@ -42,15 +67,27 @@ export function RankingScreen({ ranking, images, onClose, onNextGame }: RankingS
         <ol className="rank-grid">
           {ranking.map(({ imageId, rank }) => {
             const image = images[imageId]!;
+            const isSelected = selected.has(imageId);
             return (
               <li key={imageId} className={`rank-grid__item rank-grid__item--${tierOf(rank)}`}>
                 <figure>
                   <img src={image.url} alt={image.name} />
                   <figcaption>
                     <span className="rank-grid__rank">#{rank}</span>
-                    {!hideNames && <span className="rank-grid__name">{image.name}</span>}
+                    {showName(rank) && <span className="rank-grid__name">{image.name}</span>}
                   </figcaption>
                 </figure>
+                {selecting && (
+                  <button
+                    type="button"
+                    className={`rank-grid__select${isSelected ? ' rank-grid__select--on' : ''}`}
+                    aria-pressed={isSelected}
+                    aria-label={`Select #${rank} ${image.name}`}
+                    onClick={() => toggleSelected(imageId)}
+                  >
+                    {isSelected ? '✓' : ''}
+                  </button>
+                )}
               </li>
             );
           })}
@@ -58,12 +95,45 @@ export function RankingScreen({ ranking, images, onClose, onNextGame }: RankingS
       </main>
 
       <footer className="bar bar--bottom">
-        <button type="button" aria-pressed={hideNames} onClick={() => setHideNames(!hideNames)}>
-          Hide File Names
-        </button>
-        <button type="button" disabled={!top} onClick={() => top && downloadImage(top)}>
-          Download Top 1
-        </button>
+        <PopupMenu
+          label="File Names"
+          items={[
+            { key: 'all', label: 'Show all', checked: nameMode === 'all', onSelect: () => setNameMode('all') },
+            { key: 'top', label: 'Show for Top Ranks', checked: nameMode === 'top', onSelect: () => setNameMode('top') },
+            { key: 'none', label: 'Hide all', checked: nameMode === 'none', onSelect: () => setNameMode('none') },
+          ]}
+        />
+
+        {selecting ? (
+          <div className="toolbar-group" role="group" aria-label="Download selection">
+            <button type="button" onClick={stopSelecting}>
+              Cancel
+            </button>
+            <button
+              type="button"
+              className="primary"
+              disabled={selected.size === 0}
+              onClick={() => {
+                downloadImages(ranking.filter((r) => selected.has(r.imageId)).map((r) => images[r.imageId]!));
+                stopSelecting();
+              }}
+            >
+              Download ({selected.size})
+            </button>
+          </div>
+        ) : (
+          <PopupMenu
+            label="Download"
+            align="center"
+            disabled={ranking.length === 0}
+            items={[
+              { key: 'top1', label: 'Top 1', onSelect: () => downloadImages(imagesForRanks(1)) },
+              { key: 'top2', label: 'Top 1 + Top 2', onSelect: () => downloadImages(imagesForRanks(2)) },
+              { key: 'own', label: 'Own Selection', onSelect: () => setSelecting(true) },
+            ]}
+          />
+        )}
+
         <button type="button" className="primary" onClick={onNextGame}>
           Next Game
         </button>
