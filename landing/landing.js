@@ -35,3 +35,36 @@ if (tip && tipTrigger) {
     if (e.key === 'Escape') tip.classList.remove('is-open');
   });
 }
+
+/* ---------- Features: aktiver Schritt = der Scroll-Abschnitt, der den oberen Fensterrand kreuzt ---------- */
+const features = document.querySelector('.features');
+const articles = [...document.querySelectorAll('.feature')];
+const steps = [...document.querySelectorAll('.features__steps > div')];
+// Muss exakt zur Media Query in landing.css passen (nur sehr niedrige Fenster fallen zurück).
+const pinned = window.matchMedia('(min-height: 34rem)');
+let observer = null;
+
+function activate(index) {
+  articles.forEach((a, i) => {
+    a.classList.toggle('is-active', i === index);
+    // Inaktive Schritte sind visibility:hidden und damit auch für Screenreader ausgeblendet.
+  });
+}
+
+function syncFeatures() {
+  observer?.disconnect();
+  observer = null;
+  if (!features || !pinned.matches) return;
+  observer = new IntersectionObserver(
+    (entries) => {
+      for (const entry of entries) {
+        if (entry.isIntersecting) activate(steps.indexOf(entry.target));
+      }
+    },
+    { rootMargin: '0px 0px -100% 0px' }, // eine Linie am oberen Fensterrand (= Position der klebenden Bühne)
+  );
+  steps.forEach((s) => observer.observe(s));
+}
+
+syncFeatures();
+pinned.addEventListener('change', syncFeatures);
