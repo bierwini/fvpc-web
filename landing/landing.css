@@ -1,7 +1,10 @@
 /* Plain Styles wie in der Web-App (Systemschrift, native Controls). Das Design folgt später. */
 * { box-sizing: border-box; }
 :root {
-  --header-h: 3.5rem;
+  /* Figma-Referenz: 1510px Breite. --u = ein "Figma-Pixel", skaliert mit der Fensterbreite
+     (ab 1960px gedeckelt). Jede Größe bekommt per max() eine lesbare Untergrenze. */
+  --u: calc(min(100vw, 1960px) / 1510);
+  --header-h: max(3.5rem, calc(72 * var(--u)));
   --gutter: clamp(1rem, 4vw, 3rem);
   /* Ein "Screen": Fensterhöhe, mindestens 34rem. */
   --screen: 100vh;
@@ -22,20 +25,21 @@ a { color: inherit; }
   display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: .5rem;
   padding: 0 var(--gutter); background: #fff;
 }
-.logo { display: inline-flex; align-items: center; gap: .4rem; font-weight: 700; text-decoration: none; justify-self: start; }
+.logo { display: inline-flex; align-items: center; gap: .4rem; font-size: max(1.125rem, calc(34 * var(--u))); font-weight: 700; line-height: 1; text-decoration: none; justify-self: start; }
 .edition { justify-self: end; display: flex; }
-.edition button { border-radius: 0; }
+.edition button { border-radius: 0; font-family: inherit; font-size: max(.9375rem, calc(17 * var(--u))); font-weight: 500; }
 .edition button[aria-pressed='true'] { background: Highlight; color: HighlightText; }
 [data-edition='web'] [data-for='ios'], [data-edition='ios'] [data-for='web'] { display: none; }
 @media (max-width: 36rem) { .edition__long { display: none; } }
 
 /* Link im Look eines nativen Buttons */
 .btn {
-  display: inline-block; padding: .35rem .9rem; font: inherit; text-decoration: none; text-align: center;
+  display: inline-block; padding: .35rem .9rem; font: inherit; font-size: max(.9375rem, calc(17 * var(--u))); font-weight: 500;
+  text-decoration: none; text-align: center;
   color: ButtonText; background: ButtonFace; border: 1px solid ButtonBorder; border-radius: .3rem;
 }
 .btn[disabled] { color: GrayText; cursor: not-allowed; }
-.btn--large { font-size: clamp(1.05rem, 2.5vw, 1.4rem); padding: .6rem 1.6rem; }
+.btn--large { padding: .6rem 1.6rem; }
 
 /* ---------- Sektionen: genau ein Screen hoch, Inhalt in der echten Fenstermitte ----------
    Oben und unten bleibt Platz für Header bzw. Footer, die über dem Inhalt liegen. */
@@ -69,11 +73,11 @@ a { color: inherit; }
 @media (prefers-reduced-motion: reduce) { .fade-up { animation: none; } }
 
 /* Texte skalieren mit der Fensterbreite */
-.title { margin: 0; max-width: 24ch; font-size: clamp(1.6rem, 5vw, 3.25rem); }
-.large-title { margin: 0; font-size: clamp(2.25rem, 9vw, 6rem); line-height: 1.05; }
-.subtitle { margin: 0; font-size: clamp(1.15rem, 3.5vw, 2.25rem); }
-.headline { margin: 0; max-width: 30ch; font-size: clamp(1.5rem, 4vw, 2.75rem); }
-.body-text { margin: 0; font-size: clamp(1rem, 2vw, 1.35rem); }
+.title { margin: 0; max-width: 24ch; font-size: max(1.75rem, calc(84 * var(--u))); font-weight: 700; line-height: 1.1; text-wrap: balance; }
+.large-title { margin: 0; font-size: max(2.25rem, calc(100 * var(--u))); font-weight: 700; line-height: 1.05; }
+.subtitle { margin: 0; font-size: max(1.25rem, calc(60 * var(--u))); font-weight: 700; line-height: 1.15; }
+.headline { margin: 0; max-width: 30ch; font-size: max(1.5rem, calc(34 * var(--u))); font-weight: 700; line-height: 1.2; text-wrap: balance; }
+.body-text { margin: 0; font-size: max(1rem, calc(22 * var(--u))); font-weight: 700; }
 
 /* Features: vier Schritte untereinander, jeder genau ein Screen hoch (Fallback); der Geräte-Platzhalter skaliert mit dem Platz. */
 .feature {
@@ -129,11 +133,12 @@ a { color: inherit; }
   padding: 1.25rem var(--gutter);
 }
 .footer__links { margin: 0; padding: 0; list-style: none; }
+.footer__links { font-size: max(.8125rem, calc(15 * var(--u))); font-weight: 700; }
 .footer__links a { text-decoration: none; }
-.footer__copy { margin: 0; font-size: .85rem; text-align: center; opacity: .8; }
+.footer__copy { margin: 0; font-size: max(.75rem, calc(12 * var(--u))); font-weight: 700; text-align: center; opacity: .8; }
 .footer__social { justify-self: end; display: flex; gap: .5rem; }
 .icon-placeholder {
-  display: grid; place-items: center; width: 2.25rem; height: 2.25rem; font-size: .75rem;
+  display: grid; place-items: center; width: 2.25rem; height: 2.25rem; font-size: .75rem; font-weight: 700;
   text-decoration: none; border: 1px solid currentColor; border-radius: 50%;
 }
 @media (max-width: 40rem) {
