@@ -164,6 +164,14 @@ export function tournamentReducer(
       return resolveCurrentMatch(state, winnerId, action.imageId, 'excluded');
     }
 
+    case 'ABORT_TO_UPLOAD':
+      return {
+        ...createInitialState(),
+        view: 'upload',
+        images: state.images,
+        imageOrder: state.imageOrder,
+      };
+
     case 'RESET':
       return { ...createInitialState(), view: action.view };
   }

@@ -31,8 +31,3 @@ export function computeRanking(
 
   return ranking;
 }
-
-/** Bilder, die manuell ausgeschlossen wurden (nicht im Ranking). */
-export function getExcludedIds(eliminations: readonly Elimination[]): ImageId[] {
-  return eliminations.filter((e) => e.reason === 'excluded').map((e) => e.imageId);
-}

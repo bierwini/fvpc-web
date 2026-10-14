@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { BlobRegistry } from './blobRegistry';
 import { advanceToNextRound, buildRound, createInitialState, tournamentReducer } from './engine';
 import { computeRanking } from './ranking';
+import { getStartOrder } from './shuffle';
 import type { TournamentAction, TournamentState } from './types';
 
 function run(state: TournamentState, ...actions: TournamentAction[]): TournamentState {
@@ -119,5 +120,32 @@ describe('BlobRegistry', () => {
     expect(reg.size).toBe(0);
     create.mockRestore();
     revoke.mockRestore();
+  });
+});
+
+describe('Startreihenfolge & Abbruch', () => {
+  it('Shuffle aus: exakt die Upload-Reihenfolge', () => {
+    const order = ['a', 'b', 'c', 'd', 'e'];
+    expect(getStartOrder(order, false, () => 0)).toEqual(order);
+  });
+
+  it('Shuffle an: Permutation derselben Bilder, Original bleibt unverändert', () => {
+    const order = ['a', 'b', 'c', 'd', 'e'];
+    const out = getStartOrder(order, true, () => 0);
+    expect(out).not.toEqual(order);
+    expect([...out].sort()).toEqual(order);
+    expect(order).toEqual(['a', 'b', 'c', 'd', 'e']);
+  });
+
+  it('ABORT_TO_UPLOAD behält Bilder, verwirft den Turnierfortschritt', () => {
+    const s0 = run(started(4), { type: 'PICK_WINNER', winnerId: 'i1' });
+    const s = run(s0, { type: 'ABORT_TO_UPLOAD' });
+    expect(s.view).toBe('upload');
+    expect(s.images).toBe(s0.images);
+    expect(s.imageOrder).toEqual(['i1', 'i2', 'i3', 'i4']);
+    expect(s.eliminations).toEqual([]);
+    expect(s.matchQueue).toEqual([]);
+    // erneuter Start funktioniert
+    expect(run(s, { type: 'START_TOURNAMENT', order: s.imageOrder }).totalMatches).toBe(3);
   });
 });
