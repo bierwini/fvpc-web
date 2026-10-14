@@ -1,6 +1,11 @@
 import { useRef, useState } from 'react';
 import { ConfirmSheet, Sheet } from '../components/Sheet';
-import { ZoomStage, type FitMode, type ZoomStageHandle } from '../components/ZoomStage';
+import {
+  ZoomStage,
+  type FitMode,
+  type ZoomInfo,
+  type ZoomStageHandle,
+} from '../components/ZoomStage';
 import type { ImageId, Matchup, TournamentImage } from '../tournament/types';
 
 interface MatchScreenProps {
@@ -49,9 +54,27 @@ export function MatchScreen({
 
   // Fit/Fill gilt für das ganze Turnier (bleibt über Duelle hinweg), der Zoom nur für ein Duell.
   const [mode, setMode] = useState<FitMode>('fill');
-  const [zoomed, setZoomed] = useState(false);
+  const [zoom, setZoom] = useState<ZoomInfo>({ zoomed: false, reachesFill: false });
   const stageRef = useRef<ZoomStageHandle>(null);
   const otherId = match[activeIndex === 0 ? 1 : 0];
+
+  // Fit/Fill-Button (Texte später durch Expand-/Collapse-Icons ersetzbar):
+  //   ungezoomt: wechselt den Modus (Fill-Modus zeigt "Fit", Fit-Modus zeigt "Fill").
+  //   gezoomt:   führt zum nächsten Ruhepunkt zurück.
+  //     Fill-Modus -> "Fill" (zurück auf Fill-Größe, danach "Fit").
+  //     Fit-Modus  -> "Fill" (springt auf Fill-Größe), sobald die Fill-Größe überschritten ist "Fit" (zurück auf Fit).
+  const fitFill = (() => {
+    const toFill = { label: 'Fill', aria: 'Scale to fill window', onClick: () => setMode('fill') };
+    const toFit = { label: 'Fit', aria: 'Scale to fit window', onClick: () => setMode('fit') };
+    const resetZoom = (base: typeof toFill) => ({
+      ...base,
+      aria: `${base.aria} (reset zoom)`,
+      onClick: () => stageRef.current?.resetZoom(),
+    });
+    if (!zoom.zoomed) return mode === 'fill' ? toFit : toFill;
+    if (mode === 'fill') return resetZoom(toFill);
+    return zoom.reachesFill ? resetZoom(toFit) : toFill;
+  })();
 
   const [closeOpen, setCloseOpen] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
@@ -68,7 +91,7 @@ export function MatchScreen({
         resetKey={matchKey}
         activeId={activeId}
         otherId={otherId}
-        onZoomedChange={setZoomed}
+        onZoomChange={setZoom}
         label={`Showing photo ${activeIndex === 0 ? 'A' : 'B'} – click to switch, pinch or scroll to zoom`}
         onTap={() => setSelection({ matchKey, index: activeIndex === 0 ? 1 : 0 })}
       >
@@ -88,18 +111,8 @@ export function MatchScreen({
 
       <header className="bar bar--top">
         <div className="toolbar-group" role="group" aria-label="Tools">
-          {/* Gezoomt: zurück auf die Basisgröße. Sonst: Wechsel zwischen Fill und Fit. */}
-          <button
-            type="button"
-            aria-label={
-              zoomed ? 'Reset zoom' : mode === 'fill' ? 'Scale to fit window' : 'Scale to fill window'
-            }
-            onClick={() => {
-              if (zoomed) stageRef.current?.resetZoom();
-              else setMode(mode === 'fill' ? 'fit' : 'fill');
-            }}
-          >
-            {zoomed || mode === 'fit' ? 'Fill' : 'Fit'}
+          <button type="button" aria-label={fitFill.aria} onClick={fitFill.onClick}>
+            {fitFill.label}
           </button>
           <button
             type="button"
