@@ -1,15 +1,24 @@
 /* Plain Styles wie in der Web-App (Systemschrift, native Controls). Das Design folgt später. */
 * { box-sizing: border-box; }
-:root { --header-h: 3.5rem; --gutter: clamp(1rem, 4vw, 3rem); }
-html { scroll-behavior: smooth; scroll-padding-top: var(--header-h); }
+:root {
+  --header-h: 3.5rem;
+  --gutter: clamp(1rem, 4vw, 3rem);
+  /* Ein "Screen": Fensterhöhe, mindestens 34rem (darunter scrollt die Seite normal). */
+  --screen: 100vh;
+  --screen: max(100svh, 34rem);
+}
+html { scroll-behavior: smooth; scroll-snap-type: y mandatory; }
+.snap { scroll-snap-align: start; }
+@media (max-height: 34rem) { html { scroll-snap-type: none; } }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 body { margin: 0; font-family: system-ui, sans-serif; line-height: 1.4; }
 a { color: inherit; }
 
-/* ---------- Header: Logo | Start App | Edition-Switch ---------- */
+/* ---------- Header: liegt über dem Inhalt und scrollt nicht mit ---------- */
 .site-header {
-  position: sticky; top: 0; z-index: 10; height: var(--header-h);
+  position: fixed; top: 0; left: 0; right: 0; z-index: 10; height: var(--header-h);
   display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: .5rem;
-  padding: 0 var(--gutter); background: Canvas; border-bottom: 1px solid rgb(128 128 128 / .3);
+  padding: 0 var(--gutter);
 }
 .logo { display: inline-flex; align-items: center; gap: .4rem; font-weight: 700; text-decoration: none; justify-self: start; }
 .edition { justify-self: end; display: flex; }
@@ -25,15 +34,14 @@ a { color: inherit; }
 }
 .btn--large { font-size: clamp(1.05rem, 2.5vw, 1.4rem); padding: .6rem 1.6rem; }
 
-/* ---------- Sektionen: immer mindestens Fensterhöhe abzüglich Header ---------- */
+/* ---------- Sektionen: genau ein Screen hoch, Inhalt in der echten Fenstermitte ----------
+   Oben und unten bleibt Platz für Header bzw. Footer, die über dem Inhalt liegen. */
 .section {
-  min-height: calc(100vh - var(--header-h));
-  min-height: calc(100svh - var(--header-h));
-  padding: clamp(2rem, 6vh, 4rem) var(--gutter);
+  min-height: var(--screen);
+  padding: var(--header-h) var(--gutter);
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   text-align: center; gap: clamp(1rem, 3vh, 2rem);
 }
-.container { width: 100%; max-width: 70rem; margin-inline: auto; }
 
 /* Texte skalieren mit der Fensterbreite */
 .title { margin: 0; max-width: 24ch; font-size: clamp(1.6rem, 5vw, 3.25rem); }
@@ -42,32 +50,55 @@ a { color: inherit; }
 .headline { margin: 0; max-width: 30ch; font-size: clamp(1.5rem, 4vw, 2.75rem); }
 .body-text { margin: 0; font-size: clamp(1rem, 2vw, 1.35rem); }
 
-/* Features: Höhe = Fenster, das iPhone-Rechteck skaliert mit der Höhe (Seitenverhältnis fix). */
-.section--features { height: calc(100svh - var(--header-h)); min-height: 34rem; }
+/* Features: jeder Schritt ist genau ein Screen hoch; das iPhone-Rechteck skaliert mit der Höhe. */
+.feature {
+  height: var(--screen); padding: var(--header-h) var(--gutter); scroll-snap-align: start;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  text-align: center; gap: clamp(1rem, 3vh, 2rem);
+}
 .phone {
   flex: 1 1 0; min-height: 0; max-width: 100%; aspect-ratio: 9 / 19.5;
   display: grid; place-items: center; text-align: center; padding: 1rem;
   border: 2px solid currentColor; border-radius: clamp(1.5rem, 4vh, 3rem);
 }
+.features__steps { display: none; }
 
-/* How: Überschrift links, darunter Bilder-Platzhalter links und Liste rechts */
-.section--how { align-items: stretch; justify-content: flex-start; text-align: left; }
-.section--how .headline { max-width: none; }
-.how { flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: var(--gutter); align-items: center; }
-.placeholder, .store-badge {
-  display: grid; place-items: center; text-align: center; padding: 1rem;
-  border: 2px dashed currentColor; border-radius: .75rem;
+/* Mit JS und ohne reduzierte Bewegung: die Bühne bleibt stehen, nur der Inhalt wechselt. */
+@media (prefers-reduced-motion: no-preference) and (min-height: 34rem) {
+  /* Der Container ist genau so hoch wie die Scrollstrecke (4 Schritte). Die Bühne klebt darin
+     und wird am Ende der Sektion normal losgelassen. Die Schritte liegen unsichtbar darüber. */
+  html.js .features { position: relative; height: calc(4 * var(--screen)); }
+  html.js .features__stage { position: sticky; top: 0; height: var(--screen); display: grid; }
+  html.js .feature {
+    grid-area: 1 / 1; scroll-snap-align: none;
+    opacity: 0; visibility: hidden; transition: opacity .25s, visibility .25s;
+  }
+  html.js .feature.is-active { opacity: 1; visibility: visible; }
+  html.js .features__steps { display: block; position: absolute; top: 0; left: 0; right: 0; pointer-events: none; }
+  html.js .features__steps > div { height: var(--screen); scroll-snap-align: start; }
 }
-.placeholder { width: 100%; aspect-ratio: 4 / 3; }
-.how__list { margin: 0; padding-left: 1.25rem; display: grid; gap: 1rem; font-size: clamp(1.05rem, 2.2vw, 1.6rem); }
-@media (max-width: 48rem) { .how { grid-template-columns: 1fr; align-content: center; } }
+
+/* "How?"-Bubble: an der (zentrierten) Textzeile verankert, damit sie auch auf schmalen Fenstern im Bild bleibt. */
+.feature .body-text { position: relative; }
+.tip { display: inline-block; }
+.tip__trigger { font: inherit; padding: 0; border: 0; background: none; text-decoration: underline; cursor: help; color: inherit; }
+.tip__bubble {
+  position: absolute; bottom: calc(100% + .6rem); left: 50%; transform: translateX(-50%);
+  width: min(20rem, calc(100vw - 2rem)); padding: .75rem 1rem; text-align: left;
+  font-size: .9rem; line-height: 1.4; color: CanvasText; background: Canvas;
+  border: 1px solid currentColor; border-radius: .6rem; box-shadow: 0 .25rem 1rem rgb(0 0 0 / .2);
+  visibility: hidden; opacity: 0; transition: opacity .15s, visibility .15s; pointer-events: none;
+}
+.tip:hover .tip__bubble, .tip:focus-within .tip__bubble, .tip.is-open .tip__bubble { visibility: visible; opacity: 1; pointer-events: auto; }
 
 .store-badge { width: 12rem; height: 4rem; font-size: .8rem; }
 
-/* ---------- Footer: Links | Copyright | Social ---------- */
+/* ---------- Letzter Screen: CTA mittig, Footer liegt unten darüber ---------- */
+.last-screen { position: relative; }
 .site-footer {
+  position: absolute; left: 0; right: 0; bottom: 0;
   display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 1rem;
-  padding: 1.5rem var(--gutter); border-top: 1px solid rgb(128 128 128 / .3);
+  padding: 1.25rem var(--gutter);
 }
 .footer__links { margin: 0; padding-left: 1.25rem; }
 .footer__copy { margin: 0; font-size: .85rem; text-align: center; opacity: .8; }
@@ -77,11 +108,10 @@ a { color: inherit; }
   text-decoration: none; border: 1px solid currentColor; border-radius: 50%;
 }
 @media (max-width: 40rem) {
-  .site-footer { grid-template-columns: 1fr; justify-items: center; text-align: center; }
-  .footer__links { padding-left: 0; list-style-position: inside; }
+  .site-footer { grid-template-columns: 1fr; justify-items: center; text-align: center; gap: .6rem; padding: .75rem var(--gutter); }
+  .footer__links { display: flex; flex-wrap: wrap; justify-content: center; gap: .25rem 1.25rem; padding-left: 0; list-style-position: inside; }
   .footer__social { justify-self: center; }
 }
 
 /* ---------- Platzhalter-Seiten (Terms, Privacy, Imprint) ---------- */
-.legal { max-width: 42rem; margin: 0 auto; padding: 2rem var(--gutter) 4rem; }
-.site-header--simple { grid-template-columns: 1fr auto; }
+.legal { max-width: 42rem; margin: 0 auto; padding: calc(var(--header-h) + 2rem) var(--gutter) 4rem; }

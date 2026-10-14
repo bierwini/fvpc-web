@@ -4,10 +4,10 @@ export function IntroScreen({ onStart }: { onStart: () => void }) {
   return (
     <div className="screen screen--intro">
       <div className="topbar">
-        {/* Die App liegt unter /app/, die Landingpage eine Ebene darüber. */}
-        <a className="link-button" href="../">
+        {/* Gleicher Button wie im Upload. Die App liegt unter /app/, die Landingpage eine Ebene darüber. */}
+        <button type="button" onClick={() => window.location.assign('../')}>
           ← Back
-        </a>
+        </button>
       </div>
 
       <main className="intro__column">

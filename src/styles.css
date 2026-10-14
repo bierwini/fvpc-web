@@ -4,11 +4,6 @@ html, body, #root { height: 100%; margin: 0; }
 body { font-family: system-ui, sans-serif; }
 
 .screen { min-height: 100%; padding: 1rem; }
-/* Link im Look eines nativen Buttons */
-.link-button {
-  display: inline-block; padding: .1rem .45rem; font-size: 13.33px; text-decoration: none;
-  color: ButtonText; background: ButtonFace; border: 1px solid ButtonBorder; border-radius: .25rem;
-}
 .legal-caption { font-size: .75rem; opacity: .7; margin: 0; }
 
 /* ---------- Intro & Upload: Spaltenlayout, Footer unten ---------- */
