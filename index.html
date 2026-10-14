@@ -17,20 +17,20 @@
   </head>
   <body>
     <header class="site-header">
-      <a class="logo" href="./" aria-label="Favopic – home">
+      <a class="logo text-2xl md:text-4xl font-bold" href="./" aria-label="Favopic – home">
         <span class="logo__mark" aria-hidden="true">◻</span>
         <span>Favopic</span>
       </a>
 
       <!-- Je nach Edition: Web => App starten, iOS => noch nicht verfügbar (nicht klickbar) -->
-      <a class="btn" data-for="web" href="./app/">Start App</a>
-      <button type="button" class="btn" data-for="ios" disabled>Available soon</button>
+      <a class="btn text-base md:text-lg font-medium" data-for="web" href="./app/">Start App</a>
+      <button type="button" class="btn text-base md:text-lg font-medium" data-for="ios" disabled>Available soon</button>
 
       <div class="edition" role="group" aria-label="Edition">
-        <button type="button" data-edition-option="ios" aria-pressed="false">
+        <button type="button" class="text-base md:text-lg font-medium" data-edition-option="ios" aria-pressed="false">
           iOS<span class="edition__long"> Edition</span>
         </button>
-        <button type="button" data-edition-option="web" aria-pressed="true">
+        <button type="button" class="text-base md:text-lg font-medium" data-edition-option="web" aria-pressed="true">
           Web<span class="edition__long"> Edition</span>
         </button>
       </div>
@@ -45,16 +45,16 @@
         <div class="hero-wrap__bg" aria-hidden="true"></div>
         <div class="hero-wrap__content">
           <section class="section section--intro" aria-labelledby="intro-title">
-            <h2 id="intro-title" class="title fade-up">
+            <h2 id="intro-title" class="title fade-up text-4xl md:text-6xl lg:text-7xl font-bold leading-tight text-balance">
               Your phone is full of photos that look the same?
             </h2>
           </section>
 
           <section class="section section--hero" aria-labelledby="hero-title">
-            <h1 id="hero-title" class="large-title">
+            <h1 id="hero-title" class="large-title text-5xl md:text-7xl lg:text-8xl font-bold leading-none">
               Find your favorite<br />photos with Favopic
             </h1>
-            <p class="subtitle">and enjoy your library again!</p>
+            <p class="subtitle text-2xl md:text-4xl lg:text-6xl font-bold leading-tight">and enjoy your library again!</p>
           </section>
         </div>
       </div>
@@ -67,7 +67,7 @@
       <section class="features" aria-label="Features">
         <div class="features__stage">
           <article class="feature is-active" data-step="0">
-            <h2 class="headline">Intuitive 1vs1 comparison</h2>
+            <h2 class="headline text-2xl md:text-4xl font-bold leading-tight text-balance">Intuitive 1vs1 comparison</h2>
             <div class="device-slot">
               <div class="device" role="img" aria-label="Placeholder for a screenshot">
                 <span data-for="ios">iPhone placeholder</span>
@@ -75,11 +75,11 @@
                 <span class="device__label">1vs1 comparison</span>
               </div>
             </div>
-            <p class="body-text">
+            <p class="body-text text-base md:text-xl font-bold">
               Photos stay on your device. No photo is uploaded.
               <span class="tip">
                 <button type="button" class="tip__trigger" aria-describedby="blob-tip">How?</button>
-                <span id="blob-tip" role="tooltip" class="tip__bubble">
+                <span id="blob-tip" role="tooltip" class="tip__bubble text-sm">
                   Your photos are never uploaded. Your browser only creates temporary links to the
                   files on your device. They exist in memory only and are deleted as soon as you
                   reset, close the tournament or leave the page.
@@ -89,7 +89,7 @@
           </article>
 
           <article class="feature" data-step="1">
-            <h2 class="headline">Rankings with bulk actions</h2>
+            <h2 class="headline text-2xl md:text-4xl font-bold leading-tight text-balance">Rankings with bulk actions</h2>
             <div class="device-slot">
               <div class="device" role="img" aria-label="Placeholder for a screenshot">
                 <span data-for="ios">iPhone placeholder</span>
@@ -97,11 +97,11 @@
                 <span class="device__label">Rankings</span>
               </div>
             </div>
-            <p class="body-text">Placeholder text for rankings with bulk actions.</p>
+            <p class="body-text text-base md:text-xl font-bold">Placeholder text for rankings with bulk actions.</p>
           </article>
 
           <article class="feature" data-step="2">
-            <h2 class="headline">Intelligent suggestions</h2>
+            <h2 class="headline text-2xl md:text-4xl font-bold leading-tight text-balance">Intelligent suggestions</h2>
             <div class="device-slot">
               <div class="device" role="img" aria-label="Placeholder for a screenshot">
                 <span data-for="ios">iPhone placeholder</span>
@@ -109,11 +109,11 @@
                 <span class="device__label">Suggestions</span>
               </div>
             </div>
-            <p class="body-text">Placeholder text for intelligent suggestions.</p>
+            <p class="body-text text-base md:text-xl font-bold">Placeholder text for intelligent suggestions.</p>
           </article>
 
           <article class="feature" data-step="3">
-            <h2 class="headline">Clean photos as a habit</h2>
+            <h2 class="headline text-2xl md:text-4xl font-bold leading-tight text-balance">Clean photos as a habit</h2>
             <div class="device-slot">
               <div class="device" role="img" aria-label="Placeholder for a screenshot">
                 <span data-for="ios">iPhone placeholder</span>
@@ -121,7 +121,7 @@
                 <span class="device__label">Habit</span>
               </div>
             </div>
-            <p class="body-text">Placeholder text for cleaning photos as a habit.</p>
+            <p class="body-text text-base md:text-xl font-bold">Placeholder text for cleaning photos as a habit.</p>
           </article>
         </div>
 
@@ -137,26 +137,26 @@
       <!-- Footer liegt unten im letzten Screen, der CTA bleibt in der Fenstermitte. -->
       <div class="last-screen">
         <section id="get-the-app" class="section" aria-labelledby="cta-title">
-          <h2 id="cta-title" class="headline">
+          <h2 id="cta-title" class="headline text-2xl md:text-4xl font-bold leading-tight text-balance">
             Gain back control of your library and focus on your best memories!
           </h2>
-          <a class="btn btn--large" data-for="web" href="./app/">Start App</a>
-          <button type="button" class="btn btn--large" data-for="ios" disabled>Available soon</button>
-          <div class="store-badge" role="img" aria-label="Download on the App Store – available soon">
+          <a class="btn btn--large text-base md:text-lg font-medium" data-for="web" href="./app/">Start App</a>
+          <button type="button" class="btn btn--large text-base md:text-lg font-medium" data-for="ios" disabled>Available soon</button>
+          <div class="store-badge text-xs" role="img" aria-label="Download on the App Store – available soon">
             App Store badge placeholder<br />Available soon
           </div>
         </section>
 
         <footer class="site-footer">
-          <ul class="footer__links">
+          <ul class="footer__links text-sm font-bold">
             <li><a href="./terms/">Terms</a></li>
             <li><a href="./privacy/">Privacy</a></li>
             <li><a href="./imprint/">Imprint</a></li>
           </ul>
-          <p class="footer__copy">© 2026 Favopic. All rights reserved.</p>
+          <p class="footer__copy text-xs font-bold">© 2026 Favopic. All rights reserved.</p>
           <div class="footer__social">
-            <a class="icon-placeholder" href="#" aria-label="Instagram">IG</a>
-            <a class="icon-placeholder" href="#" aria-label="TikTok">TT</a>
+            <a class="icon-placeholder text-xs font-bold" href="#" aria-label="Instagram">IG</a>
+            <a class="icon-placeholder text-xs font-bold" href="#" aria-label="TikTok">TT</a>
           </div>
         </footer>
       </div>

@@ -1,3 +1,4 @@
+import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
 
@@ -7,7 +8,7 @@ const page = (path: string) => new URL(path, import.meta.url).pathname;
 // Mehrere Seiten: Landingpage (/), Web-App (/app/) und Platzhalter für Rechtstexte.
 export default defineConfig({
   base: './',
-  plugins: [react()],
+  plugins: [react(), tailwindcss()],
   build: {
     rollupOptions: {
       input: {
