@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { ConfirmSheet, Sheet } from '../components/Sheet';
-import { ZoomStage } from '../components/ZoomStage';
+import { ZoomStage, type FitMode, type ZoomStageHandle } from '../components/ZoomStage';
 import type { ImageId, Matchup, TournamentImage } from '../tournament/types';
 
 interface MatchScreenProps {
@@ -16,9 +16,16 @@ interface MatchScreenProps {
   onClose: () => void;
 }
 
+/** Seitenverhältnis fürs CSS (Fit/Fill-Größe wird dort aus --ar berechnet). */
+function setAspect(el: HTMLImageElement) {
+  if (el.naturalWidth > 0) el.style.setProperty('--ar', String(el.naturalWidth / el.naturalHeight));
+}
+
 /** Stabile Ref-Funktion: dekodiert das Bild einmal beim Einhängen, nicht erst beim Anzeigen. */
-function decodeOnMount(el: HTMLImageElement | null) {
-  el?.decode().catch(() => {});
+function prepareImage(el: HTMLImageElement | null) {
+  if (!el) return;
+  setAspect(el);
+  el.decode().then(() => setAspect(el), () => {});
 }
 
 export function MatchScreen({
@@ -40,6 +47,12 @@ export function MatchScreen({
   const activeIndex = selection.matchKey === matchKey ? selection.index : 0;
   const activeId = match[activeIndex];
 
+  // Fit/Fill gilt für das ganze Turnier (bleibt über Duelle hinweg), der Zoom nur für ein Duell.
+  const [mode, setMode] = useState<FitMode>('fill');
+  const [zoomed, setZoomed] = useState(false);
+  const stageRef = useRef<ZoomStageHandle>(null);
+  const otherId = match[activeIndex === 0 ? 1 : 0];
+
   const [closeOpen, setCloseOpen] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
 
@@ -50,14 +63,21 @@ export function MatchScreen({
   return (
     <div className="screen screen--match">
       <ZoomStage
+        ref={stageRef}
+        mode={mode}
         resetKey={matchKey}
+        activeId={activeId}
+        otherId={otherId}
+        onZoomedChange={setZoomed}
         label={`Showing photo ${activeIndex === 0 ? 'A' : 'B'} – click to switch, pinch or scroll to zoom`}
         onTap={() => setSelection({ matchKey, index: activeIndex === 0 ? 1 : 0 })}
       >
         {mountedIds.map((id) => (
           <img
             key={id}
-            ref={decodeOnMount}
+            ref={prepareImage}
+            data-image-id={id}
+            onLoad={(e) => setAspect(e.currentTarget)}
             src={images[id]!.url}
             alt={id === activeId ? images[id]!.name : ''}
             className={id === activeId ? 'stage__img stage__img--active' : 'stage__img'}
@@ -68,11 +88,25 @@ export function MatchScreen({
 
       <header className="bar bar--top">
         <div className="toolbar-group" role="group" aria-label="Tools">
-          <button type="button" aria-label="Placeholder tool 1">
-            ◐
+          {/* Gezoomt: zurück auf die Basisgröße. Sonst: Wechsel zwischen Fill und Fit. */}
+          <button
+            type="button"
+            aria-label={
+              zoomed ? 'Reset zoom' : mode === 'fill' ? 'Scale to fit window' : 'Scale to fill window'
+            }
+            onClick={() => {
+              if (zoomed) stageRef.current?.resetZoom();
+              else setMode(mode === 'fill' ? 'fit' : 'fill');
+            }}
+          >
+            {zoomed || mode === 'fit' ? 'Fill' : 'Fit'}
           </button>
-          <button type="button" aria-label="Placeholder tool 2">
-            ◑
+          <button
+            type="button"
+            aria-label="Sync zoom and position with the other photo"
+            onClick={() => stageRef.current?.syncFromOther()}
+          >
+            Sync
           </button>
         </div>
         <progress
