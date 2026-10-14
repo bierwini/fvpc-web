@@ -58,14 +58,14 @@ export function MatchScreen({
   const stageRef = useRef<ZoomStageHandle>(null);
   const otherId = match[activeIndex === 0 ? 1 : 0];
 
-  // Fit/Fill-Button (Texte später durch Expand-/Collapse-Icons ersetzbar):
+  // Fit/Fill-Button. Das Zeichen zeigt die Aktion: ↙↗ (Pfeile nach außen) = "Fill", ↗↙ (nach innen) = "Fit".
   //   ungezoomt: wechselt den Modus (Fill-Modus zeigt "Fit", Fit-Modus zeigt "Fill").
   //   gezoomt:   führt zum nächsten Ruhepunkt zurück.
   //     Fill-Modus -> "Fill" (zurück auf Fill-Größe, danach "Fit").
   //     Fit-Modus  -> "Fill" (springt auf Fill-Größe), sobald die Fill-Größe überschritten ist "Fit" (zurück auf Fit).
   const fitFill = (() => {
-    const toFill = { label: 'Fill', aria: 'Scale to fill window', onClick: () => setMode('fill') };
-    const toFit = { label: 'Fit', aria: 'Scale to fit window', onClick: () => setMode('fit') };
+    const toFill = { icon: '↙↗', aria: 'Scale to fill window', onClick: () => setMode('fill') };
+    const toFit = { icon: '↗↙', aria: 'Scale to fit window', onClick: () => setMode('fit') };
     const resetZoom = (base: typeof toFill) => ({
       ...base,
       aria: `${base.aria} (reset zoom)`,
@@ -112,7 +112,7 @@ export function MatchScreen({
       <header className="bar bar--top">
         <div className="toolbar-group" role="group" aria-label="Tools">
           <button type="button" aria-label={fitFill.aria} onClick={fitFill.onClick}>
-            {fitFill.label}
+            <span aria-hidden="true">{fitFill.icon}</span>
           </button>
           <button
             type="button"
