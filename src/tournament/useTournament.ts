@@ -50,16 +50,15 @@ export function useTournament() {
     [],
   );
 
-  /** Abbruch (Match/Ranking): zurück zum Upload, Bilder und Blobs bleiben erhalten. */
-  const abortToUpload = useCallback(() => dispatch({ type: 'ABORT_TO_UPLOAD' }), []);
+  const goToIntro = useCallback(() => dispatch({ type: 'GO_TO_INTRO' }), []);
 
-  /** Manueller Reset / Abbruch: gibt ALLE Blobs frei, zurück zum Intro. */
+  /** Close im Match/Ranking: gibt ALLE Blobs frei, zurück zum Intro. */
   const resetTournament = useCallback(() => {
     blobs.revokeAll();
     dispatch({ type: 'RESET', view: 'intro' });
   }, [blobs]);
 
-  /** Neues Turnier: gibt ALLE Blobs frei, direkt zum Upload. */
+  /** Next Game: gibt ALLE Blobs frei, direkt zum Upload. */
   const startNewTournament = useCallback(() => {
     blobs.revokeAll();
     dispatch({ type: 'RESET', view: 'upload' });
@@ -84,7 +83,7 @@ export function useTournament() {
       pickWinner,
       excludeCurrentImage,
       setShuffleEnabled,
-      abortToUpload,
+      goToIntro,
       resetTournament,
       startNewTournament,
     },

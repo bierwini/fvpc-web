@@ -58,8 +58,8 @@ export type TournamentAction =
   | { type: 'START_TOURNAMENT'; order: ImageId[] }
   | { type: 'PICK_WINNER'; winnerId: ImageId }
   | { type: 'EXCLUDE_IMAGE'; imageId: ImageId }
-  /** Turnier abbrechen: zurück zum Upload, geladene Bilder (und Blobs) bleiben erhalten. */
-  | { type: 'ABORT_TO_UPLOAD' }
+  /** Upload -> Intro. Geladene Bilder (und Blobs) bleiben erhalten. */
+  | { type: 'GO_TO_INTRO' }
   /** Zurück zum Startzustand. Die Blobs gibt der Aufrufer vorher frei. */
   | { type: 'RESET'; view: 'intro' | 'upload' };
 

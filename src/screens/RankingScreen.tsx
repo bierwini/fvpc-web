@@ -5,10 +5,15 @@ import type { ImageId, RankingEntry, TournamentImage } from '../tournament/types
 interface RankingScreenProps {
   ranking: RankingEntry[];
   images: Record<ImageId, TournamentImage>;
-  /** Close: zurück zum Upload (Bilder bleiben). */
+  /** Close (mit Bestätigung): alles verwerfen, zurück zum Intro. */
   onClose: () => void;
-  /** Next Game: alles freigeben, zurück zum leeren Intro. */
+  /** Next Game (ohne Bestätigung): alles verwerfen, zurück zum leeren Upload. */
   onNextGame: () => void;
+}
+
+/** Größenstufe: #1 groß, #2 mittel, alle weiteren klein. */
+function tierOf(rank: number) {
+  return rank === 1 ? 'first' : rank === 2 ? 'second' : 'rest';
 }
 
 function downloadImage(image: TournamentImage) {
@@ -20,7 +25,7 @@ function downloadImage(image: TournamentImage) {
 
 export function RankingScreen({ ranking, images, onClose, onNextGame }: RankingScreenProps) {
   const [hideNames, setHideNames] = useState(false);
-  const [sheet, setSheet] = useState<'close' | 'next' | null>(null);
+  const [closeOpen, setCloseOpen] = useState(false);
 
   const top = ranking[0] ? images[ranking[0].imageId] : undefined;
 
@@ -28,7 +33,7 @@ export function RankingScreen({ ranking, images, onClose, onNextGame }: RankingS
     <div className="screen screen--ranking">
       <header className="bar bar--top">
         <h1>Ranking</h1>
-        <button type="button" onClick={() => setSheet('close')}>
+        <button type="button" onClick={() => setCloseOpen(true)}>
           Close
         </button>
       </header>
@@ -38,7 +43,7 @@ export function RankingScreen({ ranking, images, onClose, onNextGame }: RankingS
           {ranking.map(({ imageId, rank }) => {
             const image = images[imageId]!;
             return (
-              <li key={imageId}>
+              <li key={imageId} className={`rank-grid__item rank-grid__item--${tierOf(rank)}`}>
                 <figure>
                   <img src={image.url} alt={image.name} />
                   <figcaption>
@@ -59,32 +64,21 @@ export function RankingScreen({ ranking, images, onClose, onNextGame }: RankingS
         <button type="button" disabled={!top} onClick={() => top && downloadImage(top)}>
           Download Top 1
         </button>
-        <button type="button" className="primary" onClick={() => setSheet('next')}>
+        <button type="button" className="primary" onClick={onNextGame}>
           Next Game
         </button>
       </footer>
 
       <ConfirmSheet
-        open={sheet === 'close'}
+        open={closeOpen}
         title="Close ranking?"
-        message="You return to the upload. Your loaded photos are kept."
-        confirmLabel="Close"
+        message="The ranking and all loaded photos are discarded and you return to the start."
+        confirmLabel="Discard & Close"
         onConfirm={() => {
-          setSheet(null);
+          setCloseOpen(false);
           onClose();
         }}
-        onCancel={() => setSheet(null)}
-      />
-      <ConfirmSheet
-        open={sheet === 'next'}
-        title="Start next game?"
-        message="This clears all photos and returns to the start. The ranking is lost."
-        confirmLabel="Next Game"
-        onConfirm={() => {
-          setSheet(null);
-          onNextGame();
-        }}
-        onCancel={() => setSheet(null)}
+        onCancel={() => setCloseOpen(false)}
       />
     </div>
   );

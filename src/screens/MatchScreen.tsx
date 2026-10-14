@@ -4,32 +4,68 @@ import type { ImageId, Matchup, TournamentImage } from '../tournament/types';
 
 interface MatchScreenProps {
   match: Matchup;
+  /** Folgeduell: seine Bilder werden schon jetzt im Hintergrund geladen und dekodiert. */
+  nextMatch: Matchup | null;
   images: Record<ImageId, TournamentImage>;
   completedMatches: number;
   totalMatches: number;
   onChoose: (id: ImageId) => void;
   onRemove: (id: ImageId) => void;
-  onAbort: () => void;
+  /** Close: alles verwerfen, zurück zum Intro. */
+  onClose: () => void;
+}
+
+/** Stabile Ref-Funktion: dekodiert das Bild einmal beim Einhängen, nicht erst beim Anzeigen. */
+function decodeOnMount(el: HTMLImageElement | null) {
+  el?.decode().catch(() => {});
 }
 
 export function MatchScreen({
   match,
+  nextMatch,
   images,
   completedMatches,
   totalMatches,
   onChoose,
   onRemove,
-  onAbort,
+  onClose,
 }: MatchScreenProps) {
-  // 0 = Bild A, 1 = Bild B. Der Parent setzt per `key` bei jedem neuen Duell zurück.
-  const [activeIndex, setActiveIndex] = useState<0 | 1>(0);
+  // Die Auswahl gehört zu einem bestimmten Duell; bei einem neuen Duell gilt wieder Bild A.
+  const matchKey = match.join('|');
+  const [selection, setSelection] = useState<{ matchKey: string; index: 0 | 1 }>({
+    matchKey,
+    index: 0,
+  });
+  const activeIndex = selection.matchKey === matchKey ? selection.index : 0;
+  const activeId = match[activeIndex];
+
   const [closeOpen, setCloseOpen] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
 
-  const activeId = match[activeIndex];
+  // Aktuelles + nächstes Duell bleiben dauerhaft im DOM (Key = Bild-ID). Beim Weiterschalten
+  // wird nichts neu eingehängt oder geladen, es ändert sich nur, welches Bild sichtbar ist.
+  const mountedIds = [...match, ...(nextMatch ?? [])];
 
   return (
     <div className="screen screen--match">
+      <button
+        type="button"
+        className="stage"
+        aria-label={`Showing photo ${activeIndex === 0 ? 'A' : 'B'} – click to switch`}
+        onClick={() => setSelection({ matchKey, index: activeIndex === 0 ? 1 : 0 })}
+      >
+        {mountedIds.map((id) => (
+          <img
+            key={id}
+            ref={decodeOnMount}
+            src={images[id]!.url}
+            alt={id === activeId ? images[id]!.name : ''}
+            className={id === activeId ? 'stage__img stage__img--active' : 'stage__img'}
+            draggable={false}
+          />
+        ))}
+      </button>
+
       <header className="bar bar--top">
         <div className="toolbar-group" role="group" aria-label="Tools">
           <button type="button" aria-label="Placeholder tool 1">
@@ -51,26 +87,6 @@ export function MatchScreen({
         </button>
       </header>
 
-      <main className="stage">
-        {/* Beide Bilder bleiben im DOM (bereits dekodiert) -> Toggle ohne Ladezeit. */}
-        <button
-          type="button"
-          className="stage__toggle"
-          aria-label={`Showing photo ${activeIndex === 0 ? 'A' : 'B'} – click to switch`}
-          onClick={() => setActiveIndex(activeIndex === 0 ? 1 : 0)}
-        >
-          {match.map((id, i) => (
-            <img
-              key={id}
-              src={images[id]!.url}
-              alt={images[id]!.name}
-              hidden={i !== activeIndex}
-              draggable={false}
-            />
-          ))}
-        </button>
-      </main>
-
       <footer className="bar bar--bottom">
         <button type="button" onClick={() => onRemove(activeId)}>
           Remove Current Photo
@@ -86,11 +102,11 @@ export function MatchScreen({
       <ConfirmSheet
         open={closeOpen}
         title="Cancel tournament?"
-        message="Your progress is discarded. Your loaded photos are kept and you return to the upload."
-        confirmLabel="Cancel Tournament"
+        message="The tournament and all loaded photos are discarded and you return to the start."
+        confirmLabel="Discard & Close"
         onConfirm={() => {
           setCloseOpen(false);
-          onAbort();
+          onClose();
         }}
         onCancel={() => setCloseOpen(false)}
       />

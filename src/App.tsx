@@ -19,6 +19,7 @@ export function App() {
           onShuffleChange={actions.setShuffleEnabled}
           onAddFiles={actions.addFiles}
           onRemoveImage={actions.removeImage}
+          onBack={actions.goToIntro}
           onStart={actions.startTournament}
         />
       );
@@ -26,15 +27,14 @@ export function App() {
     case 'match':
       return currentMatch ? (
         <MatchScreen
-          // Neues Duell => Ansicht startet wieder bei Bild A.
-          key={currentMatch.join('|')}
           match={currentMatch}
+          nextMatch={state.matchQueue[1] ?? null}
           images={state.images}
           completedMatches={state.completedMatches}
           totalMatches={state.totalMatches}
           onChoose={actions.pickWinner}
           onRemove={actions.excludeCurrentImage}
-          onAbort={actions.abortToUpload}
+          onClose={actions.resetTournament}
         />
       ) : null;
 
@@ -43,8 +43,8 @@ export function App() {
         <RankingScreen
           ranking={ranking}
           images={state.images}
-          onClose={actions.abortToUpload}
-          onNextGame={actions.resetTournament}
+          onClose={actions.resetTournament}
+          onNextGame={actions.startNewTournament}
         />
       );
   }

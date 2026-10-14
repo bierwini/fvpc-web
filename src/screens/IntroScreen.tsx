@@ -8,7 +8,8 @@ export function IntroScreen({ onStart }: { onStart: () => void }) {
         <p className="subtitle">Find your favorite photo, one duel at a time.</p>
       </header>
 
-      <section aria-label="How it works">
+      {/* Nimmt den freien vertikalen Platz ein. */}
+      <section className="intro__body" aria-label="How it works">
         <ul>
           <li>Placeholder benefit 1</li>
           <li>Placeholder benefit 2</li>

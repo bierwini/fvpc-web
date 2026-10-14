@@ -113,6 +113,9 @@ export function tournamentReducer(
     case 'GO_TO_UPLOAD':
       return { ...state, view: 'upload' };
 
+    case 'GO_TO_INTRO':
+      return state.view === 'upload' ? { ...state, view: 'intro' } : state;
+
     case 'IMAGES_ADDED': {
       if (state.view !== 'upload') return state;
       const images = { ...state.images };
@@ -163,14 +166,6 @@ export function tournamentReducer(
       const winnerId = match[0] === action.imageId ? match[1] : match[0];
       return resolveCurrentMatch(state, winnerId, action.imageId, 'excluded');
     }
-
-    case 'ABORT_TO_UPLOAD':
-      return {
-        ...createInitialState(),
-        view: 'upload',
-        images: state.images,
-        imageOrder: state.imageOrder,
-      };
 
     case 'RESET':
       return { ...createInitialState(), view: action.view };

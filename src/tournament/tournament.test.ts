@@ -137,15 +137,20 @@ describe('Startreihenfolge & Abbruch', () => {
     expect(order).toEqual(['a', 'b', 'c', 'd', 'e']);
   });
 
-  it('ABORT_TO_UPLOAD behält Bilder, verwirft den Turnierfortschritt', () => {
-    const s0 = run(started(4), { type: 'PICK_WINNER', winnerId: 'i1' });
-    const s = run(s0, { type: 'ABORT_TO_UPLOAD' });
+  it('GO_TO_INTRO behält die geladenen Bilder', () => {
+    const upload = run(
+      createInitialState(),
+      { type: 'GO_TO_UPLOAD' },
+      { type: 'IMAGES_ADDED', images: [{ id: 'x', name: 'x', url: 'blob:x' }] },
+    );
+    const s = run(upload, { type: 'GO_TO_INTRO' }, { type: 'GO_TO_UPLOAD' });
+    expect(s.imageOrder).toEqual(['x']);
+  });
+
+  it('RESET verwirft alles', () => {
+    const s = run(started(4), { type: 'RESET', view: 'upload' });
     expect(s.view).toBe('upload');
-    expect(s.images).toBe(s0.images);
-    expect(s.imageOrder).toEqual(['i1', 'i2', 'i3', 'i4']);
-    expect(s.eliminations).toEqual([]);
+    expect(s.imageOrder).toEqual([]);
     expect(s.matchQueue).toEqual([]);
-    // erneuter Start funktioniert
-    expect(run(s, { type: 'START_TOURNAMENT', order: s.imageOrder }).totalMatches).toBe(3);
   });
 });

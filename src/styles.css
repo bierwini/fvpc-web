@@ -4,33 +4,92 @@ html, body, #root { height: 100%; margin: 0; }
 body { font-family: system-ui, sans-serif; }
 
 .screen { min-height: 100%; padding: 1rem; }
-.screen--intro, .screen--upload { display: flex; flex-direction: column; gap: 1rem; max-width: 40rem; margin: 0 auto; }
-.screen--intro footer, .screen--upload footer { margin-top: auto; display: flex; flex-direction: column; gap: .75rem; }
-
-.dropzone { display: grid; place-items: center; gap: .5rem; min-height: 14rem; border: 2px dashed currentColor; border-radius: 1rem; text-align: center; }
-.dropzone--active { background: rgb(128 128 128 / .2); }
-.thumbs { display: grid; grid-template-columns: repeat(auto-fill, minmax(8rem, 1fr)); gap: .5rem; list-style: none; padding: 0; }
-.thumbs img { width: 100%; aspect-ratio: 1; object-fit: cover; }
 .legal-caption { font-size: .75rem; opacity: .7; margin: 0; }
 
-.screen--match, .screen--ranking { display: grid; grid-template-rows: auto 1fr auto; height: 100%; padding: 0; }
-.bar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: .75rem 1rem; }
+/* ---------- Intro & Upload: Spaltenlayout, Footer unten ---------- */
+.screen--intro, .screen--upload {
+  display: flex; flex-direction: column; gap: 1rem;
+  max-width: 40rem; margin: 0 auto;
+}
+.screen--intro footer, .screen--upload footer { display: flex; flex-direction: column; gap: .75rem; }
+
+/* Intro: Inhalt füllt den freien Platz; bei zu kleinem Fenster scrollt die Seite. */
+.intro__body { flex: 1; display: flex; flex-direction: column; justify-content: space-evenly; }
+.intro__body ul { margin: 0; }
+
+/* Upload: Seite = Fensterhöhe, Dropzone füllt den Rest, Footer bleibt unten.
+   Unter der Mindesthöhe scrollt stattdessen die Seite. */
+.screen--upload { height: 100dvh; min-height: 34rem; }
+.back { align-self: flex-start; }
+
+.dropzone {
+  flex: 1; min-height: 0; display: flex; flex-direction: column; gap: .75rem;
+  border: 2px dashed currentColor; border-radius: 1rem; padding: .75rem;
+}
+.dropzone--active { background: rgb(128 128 128 / .2); }
+.dropzone__content { flex: 1; min-height: 0; overflow: auto; display: flex; flex-direction: column; }
+.dropzone__empty { margin: auto; display: grid; justify-items: center; gap: .5rem; text-align: center; }
+.dropzone__empty p { margin: 0; }
+.dropzone__shuffle { align-self: center; }
+
+.thumbs {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(6rem, 1fr)); gap: .5rem;
+  list-style: none; margin: 0; padding: 0; align-content: start;
+}
+.thumbs li { position: relative; aspect-ratio: 1; }
+.thumbs img { width: 100%; height: 100%; object-fit: cover; display: block; border-radius: .5rem; }
+.thumbs__add { width: 100%; height: 100%; font-size: 2rem; }
+.thumbs__remove {
+  position: absolute; top: .25rem; right: .25rem; width: 1.5rem; height: 1.5rem;
+  padding: 0; line-height: 1; border-radius: 50%;
+}
+
+/* ---------- Match: Bild füllt das Fenster, Leisten liegen darüber ---------- */
+.screen--match { position: fixed; inset: 0; padding: 0; background: #000; overflow: hidden; }
+.stage { all: unset; position: absolute; inset: 0; cursor: pointer; }
+.stage__img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; opacity: 0; }
+.stage__img--active { opacity: 1; }
+
+.bar {
+  position: absolute; left: 0; right: 0; z-index: 1;
+  display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: .75rem 1rem;
+}
+.bar--top { top: 0; }
+.bar--bottom { bottom: 0; }
 .bar progress { flex: 1; }
 .toolbar-group { display: flex; gap: .25rem; }
 
-.stage { min-height: 0; display: grid; }
-.stage__toggle { all: unset; display: grid; place-items: center; min-height: 0; cursor: pointer; }
-.stage__toggle img { max-width: 100%; max-height: 100%; object-fit: contain; }
-.stage__toggle img[hidden] { display: none; }
-
+/* ---------- Ranking ---------- */
+.screen--ranking { display: grid; grid-template-rows: auto 1fr auto; height: 100%; padding: 0; }
+.screen--ranking .bar { position: static; }
 .screen--ranking main { overflow: auto; min-height: 0; padding: 1rem; }
-.rank-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr)); gap: .75rem; }
-.rank-grid figure { position: relative; margin: 0; aspect-ratio: 1; }
-.rank-grid img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.rank-grid figcaption { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: flex-end; padding: .5rem; color: #fff; text-shadow: 0 1px 4px rgb(0 0 0 / .8); }
-.rank-grid__rank { font-size: 1.75rem; font-weight: 700; }
-.rank-grid__name { font-size: .8rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
+/* Mobil: 6 Spalten. #1 volle Breite, #2 mittig (4 Sp.), alle weiteren klein (3 pro Zeile). */
+.rank-grid { list-style: none; margin: 0; padding: 0; display: grid; gap: .75rem; grid-template-columns: repeat(6, 1fr); }
+.rank-grid__item { grid-column: span 2; aspect-ratio: 1; }
+.rank-grid__item--first { grid-column: 1 / -1; }
+.rank-grid__item--second { grid-column: 2 / span 4; }
+
+/* Breit: 12 Spalten. #1 und #2 nebeneinander (7 + 5), darunter alle weiteren klein (6 pro Zeile). */
+@media (min-width: 56rem) {
+  .rank-grid { grid-template-columns: repeat(12, 1fr); }
+  .rank-grid__item--first { grid-column: span 7; aspect-ratio: auto; height: clamp(18rem, 55vh, 40rem); }
+  .rank-grid__item--second { grid-column: span 5; aspect-ratio: auto; } /* streckt sich auf die Höhe von #1 */
+}
+
+.rank-grid figure { position: relative; margin: 0; width: 100%; height: 100%; }
+.rank-grid img { width: 100%; height: 100%; object-fit: cover; display: block; border-radius: .5rem; }
+.rank-grid figcaption {
+  position: absolute; inset: 0; padding: .5rem; display: flex; flex-direction: column;
+  justify-content: space-between; align-items: flex-start; gap: .25rem;
+  color: #fff; text-shadow: 0 1px 4px rgb(0 0 0 / .8);
+}
+.rank-grid__rank { font-size: 1.5rem; font-weight: 700; }
+.rank-grid__item--first .rank-grid__rank { font-size: 3rem; }
+.rank-grid__item--second .rank-grid__rank { font-size: 2.25rem; }
+.rank-grid__name { font-size: .8rem; overflow-wrap: anywhere; } /* voller Name mit Umbruch */
+
+/* ---------- Action Sheet ---------- */
 .sheet { border: 0; border-radius: 1rem; padding: 1.25rem; max-width: 24rem; }
 .sheet::backdrop { background: rgb(0 0 0 / .4); }
 .sheet__actions { display: flex; gap: .5rem; justify-content: flex-end; }
