@@ -1,11 +1,6 @@
 import { useRef, useState } from 'react';
 import { ConfirmSheet, Sheet } from '../components/Sheet';
-import {
-  ZoomStage,
-  type FitMode,
-  type ZoomInfo,
-  type ZoomStageHandle,
-} from '../components/ZoomStage';
+import { ZoomStage, type FitMode, type ZoomStageHandle } from '../components/ZoomStage';
 import type { ImageId, Matchup, TournamentImage } from '../tournament/types';
 
 interface MatchScreenProps {
@@ -54,27 +49,18 @@ export function MatchScreen({
 
   // Fit/Fill gilt für das ganze Turnier (bleibt über Duelle hinweg), der Zoom nur für ein Duell.
   const [mode, setMode] = useState<FitMode>('fill');
-  const [zoom, setZoom] = useState<ZoomInfo>({ zoomed: false, reachesFill: false });
+  const [zoomed, setZoomed] = useState(false);
   const stageRef = useRef<ZoomStageHandle>(null);
   const otherId = match[activeIndex === 0 ? 1 : 0];
 
-  // Fit/Fill-Button. Das Zeichen zeigt die Aktion: ↙↗ (Pfeile nach außen) = "Fill", ↗↙ (nach innen) = "Fit".
-  //   ungezoomt: wechselt den Modus (Fill-Modus zeigt "Fit", Fit-Modus zeigt "Fill").
-  //   gezoomt:   führt zum nächsten Ruhepunkt zurück.
-  //     Fill-Modus -> "Fill" (zurück auf Fill-Größe, danach "Fit").
-  //     Fit-Modus  -> "Fill" (springt auf Fill-Größe), sobald die Fill-Größe überschritten ist "Fit" (zurück auf Fit).
-  const fitFill = (() => {
-    const toFill = { icon: '↙↗', aria: 'Scale to fill window', onClick: () => setMode('fill') };
-    const toFit = { icon: '↗↙', aria: 'Scale to fit window', onClick: () => setMode('fit') };
-    const resetZoom = (base: typeof toFill) => ({
-      ...base,
-      aria: `${base.aria} (reset zoom)`,
-      onClick: () => stageRef.current?.resetZoom(),
-    });
-    if (!zoom.zoomed) return mode === 'fill' ? toFit : toFill;
-    if (mode === 'fill') return resetZoom(toFill);
-    return zoom.reachesFill ? resetZoom(toFit) : toFill;
-  })();
+  // Fit/Fill-Button. Das Zeichen zeigt die Aktion: ↗↙ (Pfeile nach innen, "Fit") oder ↙↗ (nach außen, "Fill").
+  //   gezoomt (beide Modi): ↗↙, setzt den Zoom zurück (Fill-Modus: auf Fill-Größe, Fit-Modus: auf Fit).
+  //   ungezoomt: wechselt den Modus; Fill-Modus zeigt ↗↙ (-> Fit), Fit-Modus zeigt ↙↗ (-> Fill).
+  const fitFill = zoomed
+    ? { icon: '↗↙', aria: 'Reset zoom', onClick: () => stageRef.current?.resetZoom() }
+    : mode === 'fill'
+      ? { icon: '↗↙', aria: 'Scale to fit window', onClick: () => setMode('fit') }
+      : { icon: '↙↗', aria: 'Scale to fill window', onClick: () => setMode('fill') };
 
   const [closeOpen, setCloseOpen] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
@@ -91,7 +77,7 @@ export function MatchScreen({
         resetKey={matchKey}
         activeId={activeId}
         otherId={otherId}
-        onZoomChange={setZoom}
+        onZoomedChange={setZoomed}
         label={`Showing photo ${activeIndex === 0 ? 'A' : 'B'} – click to switch, pinch or scroll to zoom`}
         onTap={() => setSelection({ matchKey, index: activeIndex === 0 ? 1 : 0 })}
       >
