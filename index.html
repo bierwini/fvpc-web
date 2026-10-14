@@ -22,9 +22,9 @@
         <span>Favopic</span>
       </a>
 
-      <!-- Je nach Edition: Web => App starten, iOS => zum App-Store-Platzhalter -->
+      <!-- Je nach Edition: Web => App starten, iOS => noch nicht verfügbar (nicht klickbar) -->
       <a class="btn" data-for="web" href="./app/">Start App</a>
-      <a class="btn" data-for="ios" href="#get-the-app">Get the App</a>
+      <button type="button" class="btn" data-for="ios" disabled>Available soon</button>
 
       <div class="edition" role="group" aria-label="Edition">
         <button type="button" data-edition-option="ios" aria-pressed="false">
@@ -37,28 +37,43 @@
     </header>
 
     <main>
-      <section class="section" aria-labelledby="intro-title">
-        <h2 id="intro-title" class="title">Your phone is full of photos that look the same?</h2>
-      </section>
+      <!--
+        Intro + Hero teilen sich einen Hintergrund (Grid). Er bleibt stehen, während der Hero-Text
+        hereinscrollt, und scrollt danach mit der Hülle hinaus.
+      -->
+      <div class="hero-wrap">
+        <div class="hero-wrap__bg" aria-hidden="true"></div>
+        <div class="hero-wrap__content">
+          <section class="section section--intro" aria-labelledby="intro-title">
+            <h2 id="intro-title" class="title fade-up">
+              Your phone is full of photos that look the same?
+            </h2>
+          </section>
 
-      <section class="section" aria-labelledby="hero-title">
-        <h1 id="hero-title" class="large-title">
-          Find your favorite<br />photos with Favopic
-        </h1>
-        <p class="subtitle">and enjoy your library again!</p>
-      </section>
+          <section class="section section--hero" aria-labelledby="hero-title">
+            <h1 id="hero-title" class="large-title">
+              Find your favorite<br />photos with Favopic
+            </h1>
+            <p class="subtitle">and enjoy your library again!</p>
+          </section>
+        </div>
+      </div>
 
       <!--
         Features: Eine feste Bühne bleibt stehen, beim Scrollen wechselt der aktive Schritt.
-        Alle vier Schritte stehen im HTML (Suchmaschinen, Screenreader, Fallback ohne JS oder bei
-        reduzierter Bewegung: dann stehen sie einfach untereinander).
+        Alle vier Schritte stehen im HTML (Suchmaschinen, Screenreader, Fallback ohne JS oder in
+        sehr niedrigen Fenstern: dann stehen sie einfach untereinander).
       -->
       <section class="features" aria-label="Features">
         <div class="features__stage">
           <article class="feature is-active" data-step="0">
             <h2 class="headline">Intuitive 1vs1 comparison</h2>
-            <div class="phone" role="img" aria-label="Placeholder for an iPhone screenshot">
-              iPhone placeholder<br />1vs1 comparison
+            <div class="device-slot">
+              <div class="device" role="img" aria-label="Placeholder for a screenshot">
+                <span data-for="ios">iPhone placeholder</span>
+                <span data-for="web">Desktop placeholder</span>
+                <span class="device__label">1vs1 comparison</span>
+              </div>
             </div>
             <p class="body-text">
               Photos stay on your device. No photo is uploaded.
@@ -75,24 +90,36 @@
 
           <article class="feature" data-step="1">
             <h2 class="headline">Rankings with bulk actions</h2>
-            <div class="phone" role="img" aria-label="Placeholder for an iPhone screenshot">
-              iPhone placeholder<br />Rankings
+            <div class="device-slot">
+              <div class="device" role="img" aria-label="Placeholder for a screenshot">
+                <span data-for="ios">iPhone placeholder</span>
+                <span data-for="web">Desktop placeholder</span>
+                <span class="device__label">Rankings</span>
+              </div>
             </div>
             <p class="body-text">Placeholder text for rankings with bulk actions.</p>
           </article>
 
           <article class="feature" data-step="2">
             <h2 class="headline">Intelligent suggestions</h2>
-            <div class="phone" role="img" aria-label="Placeholder for an iPhone screenshot">
-              iPhone placeholder<br />Suggestions
+            <div class="device-slot">
+              <div class="device" role="img" aria-label="Placeholder for a screenshot">
+                <span data-for="ios">iPhone placeholder</span>
+                <span data-for="web">Desktop placeholder</span>
+                <span class="device__label">Suggestions</span>
+              </div>
             </div>
             <p class="body-text">Placeholder text for intelligent suggestions.</p>
           </article>
 
           <article class="feature" data-step="3">
             <h2 class="headline">Clean photos as a habit</h2>
-            <div class="phone" role="img" aria-label="Placeholder for an iPhone screenshot">
-              iPhone placeholder<br />Habit
+            <div class="device-slot">
+              <div class="device" role="img" aria-label="Placeholder for a screenshot">
+                <span data-for="ios">iPhone placeholder</span>
+                <span data-for="web">Desktop placeholder</span>
+                <span class="device__label">Habit</span>
+              </div>
             </div>
             <p class="body-text">Placeholder text for cleaning photos as a habit.</p>
           </article>
@@ -114,8 +141,8 @@
             Gain back control of your library and focus on your best memories!
           </h2>
           <a class="btn btn--large" href="./app/">Start App</a>
-          <div class="store-badge" role="img" aria-label="Download on the App Store – coming soon">
-            App Store badge placeholder
+          <div class="store-badge" role="img" aria-label="Download on the App Store – available soon">
+            App Store badge placeholder<br />Available soon
           </div>
         </section>
 
