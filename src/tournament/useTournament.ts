@@ -7,8 +7,8 @@ import { MAX_FILE_BYTES, MAX_IMAGES, type AddFilesResult, type ImageId, type Tou
 
 export function useTournament() {
   const [state, dispatch] = useReducer(tournamentReducer, undefined, createInitialState);
-  /** Shuffle-Toggle aus Screen 2, standardmäßig aktiv. */
-  const [shuffleEnabled, setShuffleEnabled] = useState(true);
+  /** Shuffle-Toggle aus Screen 2, standardmäßig aus. */
+  const [shuffleEnabled, setShuffleEnabled] = useState(false);
   // Lazy init: genau eine Registry pro Hook-Instanz.
   const [blobs] = useState(() => new BlobRegistry());
 
