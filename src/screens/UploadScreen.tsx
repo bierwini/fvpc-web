@@ -1,6 +1,12 @@
 import { useRef, useState, type DragEvent } from 'react';
 import { LegalCaption } from '../components/LegalCaption';
-import type { AddFilesResult, ImageId, TournamentImage } from '../tournament/types';
+import {
+  MAX_FILE_BYTES,
+  MAX_IMAGES,
+  type AddFilesResult,
+  type ImageId,
+  type TournamentImage,
+} from '../tournament/types';
 
 interface UploadScreenProps {
   images: TournamentImage[];
@@ -13,10 +19,16 @@ interface UploadScreenProps {
   onStart: () => void;
 }
 
-function describeResult({ duplicates, skipped }: AddFilesResult): string {
+function describeResult({ duplicates, skipped, overLimit, tooLarge }: AddFilesResult): string {
   const parts: string[] = [];
   if (duplicates > 0) parts.push(`${duplicates} duplicate${duplicates > 1 ? 's' : ''} skipped`);
   if (skipped > 0) parts.push(`${skipped} non-image file${skipped > 1 ? 's' : ''} skipped`);
+  if (overLimit > 0)
+    parts.push(`${overLimit} file${overLimit > 1 ? 's' : ''} skipped (limit: ${MAX_IMAGES} photos)`);
+  if (tooLarge > 0)
+    parts.push(
+      `${tooLarge} file${tooLarge > 1 ? 's' : ''} skipped (over ${MAX_FILE_BYTES / 1024 / 1024} MB)`,
+    );
   return parts.join(' · ');
 }
 
@@ -53,7 +65,7 @@ export function UploadScreen({
       <main className="upload__column">
         <header>
           <h1>Add your photos</h1>
-          <p className="subtitle">Add at least two images to start the tournament.</p>
+          <p className="subtitle">{`Add at least two images to start the tournament (up to ${MAX_IMAGES}).`}</p>
         </header>
 
         <div className="upload__body">

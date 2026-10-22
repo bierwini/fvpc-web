@@ -3,7 +3,7 @@ import { BlobRegistry } from './blobRegistry';
 import { createInitialState, getCurrentMatch, tournamentReducer } from './engine';
 import { computeRanking } from './ranking';
 import { getStartOrder } from './shuffle';
-import type { AddFilesResult, ImageId, TournamentImage } from './types';
+import { MAX_FILE_BYTES, MAX_IMAGES, type AddFilesResult, type ImageId, type TournamentImage } from './types';
 
 export function useTournament() {
   const [state, dispatch] = useReducer(tournamentReducer, undefined, createInitialState);
@@ -20,10 +20,18 @@ export function useTournament() {
   const addFiles = useCallback(
     (files: Iterable<File>): AddFilesResult => {
       const images: TournamentImage[] = [];
-      const result: AddFilesResult = { added: 0, duplicates: 0, skipped: 0 };
+      const result: AddFilesResult = { added: 0, duplicates: 0, skipped: 0, overLimit: 0, tooLarge: 0 };
       for (const file of files) {
         if (!file.type.startsWith('image/')) {
           result.skipped++;
+          continue;
+        }
+        if (file.size > MAX_FILE_BYTES) {
+          result.tooLarge++;
+          continue;
+        }
+        if (blobs.size >= MAX_IMAGES) {
+          result.overLimit++;
           continue;
         }
         const image = blobs.register(file);

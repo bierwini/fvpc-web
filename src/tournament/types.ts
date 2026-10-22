@@ -75,4 +75,11 @@ export interface AddFilesResult {
   duplicates: number;
   /** Keine Bilddateien. */
   skipped: number;
+  /** Über dem Limit von MAX_IMAGES Bildern. */
+  overLimit: number;
+  /** Einzelne Datei größer als MAX_FILE_BYTES. */
+  tooLarge: number;
 }
+
+export const MAX_IMAGES = 500;
+export const MAX_FILE_BYTES = 100 * 1024 * 1024;
