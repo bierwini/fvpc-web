@@ -11,34 +11,38 @@ import {
 } from 'react';
 import type { ImageId } from '../tournament/types';
 
-const MAX_ZOOM = 8; // relativ zur Basisgröße (Fit bzw. Fill)
+const MAX_ZOOM = 8; // relativ zur Fill-Größe; nach unten begrenzt die Fit-Größe (siehe minZoom)
 const TAP_SLOP = 6; // px: darunter zählt eine Berührung als Tap, nicht als Verschieben
 
-/** fill = Fenster komplett füllen (Bild wird beschnitten), fit = Bild komplett sichtbar. */
-export type FitMode = 'fit' | 'fill';
+/**
+ * Zoom 1 = Fill (Fenster komplett gefüllt, Bild beschnitten). Herauszoomen geht bis Fit (Bild komplett sichtbar).
+ * zoomed: über Fill hinaus, fit: genau Fit erreicht, fill: dazwischen bzw. Fill.
+ */
+export type ZoomState = 'zoomed' | 'fit' | 'fill';
 
 export interface ZoomStageHandle {
-  /** Zoom des angezeigten Bildes zurück auf die Basisgröße (Fit bzw. Fill). */
+  /** Zoom des angezeigten Bildes zurück auf Fill. */
   resetZoom: () => void;
+  /** Zoom des angezeigten Bildes auf Fit (Bild komplett sichtbar). */
+  zoomToFit: () => void;
   /** Zoom + Ausschnitt des anderen Bildes auf das angezeigte Bild übertragen. */
   syncFromOther: () => void;
 }
 
 interface ZoomStageProps {
-  mode: FitMode;
   /** Ändert sich der Key (neues Duell), werden alle Zoom-Zustände verworfen. */
   resetKey: string;
   activeId: ImageId;
   otherId: ImageId;
   /** Tap/Klick ohne Verschieben (auch Enter/Space). */
   onTap: () => void;
-  onZoomedChange: (zoomed: boolean) => void;
+  onZoomStateChange: (state: ZoomState) => void;
   label: string;
   /** Bilder mit `data-image-id`; Größe/Position steuert das CSS über data-mode. */
   children: ReactNode;
 }
 
-/** Zoom-Zustand eines Bildes: Skalierung relativ zur Basisgröße, Verschiebung in px zur Fenstermitte. */
+/** Zoom-Zustand eines Bildes: Skalierung relativ zur Fill-Größe, Verschiebung in px zur Fenstermitte. */
 interface View {
   z: number;
   tx: number;
@@ -53,18 +57,18 @@ const clamp = (v: number, min: number, max: number) => Math.min(Math.max(v, min)
  * Das Transform wird direkt am DOM gesetzt (kein Re-Render pro Bewegung).
  */
 export const ZoomStage = forwardRef<ZoomStageHandle, ZoomStageProps>(function ZoomStage(
-  { mode, resetKey, activeId, otherId, onTap, onZoomedChange, label, children },
+  { resetKey, activeId, otherId, onTap, onZoomStateChange, label, children },
   ref,
 ) {
   const rootRef = useRef<HTMLDivElement>(null);
   const layerRef = useRef<HTMLDivElement>(null);
   const views = useRef(new Map<ImageId, View>());
-  const lastZoomed = useRef(false);
+  const lastState = useRef<ZoomState>('fill');
   const pointers = useRef(new Map<number, { x: number; y: number }>());
   const gesture = useRef({ moved: false, multi: false, startX: 0, startY: 0 });
   // Aktuelle Props für die Callbacks unten, die bewusst nur einmal angelegt werden.
-  const latest = useRef({ activeId, otherId, onZoomedChange });
-  latest.current = { activeId, otherId, onZoomedChange };
+  const latest = useRef({ activeId, otherId, onZoomStateChange });
+  latest.current = { activeId, otherId, onZoomStateChange };
 
   const getView = useCallback((id: ImageId): View => {
     let v = views.current.get(id);
@@ -75,11 +79,22 @@ export const ZoomStage = forwardRef<ZoomStageHandle, ZoomStageProps>(function Zo
     return v;
   }, []);
 
-  /** Angezeigte Größe eines Bildes in der Basisansicht (ohne Zoom). */
+  /** Angezeigte Größe eines Bildes in der Fill-Ansicht (Zoom 1). */
   const imageSize = useCallback((id: ImageId) => {
     const el = layerRef.current?.querySelector<HTMLElement>(`[data-image-id="${id}"]`);
     return { w: el?.offsetWidth ?? 0, h: el?.offsetHeight ?? 0 };
   }, []);
+
+  /** Kleinster Zoom: Fit-Größe relativ zur Fill-Größe (1, wenn Fit und Fill übereinstimmen oder noch nichts geladen ist). */
+  const minZoom = useCallback(
+    (id: ImageId) => {
+      const root = rootRef.current;
+      const { w, h } = imageSize(id);
+      if (!root || !w || !h) return 1;
+      return Math.min(1, root.clientWidth / w, root.clientHeight / h);
+    },
+    [imageSize],
+  );
 
   /** Das Bild darf das Fenster nie "verlassen"; ist es kleiner als das Fenster, bleibt es zentriert. */
   const clampView = useCallback(
@@ -87,13 +102,13 @@ export const ZoomStage = forwardRef<ZoomStageHandle, ZoomStageProps>(function Zo
       const root = rootRef.current;
       if (!root) return;
       const { w, h } = imageSize(id);
-      v.z = clamp(v.z, 1, MAX_ZOOM);
+      v.z = clamp(v.z, minZoom(id), MAX_ZOOM);
       const limitX = Math.max(0, (v.z * w - root.clientWidth) / 2);
       const limitY = Math.max(0, (v.z * h - root.clientHeight) / 2);
       v.tx = clamp(v.tx, -limitX, limitX);
       v.ty = clamp(v.ty, -limitY, limitY);
     },
-    [imageSize],
+    [imageSize, minZoom],
   );
 
   const apply = useCallback(() => {
@@ -104,26 +119,27 @@ export const ZoomStage = forwardRef<ZoomStageHandle, ZoomStageProps>(function Zo
     const v = getView(id);
     clampView(id, v);
     layer.style.transform = `translate(${v.tx}px, ${v.ty}px) scale(${v.z})`;
-    const zoomed = v.z > 1;
-    root.dataset.zoomed = String(zoomed);
-    if (zoomed !== lastZoomed.current) {
-      lastZoomed.current = zoomed;
-      latest.current.onZoomedChange(zoomed);
+    const min = minZoom(id);
+    const state: ZoomState = v.z > 1.001 ? 'zoomed' : min < 0.999 && v.z <= min + 0.001 ? 'fit' : 'fill';
+    root.dataset.zoomed = String(state === 'zoomed');
+    if (state !== lastState.current) {
+      lastState.current = state;
+      latest.current.onZoomStateChange(state);
     }
-  }, [clampView, getView]);
+  }, [clampView, getView, minZoom]);
 
   /** Zoom um einen Punkt (relativ zur Fenstermitte), der dabei unter dem Finger/Zeiger bleibt. */
   const zoomAt = useCallback(
     (cx: number, cy: number, factor: number) => {
       const v = getView(latest.current.activeId);
-      const next = clamp(v.z * factor, 1, MAX_ZOOM);
+      const next = clamp(v.z * factor, minZoom(latest.current.activeId), MAX_ZOOM);
       const k = next / v.z;
       v.tx = cx - (cx - v.tx) * k;
       v.ty = cy - (cy - v.ty) * k;
       v.z = next;
       apply();
     },
-    [apply, getView],
+    [apply, getView, minZoom],
   );
 
   const toCenter = useCallback((clientX: number, clientY: number) => {
@@ -137,6 +153,13 @@ export const ZoomStage = forwardRef<ZoomStageHandle, ZoomStageProps>(function Zo
       resetZoom() {
         const v = getView(latest.current.activeId);
         v.z = 1;
+        v.tx = 0;
+        v.ty = 0;
+        apply();
+      },
+      zoomToFit() {
+        const v = getView(latest.current.activeId);
+        v.z = minZoom(latest.current.activeId);
         v.tx = 0;
         v.ty = 0;
         apply();
@@ -157,18 +180,18 @@ export const ZoomStage = forwardRef<ZoomStageHandle, ZoomStageProps>(function Zo
         apply();
       },
     }),
-    [apply, getView, imageSize],
+    [apply, getView, imageSize, minZoom],
   );
 
   // Layout-Effekte laufen vor dem Paint: kein Frame, in dem ein Bild mit dem Zoom des anderen steht.
   // Anderes Bild wird angezeigt => dessen eigenen Zoom-Zustand anwenden.
   useLayoutEffect(apply, [activeId, apply]);
 
-  // Neues Duell oder Fit/Fill-Wechsel => alle Zoom-Zustände verwerfen (Basisgröße ändert sich).
+  // Neues Duell => alle Zoom-Zustände verwerfen (jedes Duell startet bei Fill).
   useLayoutEffect(() => {
     views.current.clear();
     apply();
-  }, [resetKey, mode, apply]);
+  }, [resetKey, apply]);
 
   useEffect(() => {
     const root = rootRef.current!;
@@ -244,7 +267,6 @@ export const ZoomStage = forwardRef<ZoomStageHandle, ZoomStageProps>(function Zo
     <div
       ref={rootRef}
       className="stage"
-      data-mode={mode}
       role="button"
       tabIndex={0}
       aria-label={label}

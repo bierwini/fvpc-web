@@ -57,10 +57,8 @@ body { font-family: system-ui, sans-serif; }
 .stage { position: absolute; inset: 0; overflow: hidden; cursor: pointer; touch-action: none; user-select: none; outline-offset: -2px; container-type: size; }
 .stage[data-zoomed='true'] { cursor: grab; }
 .stage__layer { position: absolute; inset: 0; transform-origin: 50% 50%; }
-/* Größe aus dem Seitenverhältnis (--ar, per JS gesetzt): fill = Fenster komplett füllen (beschnitten), fit = ganz sichtbar. */
-.stage__img { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); max-width: none; height: auto; aspect-ratio: var(--ar, 1.5); opacity: 0; }
-.stage[data-mode='fill'] .stage__img { width: max(100cqw, 100cqh * var(--ar, 1.5)); }
-.stage[data-mode='fit'] .stage__img { width: min(100cqw, 100cqh * var(--ar, 1.5)); }
+/* Basisgröße = Fill (Fenster komplett füllen, beschnitten); Fit entsteht durch Herauszoomen (ZoomStage). Seitenverhältnis in --ar, per JS gesetzt. */
+.stage__img { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); max-width: none; height: auto; aspect-ratio: var(--ar, 1.5); width: max(100cqw, 100cqh * var(--ar, 1.5)); opacity: 0; }
 .stage__img--active { opacity: 1; }
 
 .bar {
