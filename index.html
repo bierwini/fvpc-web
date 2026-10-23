@@ -17,7 +17,7 @@
   </head>
   <body>
     <header class="site-header">
-      <a class="logo text-title-2 md:text-large-title font-bold" href="./" aria-label="Favopic – home">
+      <a class="logo logo--on-photo text-title-2 md:text-large-title font-bold" href="./" aria-label="Favopic – home">
         <img class="logo__mark" src="./landing/img/app-icon.png" alt="" width="256" height="256" />
         <span>Favopic</span>
       </a>
@@ -38,8 +38,8 @@
 
     <main>
       <!--
-        Intro + Hero teilen sich einen Hintergrund (Grid). Er bleibt stehen, während der Hero-Text
-        hereinscrollt, und scrollt danach mit der Hülle hinaus.
+        Hero: Das Foto (später Video) füllt genau die Fensterhöhe, das Phone ragt von unten hinein. Alles scrollt
+        gemeinsam heraus, danach steht nur noch "Let them compete" mit dem unteren Rand des Phones auf dem Raster.
       -->
       <div class="hero-wrap">
         <div class="hero-wrap__bg" aria-hidden="true"></div>
@@ -48,14 +48,14 @@
             <h2 id="intro-title" class="title fade-up text-large-title md:text-5xl xl:text-display font-bold text-balance">
               Your phone is full of photos that look the same?
             </h2>
-            <div class="phone" aria-hidden="true">
+            <div class="phone fade-up fade-up--late" aria-hidden="true">
               <div class="phone__screen"><img src="./landing/img/tile-01.jpg" alt="" width="256" height="256" loading="eager" /><img src="./landing/img/tile-02.jpg" alt="" width="256" height="256" loading="eager" /><img src="./landing/img/tile-03.jpg" alt="" width="256" height="256" loading="eager" /><img src="./landing/img/tile-04.jpg" alt="" width="256" height="256" loading="eager" /><img src="./landing/img/tile-05.jpg" alt="" width="256" height="256" loading="eager" /><img src="./landing/img/tile-06.jpg" alt="" width="256" height="256" loading="eager" /><img src="./landing/img/tile-07.jpg" alt="" width="256" height="256" loading="eager" /><img src="./landing/img/tile-08.jpg" alt="" width="256" height="256" loading="eager" /><img src="./landing/img/tile-09.jpg" alt="" width="256" height="256" loading="eager" /><img src="./landing/img/tile-10.jpg" alt="" width="256" height="256" loading="lazy" /><img src="./landing/img/tile-11.jpg" alt="" width="256" height="256" loading="lazy" /><img src="./landing/img/tile-12.jpg" alt="" width="256" height="256" loading="lazy" /><img src="./landing/img/tile-13.jpg" alt="" width="256" height="256" loading="lazy" /><img src="./landing/img/tile-14.jpg" alt="" width="256" height="256" loading="lazy" /><img src="./landing/img/tile-15.jpg" alt="" width="256" height="256" loading="lazy" /><img src="./landing/img/tile-16.jpg" alt="" width="256" height="256" loading="lazy" /><img src="./landing/img/tile-17.jpg" alt="" width="256" height="256" loading="lazy" /><img src="./landing/img/tile-18.jpg" alt="" width="256" height="256" loading="lazy" /><img src="./landing/img/tile-19.jpg" alt="" width="256" height="256" loading="lazy" /><img src="./landing/img/tile-20.jpg" alt="" width="256" height="256" loading="lazy" /><img src="./landing/img/tile-21.jpg" alt="" width="256" height="256" loading="lazy" /></div>
               <img class="phone__bezel" src="./landing/img/phone-bezel.png" alt="" width="675" height="1380" />
             </div>
           </section>
 
           <section class="section section--hero" aria-labelledby="hero-title">
-            <h1 id="hero-title" class="large-title text-large-title md:text-5xl xl:text-display font-bold text-balance">
+            <h1 id="hero-title" class="large-title reveal text-large-title md:text-5xl xl:text-display font-bold text-balance">
               Let them compete. Keep the best.
             </h1>
           </section>
@@ -73,7 +73,7 @@
             <h2 class="headline text-title-2 font-bold text-balance">Two shots at a time. You pick the winner.</h2>
             <div class="device-slot">
               <div class="device-shot">
-                <img src="./landing/img/feature-compare.png" alt="Placeholder screenshot: two photos side by side in Favopic" width="478" height="644" />
+                <img src="./landing/img/feature-compare.webp" alt="Placeholder screenshot: two photos side by side in Favopic" width="1341" height="1834" />
               </div>
             </div>
             <p class="body-text text-subheadline font-semibold"><img class="lock" src="./landing/img/icon-lock.svg" alt="" width="26" height="26" /><span>Photos stay on your device. No photo is uploaded. <span class="tip">
@@ -90,7 +90,7 @@
             <h2 class="headline text-title-2 font-bold text-balance">Similar shots, grouped for you.</h2>
             <div class="device-slot">
               <div class="device-shot">
-                <img src="./landing/img/feature-compare.png" alt="Placeholder screenshot: two photos side by side in Favopic" width="478" height="644" />
+                <img src="./landing/img/feature-compare.webp" alt="Placeholder screenshot: two photos side by side in Favopic" width="1341" height="1834" />
               </div>
             </div>
             <p class="body-text text-subheadline font-semibold"><img class="lock" src="./landing/img/icon-lock.svg" alt="" width="26" height="26" /><span>Photos stay on your device.</span></p>
@@ -100,7 +100,7 @@
             <h2 class="headline text-title-2 font-bold text-balance">Get rankings, delete the rest.</h2>
             <div class="device-slot">
               <div class="device-shot">
-                <img src="./landing/img/feature-compare.png" alt="Placeholder screenshot: two photos side by side in Favopic" width="478" height="644" />
+                <img src="./landing/img/feature-compare.webp" alt="Placeholder screenshot: two photos side by side in Favopic" width="1341" height="1834" />
               </div>
             </div>
             <p class="body-text text-subheadline font-semibold"><span>Delete, favorite or share many at once.</span></p>
@@ -110,7 +110,7 @@
             <h2 class="headline text-title-2 font-bold text-balance">Enjoy your library again.</h2>
             <div class="device-slot">
               <div class="device-shot">
-                <img src="./landing/img/feature-compare.png" alt="Placeholder screenshot: two photos side by side in Favopic" width="478" height="644" />
+                <img src="./landing/img/feature-compare.webp" alt="Placeholder screenshot: two photos side by side in Favopic" width="1341" height="1834" />
               </div>
             </div>
             <p class="body-text text-subheadline font-semibold"><span>Make clean photos a habit.</span></p>
@@ -132,7 +132,7 @@
           <h2 id="cta-title" class="headline text-large-title font-bold text-balance">Find your favorite photos.</h2>
           <a class="btn btn--prominent text-body font-semibold" data-for="web" href="./app/">Start App</a>
           <button type="button" class="btn btn--prominent text-body font-semibold" data-for="ios" disabled>Available soon</button>
-          <img class="store-badge" data-for="ios" src="./landing/img/app-store-badge.svg" alt="Download on the App Store – available soon" width="120" height="40" />
+          <img class="store-badge" data-for="ios" src="./landing/img/app-store-badge.png" alt="Download on the App Store – available soon" width="120" height="40" />
         </section>
 
         <footer class="site-footer">
@@ -143,8 +143,8 @@
           </ul>
           <p class="footer__copy text-xs font-normal">© 2026 Favopic. All rights reserved.</p>
           <div class="footer__social">
-            <a class="icon-placeholder text-xs font-normal" href="#" aria-label="Instagram">IG</a>
-            <a class="icon-placeholder text-xs font-normal" href="#" aria-label="TikTok">TT</a>
+            <a href="#" aria-label="Instagram"><img src="./landing/img/icon-instagram.svg" alt="" width="20" height="20" /></a>
+            <a href="#" aria-label="TikTok"><img src="./landing/img/icon-tiktok.svg" alt="" width="20" height="20" /></a>
           </div>
         </footer>
       </div>
