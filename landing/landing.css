@@ -10,11 +10,9 @@
   /* Höhe der Controls (Figma: Large = 50 px) */
   --control-h: 2.5rem;
   --header-h: 4.5rem;
-  /* Figma-Pixel: 1 Figma-px = --k. Skaliert mit Breite UND Höhe, damit der Hero in niedrigen Fenstern nicht überläuft
-     (Referenz: 1510 x 860). */
-  --k: min(100vw / 1510, 100svh / 860);
-  /* Abstand Header -> Titel (Figma: 72 px) */
-  --hero-pad: clamp(1.5rem, calc(72 * var(--k)), 6rem);
+  /* Abstand Header -> Titel -> Phone: feste Stufen je Breakpoint, kein stufenloses Mitskalieren (Figma: 72 px) */
+  --hero-pad: 1.5rem;
+  --header-pad: 1rem;
   --gutter: clamp(1rem, 4vw, 3rem);
   /* Ein "Screen": Fensterhöhe, mindestens 34rem. */
   --screen: 100vh;
@@ -24,32 +22,34 @@
   /* Abstand Intro-Text -> Hero-Text, in Bildschirmhöhen. */
   --hero-gap: .7;
 }
-@media (min-width: 48rem) { :root { --header-h: clamp(5rem, calc(147 * var(--k)), 12rem); --control-h: 3.125rem; } }
+@media (min-width: 48rem) { :root { --header-h: 6rem; --control-h: 3.125rem; --hero-pad: 3rem; --header-pad: 2rem; } }
+@media (min-width: 80rem) { :root { --header-h: 6.5rem; --hero-pad: 4.5rem; --header-pad: 2.5rem; } }
 html { scroll-behavior: smooth; }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 body { margin: 0; font-family: var(--font-sans); line-height: 1.4; color: var(--color-label); background: var(--color-background); -webkit-font-smoothing: antialiased; }
 a { color: inherit; }
 
-/* ---------- Header: bleibt oben stehen, solange der Hero (Foto, Phone, "Let them compete") zu sehen ist, und geht mit ihm.
-   Über dem Foto weiß (JS setzt .is-over-photo), danach dunkel. Auf Unterseiten normal im Fluss. ---------- */
+/* ---------- Header: bleibt oben stehen, solange der Hero (Foto, Phone) im Bild ist, und scrollt mit "Let them compete"
+   heraus (endet mit .hero-wrap). Größen springen je Breakpoint, sie skalieren nicht. Auf Unterseiten normal im Fluss. ---------- */
 .site-header {
   position: sticky; top: 0; z-index: 10; height: var(--header-h); margin-bottom: calc(-1 * var(--header-h));
   display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: .5rem;
-  padding: 0 clamp(1rem, 2.65vw, 3rem);
+  padding: 0 var(--header-pad);
 }
+@media (max-width: 39.99rem) { .site-header > .btn { display: none; } .site-header { grid-template-columns: 1fr auto; } }
 .logo { display: inline-flex; align-items: center; gap: .5rem; line-height: 1; text-decoration: none; justify-self: start; }
-/* Über dem Raster: weicher weißer Verlauf, damit scrollender Text nicht mit dem Header kollidiert */
-.site-header:not(.is-over-photo):not(.site-header--page) { background: linear-gradient(rgb(255 255 255 / .92) 60%, rgb(255 255 255 / 0)); }
-.site-header--page { position: relative; margin-bottom: 0; height: 4.5rem; }
-.site-header.is-over-photo .logo { color: #fff; text-shadow: 0 1px 12px rgb(0 0 0 / .35); }
-.site-header.is-over-photo .btn:not(.btn--prominent), .site-header.is-over-photo .edition button:not([aria-pressed='true']) { color: #fff; }
-.logo__mark { width: 2em; height: 2em; flex: none; }
+/* Sobald gescrollt wird: weicher weißer Verlauf, damit darunter laufender Text nicht mit dem Header kollidiert */
+.site-header.is-stuck { background: linear-gradient(rgb(255 255 255 / .92) 60%, rgb(255 255 255 / 0)); }
+.site-header--page { position: relative; margin-bottom: 0; height: 4.5rem; padding: 0 var(--gutter); }
+.logo__mark { width: 2.4em; height: 2.4em; flex: none; }
 /* Segmented Control (Figma: Segmented Control) */
 .edition { position: relative; justify-self: end; display: flex; padding: 2px; border-radius: 999px; background: var(--color-fill-tertiary); box-shadow: var(--shadow-glass); -webkit-backdrop-filter: blur(var(--glass-blur)); backdrop-filter: blur(var(--glass-blur)); }
 .edition button { border: 0; border-radius: 999px; min-height: calc(var(--control-h) - 4px); padding: 0 1.4rem; font-family: inherit; color: var(--color-label); background: transparent; cursor: pointer; }
 .edition button[aria-pressed='true'] { background: var(--color-segment-selected); box-shadow: 0 1px 4px rgb(0 0 0 / .12); }
 [data-edition='web'] [data-for='ios'], [data-edition='ios'] [data-for='web'] { display: none; }
-@media (max-width: 36rem) { .edition__long { display: none; } }
+/* Bis Tablet-Breite nur "iOS" / "Web", damit nichts umbricht oder mit dem Button kollidiert */
+.edition button { white-space: nowrap; }
+@media (max-width: 63.99rem) { .edition__long { display: none; } }
 
 /* Liquid-Glass-Button (Figma: Button - Liquid Glass - Text). Prominent = Regenbogen-Verlauf. */
 .btn {
@@ -69,10 +69,12 @@ a { color: inherit; }
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) { .btn:not(.btn--prominent), .edition { background: rgb(255 255 255 / .85); } }
 .btn--prominent { color: #fff; background: url('./img/rainbow.jpg') center / cover; box-shadow: 0 2px 12px rgb(0 0 0 / .15); }
 .btn[disabled] { opacity: .5; cursor: not-allowed; }
-.btn, .edition button { transition: transform .2s, filter .2s, background-color .2s, box-shadow .2s; }
+.btn, .edition button { transition: transform .25s cubic-bezier(.2, .7, .2, 1), filter .2s, background-color .2s, box-shadow .25s; }
+/* Hover: wächst von der Mausposition aus (JS setzt --ox/--oy), der Schatten wird weicher und größer */
+.btn, .edition button { transform-origin: var(--ox, 50%) var(--oy, 50%); }
 @media (hover: hover) {
-  .btn:not([disabled]):hover { transform: translateY(-1px) scale(1.03); filter: brightness(1.06); box-shadow: 0 6px 20px rgb(0 0 0 / .18), inset 0 1px 0 rgb(255 255 255 / .7); }
-  .edition button[aria-pressed='false']:hover { background: rgb(255 255 255 / .35); }
+  .btn:not([disabled]):hover { transform: scale(1.06); filter: brightness(1.06); box-shadow: 0 6px 20px rgb(0 0 0 / .18), inset 0 1px 0 rgb(255 255 255 / .7); }
+  .edition button[aria-pressed='false']:hover { background: rgb(255 255 255 / .35); transform: scale(1.06); }
 }
 .btn:not([disabled]):active { transform: scale(.97); filter: brightness(.96); }
 .edition button:active { transform: scale(.97); }
@@ -93,18 +95,22 @@ a { transition: opacity .2s; }
 }
 
 /* ---------- Intro + Hero ----------
-   Raster (Figma: Grid) als Hintergrund der ganzen Hülle. Das Foto ist genau eine Fensterhöhe hoch, das Phone
-   ragt unten hinein. Nichts klebt: Foto, Titel und Phone scrollen gemeinsam heraus. */
-.hero-wrap { position: relative; background: var(--color-background) url('./img/grid.svg') 0 0 / 256px 256px; }
+   .hero-all trägt das Raster (Figma: Grid). .hero-wrap = Foto (genau eine Fensterhöhe), Titel und Phone, das unten
+   hineinragt; darin klebt der Header. Danach "Let them compete" auf dem Raster. Nichts außer dem Header klebt. */
+.hero-all { background: var(--color-background) url('./img/grid.svg') 0 0 / 256px 256px; }
+.hero-wrap { position: relative; min-height: var(--screen); display: flow-root;
+  /* Luft unter dem Phone: Phone-Ende und Text sind nie zusammen im Fenster (mind. 38 % der Fensterhöhe) */
+  padding-bottom: max(0px, calc(38svh - var(--outro-gap))); }
 .hero-wrap__bg { position: absolute; inset: 0 0 auto 0; height: var(--screen); background: url('./img/hero.jpg') center top / cover; }
-/* Dunkler Overlay vor Foto/Video: weiße Schrift bleibt lesbar, egal welches Motiv später läuft. */
-.hero-wrap__bg::after { content: ''; position: absolute; inset: 0; background: linear-gradient(rgb(0 0 0 / .5), rgb(0 0 0 / .3) 60%, rgb(0 0 0 / .4)); }
+/* Heller Overlay vor Foto/Video: schwarze Schrift bleibt lesbar, egal welches Motiv später läuft; unten scheint das Foto durch. */
+.hero-wrap__bg::after { content: ''; position: absolute; inset: 0; background: linear-gradient(rgb(255 255 255 / .72), rgb(255 255 255 / .5) 45%, rgb(255 255 255 / .12)); }
 @media (prefers-reduced-motion: reduce) { .hero-wrap__bg { display: none; } }
 .hero-wrap__content { position: relative; z-index: 1; }
 .section--intro { min-height: 0; justify-content: flex-start; padding: calc(var(--header-h) + var(--hero-pad)) var(--gutter) 0; gap: var(--hero-pad); }
-/* "Let them compete": mindestens 200 Figma-px unter dem Phone, aber auch mind. 38 % der Fensterhöhe; danach mind. 62 %
-   Luft bis zum ersten Feature. So sind Phone-Ende, Text und Feature nie zusammen in einem Fenster. */
-.section--hero { min-height: 0; margin-top: max(calc(200 * var(--k)), 38svh); padding: 0 var(--gutter) max(calc(400 * var(--k)), 62svh); }
+/* "Let them compete": Der Header endet mit .hero-wrap, also genau dann, wenn der Text in Fenstermitte steht und weiterscrollt.
+   Danach folgt direkt das erste Feature (nur 42 % Fensterhöhe Luft unter dem Text). */
+:root { --outro-gap: max(0px, calc(45svh - var(--header-h))); }
+.section--hero { min-height: 0; margin-top: var(--outro-gap); padding: 0 var(--gutter) 42svh; }
 
 /* Fade-in-up beim Laden (Standard-CSS-Animation), danach bleibt der Text stehen. */
 @keyframes fade-up { from { opacity: 0; transform: translateY(1.75rem); } to { opacity: 1; transform: none; } }
@@ -141,7 +147,7 @@ a { transition: opacity .2s; }
 [data-edition='web'] .device { width: min(100cqw, calc(100cqh * 16 / 10)); aspect-ratio: 16 / 10; border-radius: .75rem; }
 .device__label { display: block; }
 /* Screenshot (Platzhalter aus Figma) mit Regenbogen-Glow dahinter */
-.device-shot { position: relative; height: 100cqh; max-width: 100cqw; aspect-ratio: 1341 / 1834; }
+.device-shot { position: relative; height: min(100cqh, 46rem); max-width: 100cqw; aspect-ratio: 1341 / 1834; }
 .device-shot::before {
   content: ''; position: absolute; inset: 14% 12% 18%; z-index: 0; border-radius: 50%;
   background: url('./img/rainbow.jpg') center / cover; filter: blur(48px); opacity: .55;
@@ -206,7 +212,7 @@ a { transition: opacity .2s; }
 
 /* ---------- Phone-Mockup (Figma: PhotosView + Bezel): 3x7-Raster im Bildschirm, Bezel darüber ----------
    Maße in % des Bezel-Bilds (314,78 x 643,55): Bildschirm sitzt 16,8 / 16,1 vom Rand, 281,4 x 611,8 groß. */
-.phone { position: relative; height: clamp(18rem, calc(644 * var(--k)), 64rem); aspect-ratio: 675 / 1380; flex: none; transition: transform .45s cubic-bezier(.2, .7, .2, 1); }
+.phone { position: relative; height: clamp(18rem, 43vw, 44rem); aspect-ratio: 675 / 1380; flex: none; transition: transform .45s cubic-bezier(.2, .7, .2, 1); }
 @media (hover: hover) and (prefers-reduced-motion: no-preference) { .phone:hover { transform: scale(1.04); } }
 .phone__screen {
   position: absolute; left: 5.33%; top: 2.5%; width: 89.4%; height: 95.07%; overflow: hidden;
@@ -215,6 +221,6 @@ a { transition: opacity .2s; }
 }
 .phone__screen img { width: 100%; height: 100%; object-fit: cover; border-radius: 2px; display: block; }
 .phone__bezel { position: absolute; inset: 0; width: 100%; height: 100%; }
-/* Weiße Schrift auf dem abgedunkelten Foto; ohne Foto (reduzierte Bewegung) bleibt sie schwarz. */
-@media (prefers-reduced-motion: no-preference) { .title { color: #fff; text-shadow: 0 2px 24px rgb(0 0 0 / .35); } }
+/* Schwarze Schrift auf dem hellen Overlay */
+.title { text-shadow: 0 0 .3em rgb(255 255 255 / .6); }
 .link-accent, .tip__trigger { color: var(--color-accent); }

@@ -69,18 +69,23 @@ function syncFeatures() {
 syncFeatures();
 pinned.addEventListener('change', syncFeatures);
 
-/* ---------- Header über dem Foto: weiße Schrift, danach (wenn das Foto weggescrollt ist) dunkel ---------- */
+/* ---------- Header: ab dem ersten Scrollen weißer Verlauf dahinter (sonst kollidiert darunter laufender Text) ---------- */
 const header = document.querySelector('.site-header');
-const photo = document.querySelector('.hero-wrap__bg');
-const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-if (header && photo) {
+if (header) {
   let ticking = false;
   const update = () => {
     ticking = false;
-    const over = !reduceMotion.matches && photo.getBoundingClientRect().bottom > header.offsetHeight * 0.75;
-    header.classList.toggle('is-over-photo', over);
+    header.classList.toggle('is-stuck', scrollY > 8);
   };
   addEventListener('scroll', () => { if (!ticking) { ticking = true; requestAnimationFrame(update); } }, { passive: true });
-  addEventListener('resize', update);
   update();
 }
+
+/* ---------- Buttons: Hover-Zoom wächst von der Mausposition aus (Ursprung als CSS-Variable) ---------- */
+document.querySelectorAll('.btn, .edition button').forEach((el) => {
+  el.addEventListener('pointerenter', (e) => {
+    const r = el.getBoundingClientRect();
+    el.style.setProperty('--ox', `${e.clientX - r.left}px`);
+    el.style.setProperty('--oy', `${e.clientY - r.top}px`);
+  });
+});
