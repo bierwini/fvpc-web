@@ -30,7 +30,7 @@ a { color: inherit; }
   padding: 0 var(--gutter);
 }
 .logo { display: inline-flex; align-items: center; gap: .5rem; line-height: 1; text-decoration: none; justify-self: start; text-shadow: 0 0 16px rgb(0 0 0 / .25); }
-.logo__mark { width: 2.25em; height: 2.25em; border-radius: 22%; background: var(--gradient-rainbow); }
+.logo__mark { width: 2.25em; height: 2.25em; border-radius: 22%; }
 /* Segmented Control (Figma: Segmented Control) */
 .edition { justify-self: end; display: flex; padding: 2px; border-radius: 999px; background: var(--color-fill-tertiary); }
 .edition button { border: 0; border-radius: 999px; padding: .4rem .9rem; font-family: inherit; color: var(--color-label); background: transparent; cursor: pointer; }
@@ -45,7 +45,7 @@ a { color: inherit; }
   background: var(--glass-fill); box-shadow: var(--shadow-glass);
   -webkit-backdrop-filter: blur(var(--glass-blur)); backdrop-filter: blur(var(--glass-blur));
 }
-.btn--prominent { color: #fff; background: var(--gradient-rainbow); box-shadow: 0 2px 12px rgb(0 0 0 / .15); }
+.btn--prominent { color: #fff; background: url('./img/rainbow.jpg') center / cover; box-shadow: 0 2px 12px rgb(0 0 0 / .15); }
 .btn[disabled] { opacity: .5; cursor: not-allowed; }
 .btn--large { padding: .9rem 2rem; }
 .btn:focus-visible, .edition button:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
@@ -159,13 +159,24 @@ a { color: inherit; }
 /* ---------- Platzhalter-Seiten (Terms, Privacy, Imprint) ---------- */
 .legal { max-width: 42rem; margin: 0 auto; padding: calc(var(--header-h) + 2rem) var(--gutter) 4rem; }
 
-/* ---------- Hero-Foto (Platzhalter bis zu den echten Bildern/dem Video) ----------
-   Warmer Verlauf im oberen Teil. Bei reduzierter Bewegung kein Foto, nur Raster und Phone. */
+/* ---------- Hero-Foto (aus Figma): oben im Hintergrund, blendet nach unten ins Raster aus.
+   Bei reduzierter Bewegung kein Foto, nur Raster und Phone. */
 .hero-wrap__bg::before {
   content: ''; position: absolute; inset: 0 0 auto 0; height: 55%;
-  background: radial-gradient(120% 90% at 30% 20%, #c8452f 0%, #8a3a2a 45%, #2b1a18 100%);
+  background: url('./img/hero.jpg') center top / cover;
   -webkit-mask-image: linear-gradient(#000 70%, transparent); mask-image: linear-gradient(#000 70%, transparent);
 }
 @media (prefers-reduced-motion: reduce) { .hero-wrap__bg::before { display: none; } }
+
+/* ---------- Phone-Mockup (Figma: PhotosView + Bezel): 3x7-Raster im Bildschirm, Bezel darüber ----------
+   Maße in % des Bezel-Bilds (314,78 x 643,55): Bildschirm sitzt 16,8 / 16,1 vom Rand, 281,4 x 611,8 groß. */
+.phone { position: relative; height: min(52vh, 40rem); aspect-ratio: 675 / 1380; flex: none; }
+.phone__screen {
+  position: absolute; left: 5.33%; top: 2.5%; width: 89.4%; height: 95.07%; overflow: hidden;
+  border-radius: 12.4% / 5.7%; background: #fff;
+  display: grid; grid-template-columns: repeat(3, 1fr); grid-auto-rows: calc((100% - 1.4px * 6) / 7); gap: 1.4px;
+}
+.phone__screen img { width: 100%; height: 100%; object-fit: cover; border-radius: 2px; display: block; }
+.phone__bezel { position: absolute; inset: 0; width: 100%; height: 100%; }
 .title, .large-title { text-shadow: 0 0 15px #fff; }
 .link-accent, .tip__trigger { color: var(--color-accent); }
