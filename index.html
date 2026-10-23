@@ -23,8 +23,8 @@
       </a>
 
       <!-- Je nach Edition: Web => App starten, iOS => noch nicht verfügbar (nicht klickbar) -->
-      <a class="btn text-subheadline font-semibold" data-for="web" href="./app/">Start App</a>
-      <button type="button" class="btn text-subheadline font-semibold" data-for="ios" disabled>Available soon</button>
+      <a class="btn text-body font-semibold" data-for="web" href="./app/">Start App</a>
+      <button type="button" class="btn text-body font-semibold" data-for="ios" disabled>Available soon</button>
 
       <div class="edition" role="group" aria-label="Edition">
         <button type="button" class="text-subheadline font-semibold" data-edition-option="ios" aria-pressed="false">
@@ -45,7 +45,7 @@
         <div class="hero-wrap__bg" aria-hidden="true"></div>
         <div class="hero-wrap__content">
           <section class="section section--intro" aria-labelledby="intro-title">
-            <h2 id="intro-title" class="title fade-up text-large-title md:text-display font-bold text-balance">
+            <h2 id="intro-title" class="title fade-up text-large-title md:text-5xl xl:text-display font-bold text-balance">
               Your phone is full of photos that look the same?
             </h2>
             <div class="phone" aria-hidden="true">
@@ -55,10 +55,9 @@
           </section>
 
           <section class="section section--hero" aria-labelledby="hero-title">
-            <h1 id="hero-title" class="large-title text-5xl md:text-7xl lg:text-8xl font-bold leading-none">
-              Find your favorite<br />photos with Favopic
+            <h1 id="hero-title" class="large-title text-large-title md:text-5xl xl:text-display font-bold text-balance">
+              Let them compete. Keep the best.
             </h1>
-            <p class="subtitle text-xl md:text-2xl lg:text-4xl font-medium leading-tight">and enjoy your library again!</p>
           </section>
         </div>
       </div>
@@ -71,53 +70,50 @@
       <section class="features" aria-label="Features">
         <div class="features__stage">
           <article class="feature is-active" data-step="0">
-            <h2 class="headline text-title-2 md:text-large-title font-bold text-balance">Intuitive 1vs1 comparison</h2>
+            <h2 class="headline text-title-2 font-bold text-balance">Two shots at a time. You pick the winner.</h2>
             <div class="device-slot">
               <div class="device-shot">
                 <img src="./landing/img/feature-compare.png" alt="Placeholder screenshot: two photos side by side in Favopic" width="478" height="644" />
               </div>
             </div>
-            <p class="body-text text-sm md:text-base font-medium">
-              Photos stay on your device. No photo is uploaded.
-              <span class="tip">
+            <p class="body-text text-subheadline font-semibold"><img class="lock" src="./landing/img/icon-lock.svg" alt="" width="26" height="26" /><span>Photos stay on your device. No photo is uploaded. <span class="tip">
                 <button type="button" class="tip__trigger" aria-describedby="blob-tip">How?</button>
                 <span id="blob-tip" role="tooltip" class="tip__bubble text-sm">
                   Your photos are never uploaded. Your browser only creates temporary links to the
                   files on your device. They exist in memory only and are deleted as soon as you
                   reset, close the tournament or leave the page.
                 </span>
-              </span>
-            </p>
+              </span></span></p>
           </article>
 
           <article class="feature" data-step="1">
-            <h2 class="headline text-title-2 md:text-large-title font-bold text-balance">Rankings with bulk actions</h2>
+            <h2 class="headline text-title-2 font-bold text-balance">Similar shots, grouped for you.</h2>
             <div class="device-slot">
               <div class="device-shot">
                 <img src="./landing/img/feature-compare.png" alt="Placeholder screenshot: two photos side by side in Favopic" width="478" height="644" />
               </div>
             </div>
-            <p class="body-text text-sm md:text-base font-medium">Placeholder text for rankings with bulk actions.</p>
+            <p class="body-text text-subheadline font-semibold"><img class="lock" src="./landing/img/icon-lock.svg" alt="" width="26" height="26" /><span>Photos stay on your device.</span></p>
           </article>
 
           <article class="feature" data-step="2">
-            <h2 class="headline text-title-2 md:text-large-title font-bold text-balance">Intelligent suggestions</h2>
+            <h2 class="headline text-title-2 font-bold text-balance">Get rankings, delete the rest.</h2>
             <div class="device-slot">
               <div class="device-shot">
                 <img src="./landing/img/feature-compare.png" alt="Placeholder screenshot: two photos side by side in Favopic" width="478" height="644" />
               </div>
             </div>
-            <p class="body-text text-sm md:text-base font-medium">Placeholder text for intelligent suggestions.</p>
+            <p class="body-text text-subheadline font-semibold"><span>Delete, favorite or share many at once.</span></p>
           </article>
 
           <article class="feature" data-step="3">
-            <h2 class="headline text-title-2 md:text-large-title font-bold text-balance">Clean photos as a habit</h2>
+            <h2 class="headline text-title-2 font-bold text-balance">Enjoy your library again.</h2>
             <div class="device-slot">
               <div class="device-shot">
                 <img src="./landing/img/feature-compare.png" alt="Placeholder screenshot: two photos side by side in Favopic" width="478" height="644" />
               </div>
             </div>
-            <p class="body-text text-sm md:text-base font-medium">Placeholder text for cleaning photos as a habit.</p>
+            <p class="body-text text-subheadline font-semibold"><span>Make clean photos a habit.</span></p>
           </article>
         </div>
 
@@ -133,14 +129,10 @@
       <!-- Footer liegt unten im letzten Screen, der CTA bleibt in der Fenstermitte. -->
       <div class="last-screen">
         <section id="get-the-app" class="section" aria-labelledby="cta-title">
-          <h2 id="cta-title" class="headline text-large-title md:text-display font-bold text-balance">
-            Gain back control of your library and focus on your best memories!
-          </h2>
-          <a class="btn btn--large btn--prominent text-subheadline md:text-large-title font-semibold" data-for="web" href="./app/">Start App</a>
-          <button type="button" class="btn btn--large btn--prominent text-subheadline md:text-large-title font-semibold" data-for="ios" disabled>Available soon</button>
-          <div class="store-badge text-xs" role="img" aria-label="Download on the App Store – available soon">
-            App Store badge placeholder<br />Available soon
-          </div>
+          <h2 id="cta-title" class="headline text-large-title font-bold text-balance">Find your favorite photos.</h2>
+          <a class="btn btn--prominent text-body font-semibold" data-for="web" href="./app/">Start App</a>
+          <button type="button" class="btn btn--prominent text-body font-semibold" data-for="ios" disabled>Available soon</button>
+          <img class="store-badge" data-for="ios" src="./landing/img/app-store-badge.svg" alt="Download on the App Store – available soon" width="120" height="40" />
         </section>
 
         <footer class="site-footer">
