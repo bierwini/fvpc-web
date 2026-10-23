@@ -3,8 +3,8 @@
 @layer theme, base, components, utilities;
 @import 'tailwindcss/theme.css' layer(theme);
 @import 'tailwindcss/utilities.css' layer(utilities);
+@import '../src/design/tokens.css' layer(theme);
 
-/* Plain Styles wie in der Web-App (Systemschrift, native Controls). Das Design folgt später. */
 * { box-sizing: border-box; }
 :root {
   --header-h: 4.5rem;
@@ -20,30 +20,35 @@
 @media (min-width: 48rem) { :root { --header-h: 6rem; } }
 html { scroll-behavior: smooth; }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
-body { margin: 0; font-family: system-ui, sans-serif; line-height: 1.4; }
+body { margin: 0; font-family: var(--font-sans); line-height: 1.4; color: var(--color-label); background: var(--color-background); -webkit-font-smoothing: antialiased; }
 a { color: inherit; }
 
 /* ---------- Header: liegt über dem Inhalt der ersten Seite und scrollt mit der Seite weg ---------- */
 .site-header {
   position: absolute; top: 0; left: 0; right: 0; z-index: 10; height: var(--header-h);
   display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: .5rem;
-  padding: 0 var(--gutter); background: #fff;
+  padding: 0 var(--gutter);
 }
-.logo { display: inline-flex; align-items: center; gap: .4rem; line-height: 1; text-decoration: none; justify-self: start; }
-.edition { justify-self: end; display: flex; }
-.edition button { border-radius: 0; font-family: inherit; }
-.edition button[aria-pressed='true'] { background: Highlight; color: HighlightText; }
+.logo { display: inline-flex; align-items: center; gap: .5rem; line-height: 1; text-decoration: none; justify-self: start; text-shadow: 0 0 16px rgb(0 0 0 / .25); }
+.logo__mark { width: 2.25em; height: 2.25em; border-radius: 22%; background: var(--gradient-rainbow); }
+/* Segmented Control (Figma: Segmented Control) */
+.edition { justify-self: end; display: flex; padding: 2px; border-radius: 999px; background: var(--color-fill-tertiary); }
+.edition button { border: 0; border-radius: 999px; padding: .4rem .9rem; font-family: inherit; color: var(--color-label); background: transparent; cursor: pointer; }
+.edition button[aria-pressed='true'] { background: var(--color-segment-selected); box-shadow: 0 1px 4px rgb(0 0 0 / .12); }
 [data-edition='web'] [data-for='ios'], [data-edition='ios'] [data-for='web'] { display: none; }
 @media (max-width: 36rem) { .edition__long { display: none; } }
 
-/* Link im Look eines nativen Buttons */
+/* Liquid-Glass-Button (Figma: Button - Liquid Glass - Text). Prominent = Regenbogen-Verlauf. */
 .btn {
-  display: inline-block; padding: .35rem .9rem; font-family: inherit;
-  text-decoration: none; text-align: center;
-  color: ButtonText; background: ButtonFace; border: 1px solid ButtonBorder; border-radius: .3rem;
+  display: inline-block; padding: .6rem 1.1rem; font-family: inherit; line-height: 1; cursor: pointer;
+  text-decoration: none; text-align: center; color: var(--color-label-vibrant); border: 0; border-radius: 999px;
+  background: var(--glass-fill); box-shadow: var(--shadow-glass);
+  -webkit-backdrop-filter: blur(var(--glass-blur)); backdrop-filter: blur(var(--glass-blur));
 }
-.btn[disabled] { color: GrayText; cursor: not-allowed; }
-.btn--large { padding: .6rem 1.6rem; }
+.btn--prominent { color: #fff; background: var(--gradient-rainbow); box-shadow: 0 2px 12px rgb(0 0 0 / .15); }
+.btn[disabled] { opacity: .5; cursor: not-allowed; }
+.btn--large { padding: .9rem 2rem; }
+.btn:focus-visible, .edition button:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
 
 /* ---------- Sektionen: genau ein Screen hoch, Inhalt in der echten Fenstermitte ----------
    Oben und unten bleibt Platz für Header bzw. Footer, die über dem Inhalt liegen. */
@@ -61,7 +66,7 @@ a { color: inherit; }
 .hero-wrap > * { grid-area: 1 / 1; }
 .hero-wrap__bg {
   position: sticky; top: 0; align-self: start; height: var(--screen);
-  background-color: #fff;
+  background-color: var(--color-background);
   background-image:
     linear-gradient(#f1f1f1 1px, transparent 1px),
     linear-gradient(90deg, #f1f1f1 1px, transparent 1px);
@@ -153,3 +158,14 @@ a { color: inherit; }
 
 /* ---------- Platzhalter-Seiten (Terms, Privacy, Imprint) ---------- */
 .legal { max-width: 42rem; margin: 0 auto; padding: calc(var(--header-h) + 2rem) var(--gutter) 4rem; }
+
+/* ---------- Hero-Foto (Platzhalter bis zu den echten Bildern/dem Video) ----------
+   Warmer Verlauf im oberen Teil. Bei reduzierter Bewegung kein Foto, nur Raster und Phone. */
+.hero-wrap__bg::before {
+  content: ''; position: absolute; inset: 0 0 auto 0; height: 55%;
+  background: radial-gradient(120% 90% at 30% 20%, #c8452f 0%, #8a3a2a 45%, #2b1a18 100%);
+  -webkit-mask-image: linear-gradient(#000 70%, transparent); mask-image: linear-gradient(#000 70%, transparent);
+}
+@media (prefers-reduced-motion: reduce) { .hero-wrap__bg::before { display: none; } }
+.title, .large-title { text-shadow: 0 0 15px #fff; }
+.link-accent, .tip__trigger { color: var(--color-accent); }
