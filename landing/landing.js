@@ -68,3 +68,19 @@ function syncFeatures() {
 
 syncFeatures();
 pinned.addEventListener('change', syncFeatures);
+
+/* ---------- Header über dem Foto: weiße Schrift, danach (wenn das Foto weggescrollt ist) dunkel ---------- */
+const header = document.querySelector('.site-header');
+const photo = document.querySelector('.hero-wrap__bg');
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+if (header && photo) {
+  let ticking = false;
+  const update = () => {
+    ticking = false;
+    const over = !reduceMotion.matches && photo.getBoundingClientRect().bottom > header.offsetHeight * 0.75;
+    header.classList.toggle('is-over-photo', over);
+  };
+  addEventListener('scroll', () => { if (!ticking) { ticking = true; requestAnimationFrame(update); } }, { passive: true });
+  addEventListener('resize', update);
+  update();
+}

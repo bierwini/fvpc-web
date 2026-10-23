@@ -16,32 +16,31 @@
     <script type="module" src="./landing/landing.js"></script>
   </head>
   <body>
-    <header class="site-header">
-      <a class="logo logo--on-photo text-title-2 md:text-large-title font-bold" href="./" aria-label="Favopic – home">
-        <img class="logo__mark" src="./landing/img/app-icon.png" alt="" width="256" height="256" />
-        <span>Favopic</span>
-      </a>
-
-      <!-- Je nach Edition: Web => App starten, iOS => noch nicht verfügbar (nicht klickbar) -->
-      <a class="btn text-body font-semibold" data-for="web" href="./app/">Start App</a>
-      <button type="button" class="btn text-body font-semibold" data-for="ios" disabled>Available soon</button>
-
-      <div class="edition" role="group" aria-label="Edition">
-        <button type="button" class="text-subheadline font-semibold" data-edition-option="ios" aria-pressed="false">
-          iOS<span class="edition__long"> Edition</span>
-        </button>
-        <button type="button" class="text-subheadline font-semibold" data-edition-option="web" aria-pressed="true">
-          Web<span class="edition__long"> Edition</span>
-        </button>
-      </div>
-    </header>
-
     <main>
       <!--
         Hero: Das Foto (später Video) füllt genau die Fensterhöhe, das Phone ragt von unten hinein. Alles scrollt
         gemeinsam heraus, danach steht nur noch "Let them compete" mit dem unteren Rand des Phones auf dem Raster.
       -->
       <div class="hero-wrap">
+        <header class="site-header" role="banner">
+          <a class="logo text-title-2 md:text-large-title font-bold" href="./" aria-label="Favopic – home">
+            <img class="logo__mark" src="./landing/img/app-icon.png" alt="" width="256" height="256" />
+            <span>Favopic</span>
+          </a>
+
+          <!-- Je nach Edition: Web => App starten, iOS => noch nicht verfügbar (nicht klickbar) -->
+          <a class="btn text-body font-semibold" data-for="web" href="./app/">Start App</a>
+          <button type="button" class="btn text-body font-semibold" data-for="ios" disabled>Available soon</button>
+
+          <div class="edition" role="group" aria-label="Edition">
+            <button type="button" class="text-subheadline font-semibold" data-edition-option="ios" aria-pressed="false">
+              iOS<span class="edition__long"> Edition</span>
+            </button>
+            <button type="button" class="text-subheadline font-semibold" data-edition-option="web" aria-pressed="true">
+              Web<span class="edition__long"> Edition</span>
+            </button>
+          </div>
+        </header>
         <div class="hero-wrap__bg" aria-hidden="true"></div>
         <div class="hero-wrap__content">
           <section class="section section--intro" aria-labelledby="intro-title">
@@ -70,13 +69,13 @@
       <section class="features" aria-label="Features">
         <div class="features__stage">
           <article class="feature is-active" data-step="0">
-            <h2 class="headline text-title-2 font-bold text-balance">Two shots at a time. You pick the winner.</h2>
+            <h2 class="headline text-title-2 md:text-3xl font-bold text-balance">Two shots at a time. You pick the winner.</h2>
             <div class="device-slot">
               <div class="device-shot">
                 <img src="./landing/img/feature-compare.webp" alt="Placeholder screenshot: two photos side by side in Favopic" width="1341" height="1834" />
               </div>
             </div>
-            <p class="body-text text-subheadline font-semibold"><img class="lock" src="./landing/img/icon-lock.svg" alt="" width="26" height="26" /><span>Photos stay on your device. No photo is uploaded. <span class="tip">
+            <p class="body-text text-body md:text-xl font-semibold"><img class="lock" src="./landing/img/icon-lock.svg" alt="" width="26" height="26" /><span>Photos stay on your device. No photo is uploaded. <span class="tip">
                 <button type="button" class="tip__trigger" aria-describedby="blob-tip">How?</button>
                 <span id="blob-tip" role="tooltip" class="tip__bubble text-sm">
                   Your photos are never uploaded. Your browser only creates temporary links to the
@@ -87,33 +86,33 @@
           </article>
 
           <article class="feature" data-step="1">
-            <h2 class="headline text-title-2 font-bold text-balance">Similar shots, grouped for you.</h2>
+            <h2 class="headline text-title-2 md:text-3xl font-bold text-balance">Similar shots, grouped for you.</h2>
             <div class="device-slot">
               <div class="device-shot">
                 <img src="./landing/img/feature-compare.webp" alt="Placeholder screenshot: two photos side by side in Favopic" width="1341" height="1834" />
               </div>
             </div>
-            <p class="body-text text-subheadline font-semibold"><img class="lock" src="./landing/img/icon-lock.svg" alt="" width="26" height="26" /><span>Photos stay on your device.</span></p>
+            <p class="body-text text-body md:text-xl font-semibold"><img class="lock" src="./landing/img/icon-lock.svg" alt="" width="26" height="26" /><span>Photos stay on your device.</span></p>
           </article>
 
           <article class="feature" data-step="2">
-            <h2 class="headline text-title-2 font-bold text-balance">Get rankings, delete the rest.</h2>
+            <h2 class="headline text-title-2 md:text-3xl font-bold text-balance">Get rankings, delete the rest.</h2>
             <div class="device-slot">
               <div class="device-shot">
                 <img src="./landing/img/feature-compare.webp" alt="Placeholder screenshot: two photos side by side in Favopic" width="1341" height="1834" />
               </div>
             </div>
-            <p class="body-text text-subheadline font-semibold"><span>Delete, favorite or share many at once.</span></p>
+            <p class="body-text text-body md:text-xl font-semibold"><span>Delete, favorite or share many at once.</span></p>
           </article>
 
           <article class="feature" data-step="3">
-            <h2 class="headline text-title-2 font-bold text-balance">Enjoy your library again.</h2>
+            <h2 class="headline text-title-2 md:text-3xl font-bold text-balance">Enjoy your library again.</h2>
             <div class="device-slot">
               <div class="device-shot">
                 <img src="./landing/img/feature-compare.webp" alt="Placeholder screenshot: two photos side by side in Favopic" width="1341" height="1834" />
               </div>
             </div>
-            <p class="body-text text-subheadline font-semibold"><span>Make clean photos a habit.</span></p>
+            <p class="body-text text-body md:text-xl font-semibold"><span>Make clean photos a habit.</span></p>
           </article>
         </div>
 
@@ -130,9 +129,10 @@
       <div class="last-screen">
         <section id="get-the-app" class="section" aria-labelledby="cta-title">
           <h2 id="cta-title" class="headline text-large-title font-bold text-balance">Find your favorite photos.</h2>
-          <a class="btn btn--prominent text-body font-semibold" data-for="web" href="./app/">Start App</a>
+          <a class="btn btn--prominent text-body font-semibold" data-for="web" href="./app/">Start Web App</a>
+          <p class="cta-or text-body" data-for="web">or</p>
           <button type="button" class="btn btn--prominent text-body font-semibold" data-for="ios" disabled>Available soon</button>
-          <img class="store-badge" data-for="ios" src="./landing/img/app-store-badge.png" alt="Download on the App Store – available soon" width="120" height="40" />
+          <img class="store-badge" src="./landing/img/app-store-badge.png" alt="Download on the App Store – available soon" width="120" height="40" />
         </section>
 
         <footer class="site-footer">
