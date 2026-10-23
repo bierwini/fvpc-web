@@ -104,6 +104,14 @@ a { color: inherit; }
 }
 [data-edition='web'] .device { width: min(100cqw, calc(100cqh * 16 / 10)); aspect-ratio: 16 / 10; border-radius: .75rem; }
 .device__label { display: block; }
+/* Screenshot (Platzhalter aus Figma) mit Regenbogen-Glow dahinter */
+.device-shot { position: relative; height: 100cqh; max-width: 100cqw; aspect-ratio: 478 / 644; }
+.device-shot::before {
+  content: ''; position: absolute; inset: 14% 12% 18%; z-index: 0; border-radius: 50%;
+  background: url('./img/rainbow.jpg') center / cover; filter: blur(48px); opacity: .55;
+}
+.device-shot img { position: relative; z-index: 1; width: 100%; height: 100%; object-fit: contain; display: block; }
+@media (prefers-reduced-motion: reduce) { .device-shot::before { display: none; } }
 .features__steps { display: none; }
 @media (min-height: 34rem) {
   /* Bühne (1 Screen) + Scrollstrecke (4 Schritte à --step): Die Bühne klebt, solange man die
