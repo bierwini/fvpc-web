@@ -69,23 +69,58 @@ function syncFeatures() {
 syncFeatures();
 pinned.addEventListener('change', syncFeatures);
 
-/* ---------- Header: ab dem ersten Scrollen weißer Verlauf dahinter (sonst kollidiert darunter laufender Text) ---------- */
-const header = document.querySelector('.site-header');
-if (header) {
+/* ---------- Header: weiß auf dem Foto, dunkel mit weißem Verlauf, sobald das Foto den Header verlassen hat ---------- */
+const header = document.querySelector('.hero-wrap .site-header');
+const photo = document.querySelector('.hero-wrap__bg');
+if (header && photo) {
   let ticking = false;
   const update = () => {
     ticking = false;
-    header.classList.toggle('is-stuck', scrollY > 8);
+    const noPhoto = getComputedStyle(photo).display === 'none';
+    header.classList.toggle('is-light', noPhoto || photo.getBoundingClientRect().bottom <= header.offsetHeight * 0.6);
   };
   addEventListener('scroll', () => { if (!ticking) { ticking = true; requestAnimationFrame(update); } }, { passive: true });
+  addEventListener('resize', update);
   update();
 }
 
-/* ---------- Buttons: Hover-Zoom wächst von der Mausposition aus (Ursprung als CSS-Variable) ---------- */
+/* ---------- Pointer-Animationen: Buttons und Phones folgen dem Mauszeiger (nur mit echter Maus, ohne reduzierte Bewegung) ---------- */
+const fine = window.matchMedia('(hover: hover) and (pointer: fine)');
+const calm = window.matchMedia('(prefers-reduced-motion: reduce)');
+const live = () => fine.matches && !calm.matches;
+
+// Magnet: Button wandert ein Stück zum Zeiger, ein Lichtfleck liegt unter dem Zeiger.
 document.querySelectorAll('.btn, .edition button').forEach((el) => {
-  el.addEventListener('pointerenter', (e) => {
+  el.addEventListener('pointermove', (e) => {
+    if (!live()) return;
     const r = el.getBoundingClientRect();
-    el.style.setProperty('--ox', `${e.clientX - r.left}px`);
-    el.style.setProperty('--oy', `${e.clientY - r.top}px`);
+    const x = e.clientX - r.left;
+    const y = e.clientY - r.top;
+    el.style.setProperty('--mx', `${x}px`);
+    el.style.setProperty('--my', `${y}px`);
+    el.style.setProperty('--tx', `${((x - r.width / 2) / r.width) * 10}px`);
+    el.style.setProperty('--ty', `${((y - r.height / 2) / r.height) * 8}px`);
+  });
+  el.addEventListener('pointerleave', () => {
+    el.style.removeProperty('--tx');
+    el.style.removeProperty('--ty');
+  });
+});
+
+// Phones neigen sich zum Zeiger (max. 9°), beim Verlassen schwingen sie ruhig zurück.
+document.querySelectorAll('[data-tilt]').forEach((el) => {
+  el.addEventListener('pointermove', (e) => {
+    if (!live()) return;
+    const r = el.getBoundingClientRect();
+    const nx = (e.clientX - r.left) / r.width - 0.5;
+    const ny = (e.clientY - r.top) / r.height - 0.5;
+    el.classList.remove('is-leaving');
+    el.style.setProperty('--ry', `${nx * 18}deg`);
+    el.style.setProperty('--rx', `${-ny * 18}deg`);
+  });
+  el.addEventListener('pointerleave', () => {
+    el.classList.add('is-leaving');
+    el.style.removeProperty('--rx');
+    el.style.removeProperty('--ry');
   });
 });
