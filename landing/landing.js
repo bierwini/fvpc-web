@@ -1,3 +1,5 @@
+import './i18n.js';
+
 const root = document.documentElement;
 
 /* ---------- Edition-Switch: steuert nur, welcher Header-Button sichtbar ist (CSS über data-edition) ---------- */
@@ -41,7 +43,7 @@ const features = document.querySelector('.features');
 const articles = [...document.querySelectorAll('.feature')];
 const steps = [...document.querySelectorAll('.features__steps > div')];
 // Muss exakt zur Media Query in landing.css passen (nur sehr niedrige Fenster fallen zurück).
-const pinned = window.matchMedia('(min-height: 34rem)');
+const pinned = window.matchMedia('(min-height: 52rem)');
 let observer = null;
 
 function activate(index) {
@@ -89,25 +91,17 @@ const fine = window.matchMedia('(hover: hover) and (pointer: fine)');
 const calm = window.matchMedia('(prefers-reduced-motion: reduce)');
 const live = () => fine.matches && !calm.matches;
 
-// Magnet: Button wandert ein Stück zum Zeiger, ein Lichtfleck liegt unter dem Zeiger.
-document.querySelectorAll('.btn, .edition button').forEach((el) => {
+// Buttons: bleiben stehen, der Zoom wächst von der Mausposition aus (Ursprung folgt dem Zeiger).
+document.querySelectorAll('.btn').forEach((el) => {
   el.addEventListener('pointermove', (e) => {
     if (!live()) return;
     const r = el.getBoundingClientRect();
-    const x = e.clientX - r.left;
-    const y = e.clientY - r.top;
-    el.style.setProperty('--mx', `${x}px`);
-    el.style.setProperty('--my', `${y}px`);
-    el.style.setProperty('--tx', `${((x - r.width / 2) / r.width) * 10}px`);
-    el.style.setProperty('--ty', `${((y - r.height / 2) / r.height) * 8}px`);
-  });
-  el.addEventListener('pointerleave', () => {
-    el.style.removeProperty('--tx');
-    el.style.removeProperty('--ty');
+    el.style.setProperty('--ox', `${e.clientX - r.left}px`);
+    el.style.setProperty('--oy', `${e.clientY - r.top}px`);
   });
 });
 
-// Phones neigen sich zum Zeiger (max. 9°), beim Verlassen schwingen sie ruhig zurück.
+// Hero-Phone: neigt sich leicht zum Zeiger (max. 3,5°), beim Verlassen schwingt es ruhig zurück.
 document.querySelectorAll('[data-tilt]').forEach((el) => {
   el.addEventListener('pointermove', (e) => {
     if (!live()) return;
@@ -115,8 +109,8 @@ document.querySelectorAll('[data-tilt]').forEach((el) => {
     const nx = (e.clientX - r.left) / r.width - 0.5;
     const ny = (e.clientY - r.top) / r.height - 0.5;
     el.classList.remove('is-leaving');
-    el.style.setProperty('--ry', `${nx * 18}deg`);
-    el.style.setProperty('--rx', `${-ny * 18}deg`);
+    el.style.setProperty('--ry', `${nx * 7}deg`);
+    el.style.setProperty('--rx', `${-ny * 7}deg`);
   });
   el.addEventListener('pointerleave', () => {
     el.classList.add('is-leaving');

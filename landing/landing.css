@@ -11,7 +11,8 @@
   --control-h: 2.5rem;
   --header-h: 4.5rem;
   /* Abstand Header -> Titel -> Phone: feste Stufen je Breakpoint, kein stufenloses Mitskalieren (Figma: 72 px) */
-  --hero-pad: 1.5rem;
+  --title-top: 7rem;
+  --title-h: 10.25rem;
   --header-pad: 1rem;
   --gutter: clamp(1rem, 4vw, 3rem);
   /* Ein "Screen": Fensterhöhe, mindestens 34rem. */
@@ -19,11 +20,14 @@
   --screen: max(100svh, 34rem);
   /* Scrollstrecke pro Feature-Schritt (kürzer = schneller durch die Funktionen). */
   --step: calc(var(--screen) * .5);
+  /* Feature-Bühne: Figma-Höhe 834 px, nie kleiner als Phone + Texte (das Phone wird nie kleiner). */
+  --feature-screen: max(100svh, 52rem);
+  --phone-h: 643.55px;
+  --phone-top: max(calc(var(--screen) - 376px - 16px), calc(var(--title-top) + var(--title-h) + 44px));
   /* Abstand Intro-Text -> Hero-Text, in Bildschirmhöhen. */
-  --hero-gap: .7;
 }
-@media (min-width: 48rem) { :root { --header-h: 5rem; --control-h: 3.125rem; --hero-pad: 3rem; --header-pad: 2rem; } }
-@media (min-width: 80rem) { :root { --header-h: 6rem; --hero-pad: 4.5rem; --header-pad: 2.5rem; } }
+@media (min-width: 48rem) { :root { --header-h: 5rem; --control-h: 3.125rem; --title-top: 10rem; --title-h: 10.875rem; --header-pad: 2rem; } }
+@media (min-width: 80rem) { :root { --header-h: 6rem; --title-top: 226px; --title-h: 156px; --header-pad: 2.5rem; } }
 html { scroll-behavior: smooth; }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 body { margin: 0; font-family: var(--font-sans); line-height: 1.4; color: var(--color-label); background: var(--color-background); -webkit-font-smoothing: antialiased; }
@@ -37,19 +41,21 @@ a { color: inherit; }
   padding: 0 var(--header-pad);
 }
 @media (max-width: 39.99rem) { .site-header > .btn { display: none; } .site-header { grid-template-columns: 1fr auto; } }
-.logo { display: inline-flex; align-items: center; gap: .6rem; letter-spacing: .05em; line-height: 1; text-decoration: none; justify-self: start; }
+.logo { display: inline-flex; align-items: center; gap: 7px; letter-spacing: var(--logo-tracking, 0); line-height: 1; text-decoration: none; justify-self: start; }
 /* Sobald gescrollt wird: weicher weißer Verlauf, damit darunter laufender Text nicht mit dem Header kollidiert */
 .hero-wrap .site-header { color: #fff; background: linear-gradient(rgb(0 0 0 / .4), rgb(0 0 0 / 0)); }
 .hero-wrap .site-header.is-light { color: var(--color-label); background: linear-gradient(rgb(255 255 255 / .92) 60%, rgb(255 255 255 / 0)); }
-.hero-wrap .site-header .edition button:not([aria-pressed='true']) { color: inherit; }
+.hero-wrap .site-header .edition button[aria-pressed='false'] { color: inherit; }
 .site-header--page { position: relative; margin-bottom: 0; height: 4.5rem; padding: 0 var(--gutter); }
-.logo__mark { width: 2.5rem; height: 2.5rem; border-radius: 22%; flex: none; }
+.logo__mark { width: 40px; height: 40px; border-radius: 22%; flex: none; }
 /* Segmented Control (Figma: Segmented Control) */
-.edition { position: relative; justify-self: end; display: flex; padding: 2px; border-radius: 999px; background: var(--color-fill-tertiary); box-shadow: var(--shadow-glass); -webkit-backdrop-filter: blur(var(--glass-blur)); backdrop-filter: blur(var(--glass-blur)); }
-.edition button { border: 0; border-radius: 999px; min-height: calc(var(--control-h) - 4px); padding: 0 1.4rem; font-family: inherit; color: var(--color-label); background: transparent; cursor: pointer; }
-.edition button[aria-pressed='true'] { background: var(--color-segment-selected); box-shadow: 0 1px 4px rgb(0 0 0 / .12); }
+.edition { position: relative; justify-self: end; display: grid; grid-template-columns: 1fr 1fr; padding: 2px; border-radius: 999px; background: var(--color-fill-tertiary); box-shadow: var(--shadow-glass); -webkit-backdrop-filter: blur(var(--glass-blur)); backdrop-filter: blur(var(--glass-blur)); }
+/* Standard-Segmented-Control (iOS): Ein Daumen gleitet unter die gewählte Option. */
+.edition::before { content: ''; position: absolute; top: 2px; bottom: 2px; left: 2px; width: calc((100% - 4px) / 2); border-radius: 999px; background: var(--color-segment-selected); box-shadow: 0 1px 4px rgb(0 0 0 / .12);
+  transition: transform .32s cubic-bezier(.3, .8, .2, 1); }
+[data-edition='web'] .edition::before { transform: translateX(100%); }
+.edition button { position: relative; z-index: 1; border: 0; border-radius: 999px; min-height: calc(var(--control-h) - 4px); padding: 0 1.4rem; font-family: inherit; color: var(--color-label); background: transparent; cursor: pointer; transition: opacity .2s; }
 [data-edition='web'] [data-for='ios'], [data-edition='ios'] [data-for='web'] { display: none; }
-/* Bis Tablet-Breite nur "iOS" / "Web", damit nichts umbricht oder mit dem Button kollidiert */
 .edition button { white-space: nowrap; }
 
 /* Liquid-Glass-Button (Figma: Button - Liquid Glass - Text). Prominent = Regenbogen-Verlauf. */
@@ -71,18 +77,14 @@ a { color: inherit; }
 .btn--accent { color: #fff; background: var(--color-accent); box-shadow: 0 2px 12px rgb(0 136 255 / .35), inset 0 1px 0 rgb(255 255 255 / .35); }
 .btn--prominent { color: #fff; background: url('./img/rainbow.jpg') center / cover; box-shadow: 0 2px 12px rgb(0 0 0 / .15); }
 .btn[disabled] { opacity: .5; cursor: not-allowed; }
-/* Hover: Der Button folgt dem Mauszeiger (JS setzt --tx/--ty als leichten Magnet-Versatz und --mx/--my für den Lichtfleck). */
-.btn, .edition button { transition: transform .18s cubic-bezier(.2, .7, .2, 1), filter .2s, background-color .2s, box-shadow .25s; transform: translate(var(--tx, 0px), var(--ty, 0px)); }
-.btn::before { content: ''; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; opacity: 0; transition: opacity .25s;
-  background: radial-gradient(circle at var(--mx, 50%) var(--my, 50%), rgb(255 255 255 / .45), rgb(255 255 255 / 0) 65%); }
+/* Hover: Der Button bleibt stehen und zoomt von der Mausposition aus (JS aktualisiert --ox/--oy bei jeder Mausbewegung). */
+.btn { transition: transform .25s cubic-bezier(.2, .7, .2, 1), filter .2s, background-color .2s, box-shadow .25s; transform-origin: var(--ox, 50%) var(--oy, 50%); }
 @media (hover: hover) {
-  .btn:not([disabled]):hover { transform: translate(var(--tx, 0px), var(--ty, 0px)) scale(1.06); filter: brightness(1.06); box-shadow: 0 6px 20px rgb(0 0 0 / .18), inset 0 1px 0 rgb(255 255 255 / .7); }
-  .btn:not([disabled]):hover::before { opacity: 1; }
-  .edition button[aria-pressed='false']:hover { background: rgb(255 255 255 / .35); transform: translate(var(--tx, 0px), var(--ty, 0px)) scale(1.06); }
+  .btn:not([disabled]):hover { transform: scale(1.06); filter: brightness(1.06); box-shadow: 0 6px 20px rgb(0 0 0 / .18), inset 0 1px 0 rgb(255 255 255 / .7); }
+  .edition button[aria-pressed='false']:hover { opacity: .65; }
 }
-.btn:not([disabled]):active { transform: translate(var(--tx, 0px), var(--ty, 0px)) scale(.97); filter: brightness(.96); }
-.edition button:active { transform: translate(var(--tx, 0px), var(--ty, 0px)) scale(.97); }
-@media (prefers-reduced-motion: reduce) { .btn, .edition button { transition: none; transform: none !important; } .btn::before { display: none; } }
+.btn:not([disabled]):active { transform: scale(.97); filter: brightness(.96); }
+@media (prefers-reduced-motion: reduce) { .btn, .edition::before { transition: none; } .btn:hover, .btn:active { transform: none; } }
 a { transition: opacity .2s; }
 .footer__links a, .footer__social a, .logo { transition: opacity .2s, transform .2s; }
 @media (hover: hover) { .footer__links a:hover, .footer__social a:hover, .logo:hover { opacity: .65; } }
@@ -102,19 +104,15 @@ a { transition: opacity .2s; }
    .hero-all trägt das Raster (Figma: Grid). .hero-wrap = Foto (genau eine Fensterhöhe), Titel und Phone, das unten
    hineinragt; darin klebt der Header. Danach "Let them compete" auf dem Raster. Nichts außer dem Header klebt. */
 .hero-all { background: var(--color-background) url('./img/grid.svg') 0 0 / 256px 256px; }
-.hero-wrap { position: relative; min-height: var(--screen); display: flow-root;
-  /* Luft unter dem Phone: Phone-Ende und Text sind nie zusammen im Fenster (mind. 38 % der Fensterhöhe) */
-  padding-bottom: max(0px, calc(38svh - var(--outro-gap))); }
+.hero-wrap { position: relative; min-height: var(--screen); display: flow-root; }
 .hero-wrap__bg { position: absolute; inset: 0 0 auto 0; height: var(--screen); background: url('./img/hero.jpg') center top / cover; }
 /* Dunkler Overlay (Figma: schwarz 25 %) vor Foto/Video: weiße Schrift bleibt lesbar, egal welches Motiv später läuft. */
 .hero-wrap__bg::after { content: ''; position: absolute; inset: 0; background: rgb(0 0 0 / .25); }
 @media (prefers-reduced-motion: reduce) { .hero-wrap__bg { display: none; } }
 .hero-wrap__content { position: relative; z-index: 1; }
-.section--intro { min-height: 0; justify-content: flex-start; padding: calc(var(--header-h) + var(--hero-pad)) var(--gutter) 0; gap: var(--hero-pad); }
-/* "Let them compete": Der Header endet mit .hero-wrap, also genau dann, wenn der Text in Fenstermitte steht und weiterscrollt.
-   Danach folgt direkt das erste Feature (nur 42 % Fensterhöhe Luft unter dem Text). */
-:root { --outro-gap: max(0px, calc(45svh - var(--header-h))); }
-.section--hero { min-height: 0; margin-top: var(--outro-gap); padding: 0 var(--gutter) 42svh; }
+.section--intro { position: relative; min-height: calc(var(--phone-top) + var(--phone-h)); justify-content: flex-start; padding: var(--title-top) var(--gutter) 0; gap: 0; }
+/* "Let them compete": Figma-Abstände (147 px unter dem Phone, 400 px bis zum ersten Feature). */
+.section--hero { min-height: 0; margin-top: 147px; padding: 0 var(--gutter) 400px; }
 
 /* Fade-in-up beim Laden (Standard-CSS-Animation), danach bleibt der Text stehen. */
 @keyframes fade-up { from { opacity: 0; transform: translateY(1.75rem); } to { opacity: 1; transform: none; } }
@@ -137,13 +135,13 @@ a { transition: opacity .2s; }
 /* Features: vier Schritte untereinander, jeder genau ein Screen hoch (Fallback); der Geräte-Platzhalter skaliert mit dem Platz. */
 .feature {
   /* Der Header ist hier schon weggescrollt: nur wenig Rand oben und unten, damit der Platzhalter groß wird. */
-  height: var(--screen); padding: 2rem var(--gutter);
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  text-align: center; gap: clamp(1rem, 3vh, 2.5rem);
+  height: var(--feature-screen); padding: max(60px, calc((var(--feature-screen) - 734px) / 2)) var(--gutter) 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+  text-align: center; gap: 35px;
 }
-.feature__text { display: flex; flex-direction: column; align-items: center; gap: .25rem; position: relative; z-index: 3; }
+.feature__text { display: flex; flex-direction: column; align-items: center; gap: 0; position: relative; z-index: 3; }
 .feature__text .body-text { color: #1a1a1a; }
-.device-slot { flex: 1 1 0; min-height: 0; width: 100%; display: grid; place-items: center; container-type: size; }
+.device-slot { flex: none; width: 100%; display: grid; place-items: center; }
 /* Web-Edition: breiter Desktop-Platzhalter, iOS-Edition: iPhone. Skaliert mit dem verfügbaren Platz, Seitenverhältnis bleibt. */
 .device {
   width: min(100cqw, calc(100cqh * 9 / 19.5)); aspect-ratio: 9 / 19.5;
@@ -153,7 +151,7 @@ a { transition: opacity .2s; }
 [data-edition='web'] .device { width: min(100cqw, calc(100cqh * 16 / 10)); aspect-ratio: 16 / 10; border-radius: .75rem; }
 .device__label { display: block; }
 /* Screenshot (Phone mit Bezel, freigestellt) mit Regenbogen-Glow dahinter (Figma: "Subtract", 369,6 px bei 611,8 px Phone). */
-.device-shot { position: relative; height: min(100cqh, 40rem); max-width: 100cqw; aspect-ratio: 1404 / 1902; }
+.device-shot { position: relative; height: 634px; aspect-ratio: 1404 / 1902; }
 .device-shot::before {
   content: ''; position: absolute; z-index: 0; left: 50%; top: 50%; height: 91.5%; aspect-ratio: 1; transform: translate(-50%, -50%);
   background: url('./img/feature-glow.webp') center / contain no-repeat; pointer-events: none;
@@ -161,42 +159,44 @@ a { transition: opacity .2s; }
 .device-shot img { position: relative; z-index: 1; width: 100%; height: 100%; object-fit: contain; display: block; }
 @media (prefers-reduced-motion: reduce) { .device-shot::before { display: none; } }
 .features__steps { display: none; }
-@media (min-height: 34rem) {
+@media (min-height: 52rem) {
   /* Bühne (1 Screen) + Scrollstrecke (4 Schritte à --step): Die Bühne klebt, solange man die
      4 Schritte durchscrollt, und wird danach normal losgelassen. Die Schritte liegen unsichtbar darüber. */
-  html.js .features { position: relative; height: calc(var(--screen) + 4 * var(--step)); }
-  html.js .features__stage { position: sticky; top: 0; height: var(--screen); display: grid; }
+  html.js .features { position: relative; height: calc(var(--feature-screen) + 4 * var(--step)); }
+  html.js .features__stage { position: sticky; top: 0; height: var(--feature-screen); display: grid; }
   html.js .feature { grid-area: 1 / 1; opacity: 0; visibility: hidden; }
   html.js .feature.is-active { opacity: 1; visibility: visible; }
   html.js .features__steps { display: block; position: absolute; top: 0; left: 0; right: 0; pointer-events: none; }
   html.js .features__steps > div { height: var(--step); }
 }
 /* Überblenden nur ohne reduzierte Bewegung; sonst wechselt der Text sofort. */
-@media (min-height: 34rem) and (prefers-reduced-motion: no-preference) {
+@media (min-height: 52rem) and (prefers-reduced-motion: no-preference) {
   html.js .feature { transition: opacity .25s, visibility .25s; }
 }
 
 /* "How?"-Bubble: an der (zentrierten) Textzeile verankert, damit sie auch auf schmalen Fenstern im Bild bleibt. */
 .tip { display: inline-block; position: relative; }
-.tip__trigger { font: inherit; padding: 0; border: 0; background: none; text-decoration: underline; cursor: help; color: inherit; }
+.tip__trigger { font-family: inherit; padding: 0; border: 0; background: none; text-decoration: none; cursor: help; color: var(--color-accent); }
 .tip__bubble {
-  position: absolute; top: calc(100% + .75rem); left: 50%; z-index: 5;
-  width: min(22.5rem, calc(100vw - 2rem)); padding: 1rem 1.25rem; text-align: left; font-weight: 600;
+  position: absolute; top: calc(100% + .75rem); left: 50%; z-index: 5; margin-left: calc(min(22.375rem, calc(100vw - 2rem)) / -2);
+  width: min(22.375rem, calc(100vw - 2rem)); padding: 1rem 1.25rem; text-align: left; font-weight: 600;
   line-height: 1.35; color: #000; background: rgb(255 255 255 / .72); border-radius: 1.75rem;
   -webkit-backdrop-filter: blur(24px) saturate(1.8); backdrop-filter: blur(24px) saturate(1.8);
   box-shadow: 0 8px 40px rgb(0 0 0 / .16), inset 0 1px 0 rgb(255 255 255 / .8);
-  visibility: hidden; opacity: 0; transform: translateX(-30%) translateY(-.4rem) scale(.96); transform-origin: 30% 0;
+  visibility: hidden; opacity: 0; transform: translateY(-.4rem) scale(.96); transform-origin: 50% 0;
   transition: opacity .2s, visibility .2s, transform .25s cubic-bezier(.2, .7, .2, 1); pointer-events: none;
 }
 
-.tip:hover .tip__bubble, .tip:focus-within .tip__bubble, .tip.is-open .tip__bubble { visibility: visible; opacity: 1; pointer-events: auto; transform: translateX(-30%) scale(1); }
+.tip:hover .tip__bubble, .tip:focus-within .tip__bubble, .tip.is-open .tip__bubble { visibility: visible; opacity: 1; pointer-events: auto; transform: none; }
 /* Hover-Brücke: Maus kann vom Link zur Bubble wandern, ohne dass sie schließt */
 .tip__bubble::before { content: ''; position: absolute; left: 0; right: 0; top: -.9rem; height: .9rem; }
 
-.store-badge { width: 120px; height: 40px; cursor: default; }
+.store-badge { display: block; width: 120px; height: 40px; }
+.store-badge img { display: block; width: 100%; height: 100%; }
+.cta__title { max-width: 13em; }
 .cta-or { margin: 0; color: rgb(60 60 67 / .6); }
 .body-text { display: flex; align-items: center; justify-content: center; gap: 4px; min-height: 26px; }
-.lock { width: 28px; height: 28px; flex: none; }
+.lock { width: 24px; height: 24px; flex: none; }
 
 /* ---------- Letzter Screen: CTA mittig, Footer liegt unten darüber ---------- */
 .last-screen { position: relative; }
@@ -206,7 +206,7 @@ a { transition: opacity .2s; }
   padding: 1.5rem var(--header-pad);
 }
 .footer__left { display: flex; flex-direction: column; gap: .5rem; align-items: flex-start; }
-.footer__lang { text-decoration: underline; }
+.footer__lang { text-decoration: underline; font-family: inherit; padding: 0; border: 0; background: none; color: inherit; cursor: pointer; }
 .footer__links { margin: 0; padding: 0; list-style: none; display: flex; gap: 1rem; justify-self: end; align-items: center; }
 .footer__links a { text-decoration: none; }
 .footer__copy { margin: 0; }
@@ -224,12 +224,13 @@ a { transition: opacity .2s; }
 
 /* ---------- Phone-Mockup (Figma: PhotosView + Bezel): 3x7-Raster im Bildschirm, Bezel darüber ----------
    Maße in % des Bezel-Bilds (314,78 x 643,55): Bildschirm sitzt 16,8 / 16,1 vom Rand, 281,4 x 611,8 groß. */
-/* Phones folgen dem Mauszeiger: JS setzt --rx/--ry (Neigung zum Zeiger), Hover vergrößert leicht. */
+/* Das Hero-Phone neigt sich leicht zum Zeiger (JS setzt --rx/--ry); Hover vergrößert minimal. */
 [data-tilt] { transform: perspective(1100px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) scale(var(--s, 1)); transition: transform .2s cubic-bezier(.2, .7, .2, 1); will-change: transform; }
 [data-tilt].is-leaving { transition-duration: .6s; }
-@media (hover: hover) and (prefers-reduced-motion: no-preference) { [data-tilt]:hover { --s: 1.04; } }
+@media (hover: hover) and (prefers-reduced-motion: no-preference) { [data-tilt]:hover { --s: 1.02; } }
 @media (prefers-reduced-motion: reduce) { [data-tilt] { transform: none; } }
-.phone { position: relative; height: clamp(18rem, 43vw, 44rem); aspect-ratio: 675 / 1380; flex: none; }
+/* Feste Größe (Figma: 281,4 x 611,8 plus Bezel-Rand): Das Phone skaliert nie mit dem Fenster, es ragt nur unten ins Foto hinein. */
+.phone { position: absolute; top: var(--phone-top); left: 0; right: 0; margin-inline: auto; height: var(--phone-h); width: calc(var(--phone-h) * 675 / 1380); }
 .phone__screen {
   position: absolute; left: 5.33%; top: 2.5%; width: 89.4%; height: 95.07%; overflow: hidden;
   border-radius: 12.4% / 5.7%; background: #fff;
@@ -241,3 +242,5 @@ a { transition: opacity .2s; }
 .title { color: #fff; text-shadow: 0 5px 25px rgb(0 0 0 / .25); }
 @media (prefers-reduced-motion: reduce) { .title { color: var(--color-label); text-shadow: none; } }
 .link-accent, .tip__trigger { color: var(--color-accent); }
+/* Figma bricht den Hero-Titel nach "photos" um (zwei Zeilen), nicht ausbalanciert */
+@media (min-width: 80rem) { .title { max-width: 1000px; text-wrap: wrap; } }

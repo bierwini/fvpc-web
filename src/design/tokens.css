@@ -18,8 +18,14 @@
 
   /* Textstile (Figma: Size / Leading / Letter spacing). Display = Hero-Headline auf der Landingpage. */
   --text-display: 70px;
-  --text-display--line-height: 1.1;
+  --text-display--line-height: 1.2;
   --text-display--letter-spacing: 0.4px;
+  --text-hero-title: 65px;
+  --text-hero-title--line-height: 78px;
+  --text-hero-title--letter-spacing: 0px;
+  --text-wordmark: 28px;
+  --text-wordmark--line-height: 1;
+  --text-wordmark--letter-spacing: 0px;
   --text-large-title: 34px;
   --text-large-title--line-height: 41px;
   --text-large-title--letter-spacing: 0.4px;

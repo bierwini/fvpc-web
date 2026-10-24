@@ -24,14 +24,14 @@
       <div class="hero-all">
       <div class="hero-wrap">
         <header class="site-header" role="banner">
-          <a class="logo text-title-2 md:text-3xl font-bold" href="./" aria-label="Favopic – home">
+          <a class="logo text-title-2 md:text-wordmark font-bold" href="./" aria-label="Favopic – home">
             <img class="logo__mark" src="./landing/img/app-icon.png" alt="" width="256" height="256" />
             <span>Favopic</span>
           </a>
 
           <!-- Je nach Edition: Web => App starten, iOS => noch nicht verfügbar (nicht klickbar) -->
-          <a class="btn btn--accent text-body font-semibold" data-for="web" href="./app/">Start App</a>
-          <button type="button" class="btn btn--accent text-body font-semibold" data-for="ios" disabled>Available soon</button>
+          <a class="btn btn--accent text-body font-semibold" data-for="web" href="./app/" data-i18n="btn.start">Start App</a>
+          <a class="btn btn--accent text-body font-semibold" data-for="ios" href="https://apps.apple.com/" target="_blank" rel="noopener" data-i18n="btn.download">Download App</a>
 
           <div class="edition" role="group" aria-label="Edition">
             <button type="button" class="text-subheadline font-semibold" data-edition-option="ios" aria-pressed="false">
@@ -45,7 +45,7 @@
         <div class="hero-wrap__bg" aria-hidden="true"></div>
         <div class="hero-wrap__content">
           <section class="section section--intro" aria-labelledby="intro-title">
-            <h2 id="intro-title" class="title fade-up text-large-title md:text-5xl xl:text-display font-bold text-balance">
+            <h2 id="intro-title" class="title fade-up text-large-title md:text-5xl xl:text-hero-title font-bold text-balance" data-i18n="intro.title">
               Your phone is full of photos that look the same?
             </h2>
             <div class="phone fade-up fade-up--late" data-tilt aria-hidden="true">
@@ -57,7 +57,7 @@
       </div>
 
       <section class="section section--hero" aria-labelledby="hero-title">
-            <h1 id="hero-title" class="large-title reveal text-large-title md:text-5xl xl:text-display font-bold text-balance">
+            <h1 id="hero-title" class="large-title reveal text-large-title md:text-5xl xl:text-display font-bold text-balance" data-i18n="hero.title">
               Let them compete. Keep the best.
             </h1>
       </section>
@@ -72,11 +72,11 @@
         <div class="features__stage">
           <article class="feature is-active" data-step="0">
             <div class="feature__text">
-              <h2 class="headline text-title-1 font-bold">Two shots at a time.</h2>
-              <p class="body-text text-title-2 font-bold">You pick the winner.</p>
+              <h2 class="headline text-title-1 font-bold" data-i18n="f1.title">Two shots at a time.</h2>
+              <p class="body-text text-title-2 font-bold" data-i18n="f1.sub">You pick the winner.</p>
             </div>
             <div class="device-slot">
-              <div class="device-shot" data-tilt>
+              <div class="device-shot">
                 <img src="./landing/img/feature-compare.webp" alt="Favopic comparing two similar photos side by side" width="1404" height="1902" />
               </div>
             </div>
@@ -84,11 +84,11 @@
 
           <article class="feature" data-step="1">
             <div class="feature__text">
-              <h2 class="headline text-title-1 font-bold">Get rankings, delete the rest.</h2>
-              <p class="body-text text-title-2 font-bold">Delete, favorite or share many at once.</p>
+              <h2 class="headline text-title-1 font-bold" data-i18n="f2.title">Get rankings, delete the rest.</h2>
+              <p class="body-text text-title-2 font-bold" data-i18n="f2.sub">Delete, favorite or share many at once.</p>
             </div>
             <div class="device-slot">
-              <div class="device-shot" data-tilt>
+              <div class="device-shot">
                 <img src="./landing/img/feature-ranking.webp" alt="Favopic ranking with the winner on top and the action menu open" width="1404" height="1902" />
               </div>
             </div>
@@ -96,10 +96,10 @@
 
           <article class="feature" data-step="2">
             <div class="feature__text">
-              <h2 class="headline text-title-1 font-bold">Similar shots, grouped for you.</h2>
-              <p class="body-text text-title-2 font-bold"><img class="lock" src="./landing/img/icon-lock.svg" alt="" width="24" height="24" /><span>Photos stay on your device. <span class="tip">
-                  <button type="button" class="tip__trigger text-body font-semibold" aria-describedby="blob-tip">How?</button>
-                  <span id="blob-tip" role="tooltip" class="tip__bubble text-subheadline font-semibold">
+              <h2 class="headline text-title-1 font-bold" data-i18n="f3.title">Similar shots, grouped for you.</h2>
+              <p class="body-text text-title-2 font-bold"><img class="lock" src="./landing/img/icon-lock.svg" alt="" width="24" height="24" /><span><span data-i18n="f3.sub">Photos stay on your device.</span> <span class="tip">
+                  <button type="button" class="tip__trigger text-body font-semibold" aria-describedby="blob-tip" data-i18n="tip.trigger">How?</button>
+                  <span id="blob-tip" role="tooltip" class="tip__bubble text-subheadline font-semibold" data-i18n="tip.text">
                     Your photos are never uploaded. Your browser only creates temporary links to the
                     files on your device. They exist in memory only and are deleted as soon as you
                     reset, close the tournament or leave the page.
@@ -107,7 +107,7 @@
                 </span></span></p>
             </div>
             <div class="device-slot">
-              <div class="device-shot" data-tilt>
+              <div class="device-shot">
                 <img src="./landing/img/feature-suggestions.webp" alt="Favopic suggestions: groups of similar photos found on the device" width="1404" height="1902" />
               </div>
             </div>
@@ -115,11 +115,11 @@
 
           <article class="feature" data-step="3">
             <div class="feature__text">
-              <h2 class="headline text-title-1 font-bold">Enjoy your library again.</h2>
-              <p class="body-text text-title-2 font-bold">Make clean photos a habit.</p>
+              <h2 class="headline text-title-1 font-bold" data-i18n="f4.title">Enjoy your library again.</h2>
+              <p class="body-text text-title-2 font-bold" data-i18n="f4.sub">Make clean photos a habit.</p>
             </div>
             <div class="device-slot">
-              <div class="device-shot" data-tilt>
+              <div class="device-shot">
                 <img src="./landing/img/feature-summary.webp" alt="Favopic summary with statistics and a clean photo library" width="1404" height="1902" />
               </div>
             </div>
@@ -138,27 +138,27 @@
       <!-- Footer liegt unten im letzten Screen, der CTA bleibt in der Fenstermitte. -->
       <div class="last-screen">
         <section id="get-the-app" class="section" aria-labelledby="cta-title">
-          <h2 id="cta-title" class="headline text-large-title md:text-4xl font-bold text-balance">Find your favorite photos with Favopic.</h2>
-          <a class="btn btn--prominent text-body font-semibold" data-for="web" href="./app/">Start Web App</a>
-          <p class="cta-or text-body" data-for="web">or</p>
-          <button type="button" class="btn btn--prominent text-body font-semibold" data-for="ios" disabled>Available soon</button>
-          <img class="store-badge" src="./landing/img/app-store-badge.png" alt="Download on the App Store – available soon" width="120" height="40" />
+          <h2 id="cta-title" class="headline cta__title text-large-title md:text-4xl font-bold text-balance" data-i18n="cta.title">Find your favorite photos with Favopic.</h2>
+          <a class="btn btn--prominent text-body font-semibold" data-for="web" href="./app/" data-i18n="btn.startweb">Start Web App</a>
+          <p class="cta-or text-body" data-for="web" data-i18n="cta.or">or</p>
+          <a class="btn btn--prominent text-body font-semibold" data-for="ios" href="https://apps.apple.com/" target="_blank" rel="noopener" data-i18n="btn.download">Download App</a>
+          <a class="store-badge" href="https://apps.apple.com/" target="_blank" rel="noopener" aria-label="Download on the App Store"><img src="./landing/img/app-store-badge.png" alt="" width="120" height="40" /></a>
         </section>
 
         <footer class="site-footer">
           <div class="footer__left">
-            <span class="footer__lang text-subheadline font-semibold">English</span>
-            <p class="footer__copy text-caption-1 font-semibold">© Favopic, 2026. All rights reserved.</p>
+            <button type="button" class="footer__lang text-subheadline font-semibold" data-lang-toggle aria-label="Change language">English</button>
+            <p class="footer__copy text-caption-1 font-semibold" data-i18n="footer.copy">© Favopic, 2026. All rights reserved.</p>
           </div>
           <div class="footer__social">
-            <a href="#" aria-label="Instagram"><img src="./landing/img/icon-instagram.svg" alt="" width="20" height="20" /></a>
-            <a href="#" aria-label="TikTok"><img src="./landing/img/icon-tiktok.svg" alt="" width="20" height="20" /></a>
+            <a href="https://www.instagram.com/" target="_blank" rel="noopener" aria-label="Instagram"><img src="./landing/img/icon-instagram.svg" alt="" width="20" height="20" /></a>
+            <a href="https://www.tiktok.com/" target="_blank" rel="noopener" aria-label="TikTok"><img src="./landing/img/icon-tiktok.svg" alt="" width="20" height="20" /></a>
           </div>
           <ul class="footer__links text-subheadline font-semibold">
-            <li><a href="./imprint/">Contact</a></li>
-            <li><a href="./terms/">Terms</a></li>
-            <li><a href="./privacy/">Privacy</a></li>
-            <li><a href="./imprint/">Imprint</a></li>
+            <li><a href="./contact/" data-i18n="footer.contact">Contact</a></li>
+            <li><a href="./terms/" data-i18n="footer.terms">Terms</a></li>
+            <li><a href="./privacy/" data-i18n="footer.privacy">Privacy</a></li>
+            <li><a href="./imprint/" data-i18n="footer.imprint">Imprint</a></li>
           </ul>
         </footer>
       </div>
