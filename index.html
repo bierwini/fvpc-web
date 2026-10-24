@@ -23,26 +23,26 @@
         Das Phone steht über Hero und Abschnitt 2 und ragt unten ins Foto hinein.
       -->
       <div class="hero-all relative">
-        <header class="site-header sticky top-0 z-20 -mb-22 grid h-22 grid-cols-[1fr_auto] md:grid-cols-[1fr_auto_1fr] items-center px-4 sm:px-6 2xl:px-[calc((100%-1280px)/2+24px)]" data-header>
+        <div class="header-rail"><header class="site-header sticky top-0 z-20 grid h-22 grid-cols-[1fr_auto] md:grid-cols-[1fr_auto_1fr] items-center px-4 sm:px-6 2xl:px-[calc((100%-1280px)/2+24px)]" data-header>
           <a class="logo inline-flex items-center gap-[7px] justify-self-start text-wordmark font-bold" href="./" aria-label="Favopic – home">
             <img class="size-10 rounded-[22%]" src="./landing/img/app-icon.png" alt="" width="256" height="256" />
             <span>Favopic</span>
           </a>
-          <a class="btn btn--accent" href="https://apps.apple.com/" target="_blank" rel="noopener" data-i18n="btn.download">Download App</a>
+          <a class="btn" href="https://apps.apple.com/" target="_blank" rel="noopener" data-i18n="btn.download">Download App</a>
           <a class="btn btn--light hidden md:inline-flex justify-self-end" href="./app/" data-i18n="btn.tryweb">Try Web</a>
-        </header>
+        </header></div>
 
-        <section class="hero relative h-svh" aria-labelledby="intro-title">
+        <section class="hero relative flex h-svh items-center justify-center" aria-labelledby="intro-title">
           <div class="hero__bg absolute inset-0" aria-hidden="true"></div>
-          <h2 id="intro-title" class="title fade-blur relative mx-auto px-4 pt-[27svh] text-center font-bold text-white text-balance lg:text-wrap lg:max-w-[14.5em] text-[40px] sm:text-[45px] md:text-[50px] lg:text-[60px] 2xl:text-[70px] leading-[1.2]" data-i18n="intro.title">
+          <h2 id="intro-title" class="title hero__title fade-blur relative mx-auto px-4 text-center font-bold text-white text-balance lg:text-wrap lg:max-w-[14.5em] text-[40px] sm:text-[45px] md:text-[50px] lg:text-[60px] 2xl:text-[70px] leading-[1.2]" data-i18n="intro.title">
             Your phone is full of photos that look the same?
           </h2>
         </section>
 
-        <div class="phone fade-up fade-up--late" data-tilt aria-hidden="true">
+        <div class="phone" aria-hidden="true"><div class="phone__inner" data-tilt>
           <div class="phone__screen"><img src="./landing/img/tile-01.jpg" alt="" width="256" height="256" loading="eager" /><img src="./landing/img/tile-02.jpg" alt="" width="256" height="256" loading="eager" /><img src="./landing/img/tile-03.jpg" alt="" width="256" height="256" loading="eager" /><img src="./landing/img/tile-04.jpg" alt="" width="256" height="256" loading="eager" /><img src="./landing/img/tile-05.jpg" alt="" width="256" height="256" loading="eager" /><img src="./landing/img/tile-06.jpg" alt="" width="256" height="256" loading="eager" /><img src="./landing/img/tile-07.jpg" alt="" width="256" height="256" loading="eager" /><img src="./landing/img/tile-08.jpg" alt="" width="256" height="256" loading="eager" /><img src="./landing/img/tile-09.jpg" alt="" width="256" height="256" loading="eager" /><img src="./landing/img/tile-10.jpg" alt="" width="256" height="256" loading="lazy" /><img src="./landing/img/tile-11.jpg" alt="" width="256" height="256" loading="lazy" /><img src="./landing/img/tile-12.jpg" alt="" width="256" height="256" loading="lazy" /><img src="./landing/img/tile-13.jpg" alt="" width="256" height="256" loading="lazy" /><img src="./landing/img/tile-14.jpg" alt="" width="256" height="256" loading="lazy" /><img src="./landing/img/tile-15.jpg" alt="" width="256" height="256" loading="lazy" /><img src="./landing/img/tile-16.jpg" alt="" width="256" height="256" loading="lazy" /><img src="./landing/img/tile-17.jpg" alt="" width="256" height="256" loading="lazy" /><img src="./landing/img/tile-18.jpg" alt="" width="256" height="256" loading="lazy" /><img src="./landing/img/tile-19.jpg" alt="" width="256" height="256" loading="lazy" /><img src="./landing/img/tile-20.jpg" alt="" width="256" height="256" loading="lazy" /><img src="./landing/img/tile-21.jpg" alt="" width="256" height="256" loading="lazy" /></div>
               <img class="phone__bezel" src="./landing/img/phone-bezel.png" alt="" width="675" height="1380" />
-        </div>
+        </div></div>
 
         <section class="compete flex min-h-svh items-center justify-center px-4" aria-labelledby="hero-title">
           <h1 id="hero-title" class="reveal text-center font-bold text-balance text-[40px] md:text-[45px] lg:text-[60px] 2xl:text-[70px] leading-[1.2]" data-i18n="hero.title">
@@ -57,7 +57,7 @@
       -->
       <section class="features" aria-label="Features">
         <div class="features__stage">
-          <article class="feature is-active" data-step="0">
+          <article class="feature" data-step="0">
             <div class="feature__text">
               <h2 class="text-title-1 font-bold [@media(max-height:40rem)]:text-[22px]/[28px]" data-i18n="f1.title">Two shots at a time.</h2>
               <p class="text-title-2 font-bold [@media(max-height:40rem)]:text-[17px]/[22px]" data-i18n="f1.sub">You pick the winner.</p>
@@ -98,15 +98,13 @@
           </article>
         </div>
 
-        <!-- Scrollstrecke: je Schritt eine halbe Fensterhöhe (nur mit JavaScript und ohne reduzierte Bewegung) -->
-        <div class="features__steps" aria-hidden="true"><div></div><div></div><div></div><div></div></div>
       </section>
 
       <!-- Call to Action und Footer teilen sich eine Fensterhöhe -->
       <section id="get-the-app" class="relative flex min-h-svh flex-col items-center justify-center gap-6 px-4 pt-14 pb-28 text-center" aria-labelledby="cta-title">
         <h2 id="cta-title" class="text-balance text-[30px] sm:text-[40px] leading-[1.2] font-bold" data-i18n="cta.title">Find your favorite photos.</h2>
         <div class="flex flex-col items-center gap-6">
-          <a class="btn btn--prominent" href="https://apps.apple.com/" target="_blank" rel="noopener" data-i18n="btn.download">Download App</a>
+          <a class="btn" href="https://apps.apple.com/" target="_blank" rel="noopener" data-i18n="btn.download">Download App</a>
           <a class="block h-10 w-[120px]" href="https://apps.apple.com/" target="_blank" rel="noopener" aria-label="Download on the App Store"><img class="size-full" src="./landing/img/app-store-badge.png" alt="" width="120" height="40" /></a>
         </div>
 
