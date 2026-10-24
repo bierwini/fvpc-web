@@ -51,7 +51,7 @@
 
   /* ---------- Hero + "Let them compete": gemeinsamer Raster-Hintergrund, das Phone steht über beiden ---------- */
   .hero-all {
-    background: var(--color-background) url('./img/grid.svg') 0 0 / 256px 256px;
+    background: var(--color-background) url('./img/grid.svg') 0 0 / 256px 256px fixed; /* Raster steht fest, Inhalt scrollt darüber */
     /* Höhe des Titels (zwei Zeilen) je Breakpoint, damit das Phone nie in den Titel ragt */
     --title-h: 9.5rem;
     /* Phone-Oberkante: ragt 376 px ins Foto (Figma bei 834 px Höhe), mindestens 3,75 rem unter dem Titel, dazu 24 px tiefer */
@@ -81,11 +81,13 @@
   .phone { position: absolute; z-index: 1; top: var(--phone-top); left: 0; right: 0; margin-inline: auto; height: 643.55px; width: calc(643.55px * 675 / 1380); }
   .phone__inner { position: absolute; inset: 0; }
   @media (prefers-reduced-motion: no-preference) {
-    /* Das Phone steht fest im Fenster, das Foto scrollt dahinter weg; JS blendet es aus (--po), wenn "Let them compete" mittig steht.
-       Danach übernimmt das Phone im ersten Feature. */
+    /* Das Phone steht fest im Fenster, JS setzt Versatz, Größe und Deckkraft (--py, --k, --po) und führt es vom Hero zum ersten Feature.
+       Der Versatz beim Intro läuft über die eigene Eigenschaft "translate". */
     html.js .hero-run { padding-bottom: 0; }
-    html.js .phone { position: fixed; opacity: var(--po, 1); transform: translateY(calc(100svh - var(--phone-top) + 80px)); transition: transform 1.2s cubic-bezier(.2, .7, .2, 1); will-change: transform, opacity; }
-    html.js .hero.is-phone .phone { transform: none; }
+    html.js .phone { position: fixed; opacity: var(--po, 1); transform: translateY(var(--py, 0px)) scale(var(--k, 1)); transform-origin: 50% 0;
+      translate: 0 calc(100svh - var(--phone-top) + 80px); transition: translate 1.2s cubic-bezier(.2, .7, .2, 1); will-change: transform, opacity; }
+    html.js .feature:first-child .mock { visibility: hidden; }
+    html.js .hero.is-phone .phone { translate: none; }
     html.js .hero__title { opacity: 0; }
     html.js .hero.is-title .hero__title { opacity: 1; animation: fade-blur 1s cubic-bezier(.2, .7, .2, 1) backwards; }
   }

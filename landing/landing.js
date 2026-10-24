@@ -60,36 +60,49 @@ if (hero && !calm.matches) {
   }
 }
 
-// Das Phone steht fest im Fenster und blendet aus, während "Let them compete" mittig einblendet
-function updatePhone(s, H) {
-  if (!phone || calm.matches) return;
-  const o = 1 - span(s, 0.3 * H, 0.75 * H);
+// Das Phone ist ein einziges Objekt: Es scrollt mit dem Hero bis auf die Position des ersten Features und bleibt dort stehen, blendet kurz vor
+// "Let them compete" aus und kommt mit dem ersten Feature wieder (das Feature hat dafür nur einen unsichtbaren Platzhalter).
+const shot = articles[0]?.querySelector('.device-shot');
+const stage = document.querySelector('.features__stage');
+const PHONE_H = 643.55;
+function updatePhone(s, H, featureOpacity) {
+  if (!phone || !shot || !stage || calm.matches) return;
+  const base = phone.offsetTop; // Position ohne Transform (CSS top)
+  const shotRect = shot.getBoundingClientRect();
+  const pinned = shotRect.top - stage.getBoundingClientRect().top; // Platzhalter-Position, sobald die Bühne steht
+  const inFeatures = features.getBoundingClientRect().top < H;
+  const y = inFeatures ? shotRect.top : Math.max(pinned, base - s);
+  const o = inFeatures ? featureOpacity : 1 - span(s, 0.7 * H, 0.95 * H);
+  phone.style.setProperty('--py', `${y - base}px`);
+  phone.style.setProperty('--k', String(shotRect.height / PHONE_H));
   phone.style.setProperty('--po', String(o));
-  phone.style.visibility = o <= 0 ? 'hidden' : '';
+  phone.style.visibility = o <= 0.001 ? 'hidden' : '';
 }
 
 function updateFeatures() {
-  if (!features) return;
+  if (!features) return 1;
   const stepLen = 0.6 * innerHeight;
   const top = features.getBoundingClientRect().top;
   const enter = clamp01((top - 0.15 * innerHeight) / (0.7 * innerHeight)); // das erste Feature blendet beim Hereinscrollen ein
   const t = Math.min(articles.length, Math.max(0, -top / stepLen)); // 0..n, jeder Schritt hat eine Strecke
+  let first = 1;
   articles.forEach((a, i) => {
     let d = t - (i + 0.5); // Abstand zur Mitte des Schritts
     if ((i === 0 && d < 0) || (i === articles.length - 1 && d > 0)) d = 0; // erster steht schon da, letzter bleibt bis zum Ende
-    let g = clamp01((Math.abs(d) - 0.15) / 0.42); // 0 = voll da, 1 = weg
+    let g = clamp01((Math.abs(d) - 0.2) / 0.3); // 0 = voll da, 1 = weg
     if (i === 0) g = Math.max(g, enter);
+    if (i === 0) first = 1 - g;
     a.style.setProperty('--o', String(1 - g));
-    a.style.setProperty('--b', calm.matches ? '0px' : `${4 * g}px`);
-    a.style.setProperty('--y', calm.matches ? '0px' : `${(d > 0 ? -14 : 14) * g}px`);
+    a.style.setProperty('--b', calm.matches ? '0px' : `${2 * g}px`);
+    a.style.setProperty('--y', calm.matches ? '0px' : `${(d > 0 ? -10 : 10) * g}px`);
     a.style.pointerEvents = g > 0.5 ? 'none' : '';
   });
+  return first;
 }
 
 function update() {
   ticking = false;
-  updatePhone(scrollY, innerHeight);
-  updateFeatures();
+  updatePhone(scrollY, innerHeight, updateFeatures());
   // Header: weiß auf dem Foto, dunkel mit weißem Verlauf, sobald das Foto den Header verlassen hat
   if (header && photo) {
     const noPhoto = getComputedStyle(photo).display === 'none';
@@ -101,19 +114,30 @@ addEventListener('resize', update);
 update();
 
 /* ---------- Zeiger-Neigung (nur mit echter Maus, ohne reduzierte Bewegung) ---------- */
-// Auf dem Phone neigt sich die Seite weg, auf der der Zeiger steht (max. 8°), so lässt es sich ausrichten.
+// Das Phone folgt dem Zeiger überall (die Seite zum Zeiger kommt näher, max. 5°). Auf dem Phone selbst neigt sich dagegen die Seite
+// weg, auf der der Zeiger steht (max. 3°), so lässt es sich ausrichten.
 const live = () => matchMedia('(hover: hover) and (pointer: fine)').matches && !calm.matches;
 const tilt = phone?.querySelector('[data-tilt]');
 if (phone && tilt) {
   const clamp = (v) => Math.max(-1, Math.min(1, v));
-  phone.addEventListener('pointermove', (e) => {
-    if (!live()) return;
+  addEventListener('pointermove', (e) => {
+    if (!live() || phone.style.visibility === 'hidden') return;
     const r = phone.getBoundingClientRect();
+    const over = e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom;
+    let rx;
+    let ry;
+    if (over) {
+      ry = clamp((e.clientX - (r.left + r.width / 2)) / (r.width / 2)) * 3;
+      rx = -clamp((e.clientY - (r.top + r.height / 2)) / (r.height / 2)) * 3;
+    } else {
+      ry = -clamp((e.clientX - (r.left + r.width / 2)) / (innerWidth / 2)) * 5;
+      rx = clamp((e.clientY - (r.top + r.height / 2)) / (innerHeight / 2)) * 5;
+    }
     tilt.classList.remove('is-leaving');
-    tilt.style.setProperty('--ry', `${clamp((e.clientX - (r.left + r.width / 2)) / (r.width / 2)) * 8}deg`);
-    tilt.style.setProperty('--rx', `${-clamp((e.clientY - (r.top + r.height / 2)) / (r.height / 2)) * 8}deg`);
+    tilt.style.setProperty('--rx', `${rx}deg`);
+    tilt.style.setProperty('--ry', `${ry}deg`);
   });
-  phone.addEventListener('pointerleave', () => {
+  document.documentElement.addEventListener('pointerleave', () => {
     tilt.classList.add('is-leaving');
     tilt.style.removeProperty('--rx');
     tilt.style.removeProperty('--ry');
