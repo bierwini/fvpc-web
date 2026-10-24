@@ -22,7 +22,10 @@ if (steps.length) {
       for (const entry of entries) {
         if (!entry.isIntersecting) continue;
         const index = steps.indexOf(entry.target);
-        articles.forEach((a, i) => a.classList.toggle('is-active', i === index));
+        articles.forEach((a, i) => {
+          a.classList.toggle('is-active', i === index);
+          a.classList.toggle('is-past', i < index);
+        });
       }
     },
     { rootMargin: '0px 0px -100% 0px' }, // eine Linie am oberen Fensterrand (= Position der klebenden Bühne)
@@ -46,16 +49,20 @@ if (header && photo) {
 /* ---------- Pointer-Animationen (nur mit echter Maus, ohne reduzierte Bewegung) ---------- */
 const live = () => matchMedia('(hover: hover) and (pointer: fine)').matches && !matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-// Hero-Phone neigt sich dem Zeiger entgegen (max. 3,5°): die Seite, auf der die Maus ist, kommt näher.
+// Hero-Phone folgt dem Zeiger: Im ganzen Hero neigt es sich zur Mausposition (max. 5°). Die Seite zum Zeiger kommt näher.
+const hero = document.querySelector('.hero-all');
 document.querySelectorAll('[data-tilt]').forEach((el) => {
-  el.addEventListener('pointermove', (e) => {
+  const clamp = (v) => Math.max(-1, Math.min(1, v));
+  hero?.addEventListener('pointermove', (e) => {
     if (!live()) return;
     const r = el.getBoundingClientRect();
+    const dx = clamp((e.clientX - (r.left + r.width / 2)) / (innerWidth / 2));
+    const dy = clamp((e.clientY - (r.top + r.height / 2)) / (innerHeight / 2));
     el.classList.remove('is-leaving');
-    el.style.setProperty('--ry', `${-((e.clientX - r.left) / r.width - 0.5) * 7}deg`);
-    el.style.setProperty('--rx', `${((e.clientY - r.top) / r.height - 0.5) * 7}deg`);
+    el.style.setProperty('--ry', `${-dx * 5}deg`);
+    el.style.setProperty('--rx', `${dy * 5}deg`);
   });
-  el.addEventListener('pointerleave', () => {
+  hero?.addEventListener('pointerleave', () => {
     el.classList.add('is-leaving');
     el.style.removeProperty('--rx');
     el.style.removeProperty('--ry');
