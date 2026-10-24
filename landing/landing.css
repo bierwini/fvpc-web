@@ -24,7 +24,10 @@
   .site-header { pointer-events: auto; color: #fff; background: linear-gradient(rgb(0 0 0 / .4), rgb(0 0 0 / 0)); transition: color .2s; }
   .site-header.is-light { color: var(--color-label); background: linear-gradient(rgb(255 255 255 / .92) 60%, rgb(255 255 255 / 0)); }
   .site-header--page { position: relative; height: 4.5rem; padding: 0 1rem; display: flex; align-items: center; background: none; color: inherit; }
-  .logo { line-height: 1; }
+  .logo { line-height: 1; transition: color .2s ease; }
+  /* Hover wie beim Try-Web-Button: ein Tick dunkler (weiß wird #e8e8ed) */
+  .site-header:not(.is-light) .logo:hover { color: #e8e8ed; }
+  .site-header.is-light .logo:hover { color: color-mix(in srgb, var(--color-label) 70%, white); }
   .logo__mark { width: 40px; height: 40px; border-radius: 22%; }
   .site-header--page .logo { display: inline-flex; align-items: center; gap: 7px; }
 
@@ -70,15 +73,18 @@
   @supports (animation-timeline: view()) { .reveal { animation: fade-blur linear both; animation-timeline: view(); animation-range: cover 5% cover 50%; } }
 
   /* ---------- Phone-Mockup (Figma: PhotosView + Bezel): feste Größe, skaliert nie mit dem Fenster ---------- */
-  /* Intro: erst nur das Foto, dann fährt das Phone hoch (JS setzt .is-phone nach 1,2 s oder beim Scrollen), dann kommt der Titel (.is-title).
-     Danach scrollt alles ganz normal mit der Seite, das Phone verlässt das Bild zusammen mit dem Hero. */
+  /* Intro: erst nur das Foto, dann fährt das Phone hoch (JS setzt .is-phone nach 1,2 s oder beim ersten Scrollen), dann kommt der Titel (.is-title).
+     Bis das Intro fertig ist, scrollt die Seite nicht. */
   .hero { align-items: flex-start; padding-top: 27svh; }
-  /* Unter dem Foto bleibt so viel Platz, wie das Phone hineinragt, damit "Let them compete" erst danach in der Mitte steht */
+  /* Statisch (ohne JavaScript, reduzierte Bewegung): Unter dem Foto bleibt so viel Platz, wie das Phone hineinragt, damit "Let them compete" erst danach in der Mitte steht */
   .hero-run { padding-bottom: max(0px, calc(var(--phone-top) + 643.55px - 100svh)); }
   .phone { position: absolute; z-index: 1; top: var(--phone-top); left: 0; right: 0; margin-inline: auto; height: 643.55px; width: calc(643.55px * 675 / 1380); }
   .phone__inner { position: absolute; inset: 0; }
   @media (prefers-reduced-motion: no-preference) {
-    html.js .phone { transform: translateY(calc(100svh - var(--phone-top) + 80px)); transition: transform 1.2s cubic-bezier(.2, .7, .2, 1); will-change: transform; }
+    /* Das Phone steht fest im Fenster, das Foto scrollt dahinter weg; JS blendet es aus (--po), wenn "Let them compete" mittig steht.
+       Danach übernimmt das Phone im ersten Feature. */
+    html.js .hero-run { padding-bottom: 0; }
+    html.js .phone { position: fixed; opacity: var(--po, 1); transform: translateY(calc(100svh - var(--phone-top) + 80px)); transition: transform 1.2s cubic-bezier(.2, .7, .2, 1); will-change: transform, opacity; }
     html.js .hero.is-phone .phone { transform: none; }
     html.js .hero__title { opacity: 0; }
     html.js .hero.is-title .hero__title { opacity: 1; animation: fade-blur 1s cubic-bezier(.2, .7, .2, 1) backwards; }
