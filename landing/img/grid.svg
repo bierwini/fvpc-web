@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256" fill="none">
+  <!-- Raster aus Figma: Linien alle 64 px, Markierungskreuze (je 64 px lang) alle 256 px -->
+  <path d="M.5 0v256M64.5 0v256M128.5 0v256M192.5 0v256M0 .5h256M0 64.5h256M0 128.5h256M0 192.5h256" stroke="#F1F1F2"/>
+  <path d="M96 128.5h64M128.5 96v64" stroke="#E4E4E6"/>
+</svg>

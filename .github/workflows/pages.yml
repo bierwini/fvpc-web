@@ -2,7 +2,7 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [main, claude/funny-feynman-f7yce4]
+    branches: [main, claude/funny-feynman-f7yce4, claude/figma-design-system]
   workflow_dispatch:
 
 permissions:
