@@ -57,25 +57,24 @@
   .hero-all {
     background: var(--color-background) url('./img/grid.svg') 0 0 / 256px 256px;
     /* Höhe des Titels (zwei Zeilen) je Breakpoint, damit das Phone nie in den Titel ragt */
-    --title-h: 7.7rem;
+    --title-h: 9.5rem;
     /* Phone-Oberkante: ragt 376 px ins Foto (Figma bei 834 px Höhe), mindestens 3,75 rem unter dem Titel */
     --phone-top: max(calc(27svh + var(--title-h) + 3.75rem), calc(100svh - 392px));
     /* Wie weit das Phone unter das Foto in den zweiten Abschnitt ragt */
     --over: max(0px, calc(var(--phone-top) + 643.55px - 100svh));
   }
-  @media (min-width: 40rem) { .hero-all { --title-h: 6rem; } }
-  @media (min-width: 48rem) { .hero-all { --title-h: 7.25rem; } }
-  @media (min-width: 64rem) { .hero-all { --title-h: 8.4rem; } }
-  @media (min-width: 80rem) { .hero-all { --title-h: 9.75rem; } }
+  @media (min-width: 40rem) { .hero-all { --title-h: 6.75rem; } }
+  @media (min-width: 48rem) { .hero-all { --title-h: 7.5rem; } }
+  @media (min-width: 64rem) { .hero-all { --title-h: 9rem; } }
+  @media (min-width: 96rem) { .hero-all { --title-h: 10.5rem; } }
   .hero__bg { background: url('./img/hero.jpg') center top / cover; }
   /* Dunkler Overlay (Figma: schwarz 25 %): weiße Schrift bleibt lesbar, egal welches Motiv später läuft */
   .hero__bg::after { content: ''; position: absolute; inset: 0; background: rgb(0 0 0 / .25); }
   @media (prefers-reduced-motion: reduce) { .hero__bg { display: none; } .title { color: var(--color-label); } }
   .title { text-shadow: 0 5px 25px rgb(0 0 0 / .25); }
   @media (prefers-reduced-motion: reduce) { .title { text-shadow: none; } }
-  @media (min-width: 80rem) { .title { max-width: 1000px; text-wrap: wrap; } }
-  /* Figma: 147 px unter dem Phone, danach Luft bis zum nächsten Abschnitt */
-  .compete { padding-top: calc(var(--over) + 147px); padding-bottom: 4rem; }
+  /* Figma: 143 px unter dem Phone, danach Luft bis zum nächsten Abschnitt */
+  .compete { padding-top: calc(var(--over) + 143px); padding-bottom: 4rem; }
 
   /* Fade-in-up beim Laden, danach bleibt alles stehen */
   .fade-up { animation: fade-up .9s cubic-bezier(.2, .7, .2, 1) .15s backwards; }

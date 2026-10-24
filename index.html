@@ -23,18 +23,18 @@
         Das Phone steht über Hero und Abschnitt 2 und ragt unten ins Foto hinein.
       -->
       <div class="hero-all relative">
-        <header class="site-header sticky top-0 z-20 -mb-18 md:-mb-20 xl:-mb-24 grid h-18 md:h-20 xl:h-24 grid-cols-[1fr_auto] md:grid-cols-[1fr_auto_1fr] items-center px-4 md:px-6 xl:px-10" data-header>
-          <a class="logo inline-flex items-center gap-[7px] justify-self-start text-title-2 md:text-wordmark font-bold" href="./" aria-label="Favopic – home">
+        <header class="site-header sticky top-0 z-20 -mb-22 grid h-22 grid-cols-[1fr_auto] md:grid-cols-[1fr_auto_1fr] items-center px-4 sm:px-6 2xl:px-[calc((100%-1280px)/2+24px)]" data-header>
+          <a class="logo inline-flex items-center gap-[7px] justify-self-start text-wordmark font-bold" href="./" aria-label="Favopic – home">
             <img class="size-10 rounded-[22%]" src="./landing/img/app-icon.png" alt="" width="256" height="256" />
             <span>Favopic</span>
           </a>
-          <a class="btn btn--accent text-body font-semibold" href="https://apps.apple.com/" target="_blank" rel="noopener" data-i18n="btn.download">Download App</a>
-          <a class="btn hidden md:inline-flex justify-self-end text-body font-semibold" href="./app/" data-i18n="btn.tryweb">Try Web</a>
+          <a class="btn btn--accent h-[41px] min-h-0 px-4 text-base font-medium" href="https://apps.apple.com/" target="_blank" rel="noopener" data-i18n="btn.download">Download App</a>
+          <a class="btn hidden md:inline-flex justify-self-end h-7 min-h-0 px-4 text-[13px]/[18px] font-semibold" href="./app/" data-i18n="btn.tryweb">Try Web</a>
         </header>
 
         <section class="hero relative h-svh" aria-labelledby="intro-title">
           <div class="hero__bg absolute inset-0" aria-hidden="true"></div>
-          <h2 id="intro-title" class="title fade-up relative mx-auto px-4 pt-[27svh] text-center font-bold text-white text-balance text-large-title sm:text-[40px]/[48px] md:text-5xl lg:text-[56px]/[67px] xl:text-hero-title" data-i18n="intro.title">
+          <h2 id="intro-title" class="title fade-up relative mx-auto px-4 pt-[27svh] text-center font-bold text-white text-balance lg:text-wrap lg:max-w-[13.5em] text-[40px] sm:text-[45px] md:text-[50px] lg:text-[60px] 2xl:text-[70px] leading-[1.2]" data-i18n="intro.title">
             Your phone is full of photos that look the same?
           </h2>
         </section>
@@ -45,7 +45,7 @@
         </div>
 
         <section class="compete flex min-h-svh justify-center px-4" aria-labelledby="hero-title">
-          <h1 id="hero-title" class="reveal text-center font-bold text-balance text-large-title sm:text-[40px]/[48px] md:text-5xl lg:text-[56px]/[67px] xl:text-display" data-i18n="hero.title">
+          <h1 id="hero-title" class="reveal text-center font-bold text-balance text-[40px] md:text-[45px] lg:text-[60px] 2xl:text-[70px] leading-[1.2]" data-i18n="hero.title">
             Let them compete. Keep the best.
           </h1>
         </section>
@@ -103,26 +103,26 @@
       </section>
 
       <!-- Call to Action und Footer teilen sich eine Fensterhöhe -->
-      <section id="get-the-app" class="relative flex min-h-svh flex-col items-center justify-center gap-8 px-4 pb-28 text-center" aria-labelledby="cta-title">
-        <h2 id="cta-title" class="max-w-[13em] text-balance text-title-1 font-bold sm:text-large-title" data-i18n="cta.title">Find your favorite photos with Favopic.</h2>
+      <section id="get-the-app" class="relative flex min-h-svh flex-col items-center justify-center gap-6 px-4 pt-14 pb-28 text-center" aria-labelledby="cta-title">
+        <h2 id="cta-title" class="text-balance text-[30px] sm:text-[40px] leading-[1.2] font-bold" data-i18n="cta.title">Find your favorite photos.</h2>
         <div class="flex flex-col items-center gap-6">
-          <a class="btn btn--prominent text-body font-semibold" href="https://apps.apple.com/" target="_blank" rel="noopener" data-i18n="btn.download">Download App</a>
+          <a class="btn btn--prominent h-10 min-h-0 w-[148px] px-0 text-base font-medium" href="https://apps.apple.com/" target="_blank" rel="noopener" data-i18n="btn.download">Download App</a>
           <a class="block h-10 w-[120px]" href="https://apps.apple.com/" target="_blank" rel="noopener" aria-label="Download on the App Store"><img class="size-full" src="./landing/img/app-store-badge.png" alt="" width="120" height="40" /></a>
         </div>
 
-        <footer class="site-footer absolute inset-x-0 bottom-0 grid grid-cols-3 items-end gap-y-4 px-4 py-6 text-left md:px-6">
+        <footer class="site-footer absolute inset-x-0 bottom-0 grid grid-cols-3 items-end gap-y-4 px-4 py-6 text-left sm:px-6">
           <div class="col-start-1 row-start-2 lg:row-start-1 flex flex-col items-start gap-2">
             <div class="lang">
-              <button type="button" class="lang__current text-subheadline font-semibold underline" aria-haspopup="true" aria-expanded="false" data-lang-current>English</button>
-              <ul class="lang__list text-subheadline font-semibold" hidden data-lang-list></ul>
+              <button type="button" class="lang__current text-[13px]/[18px] font-semibold underline" aria-haspopup="true" aria-expanded="false" data-lang-current>English</button>
+              <ul class="lang__list text-[13px]/[18px] font-semibold" hidden data-lang-list></ul>
             </div>
-            <p class="text-caption-1 font-semibold" data-i18n="footer.copy">© Favopic, 2026. All rights reserved.</p>
+            <p class="text-[11px]/[13px] font-normal" data-i18n="footer.copy">© Favopic, 2026. All rights reserved.</p>
           </div>
           <div class="col-start-2 row-start-2 lg:row-start-1 flex items-center justify-self-center gap-6">
             <a href="https://www.instagram.com/" target="_blank" rel="noopener" aria-label="Instagram"><img class="size-[18px]" src="./landing/img/icon-instagram.svg" alt="" width="18" height="18" /></a>
             <a href="https://www.tiktok.com/" target="_blank" rel="noopener" aria-label="TikTok"><img class="size-[18px]" src="./landing/img/icon-tiktok.svg" alt="" width="18" height="18" /></a>
           </div>
-          <ul class="col-start-3 row-start-1 row-span-2 lg:row-span-1 flex flex-col items-end gap-0 justify-self-end text-subheadline font-semibold lg:flex-row lg:gap-4">
+          <ul class="col-start-3 row-start-1 row-span-2 lg:row-span-1 flex flex-col items-end gap-0 justify-self-end text-[13px]/[18px] font-semibold lg:flex-row lg:gap-4">
             <li><a href="./contact/" data-i18n="footer.contact">Contact</a></li>
             <li><a href="./terms/" data-i18n="footer.terms">Terms</a></li>
             <li><a href="./privacy/" data-i18n="footer.privacy">Privacy</a></li>
