@@ -24,7 +24,7 @@
   .site-header { pointer-events: auto; color: #fff; background: linear-gradient(rgb(0 0 0 / .4), rgb(0 0 0 / 0)); transition: color .2s; }
   .site-header.is-light { color: var(--color-label); background: linear-gradient(rgb(255 255 255 / .92) 60%, rgb(255 255 255 / 0)); }
   .site-header--page { position: relative; height: 4.5rem; padding: 0 1rem; display: flex; align-items: center; background: none; color: inherit; }
-  .logo { line-height: 1; transition: opacity .2s; }
+  .logo { line-height: 1; }
   .logo__mark { width: 40px; height: 40px; border-radius: 22%; }
   .site-header--page .logo { display: inline-flex; align-items: center; gap: 7px; }
 
@@ -43,7 +43,7 @@
   .btn--light:active { background: #e8e8ed; }
   .btn:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
   @media (prefers-reduced-motion: reduce) { .btn { transition: none; } }
-  .logo:hover, .site-footer a:hover, .lang button:hover { opacity: .65; }
+  .site-footer a:hover, .lang button:hover { opacity: .65; }
   .site-footer a, .lang button { transition: opacity .2s; }
 
   /* ---------- Hero + "Let them compete": gemeinsamer Raster-Hintergrund, das Phone steht über beiden ---------- */
@@ -51,8 +51,8 @@
     background: var(--color-background) url('./img/grid.svg') 0 0 / 256px 256px;
     /* Höhe des Titels (zwei Zeilen) je Breakpoint, damit das Phone nie in den Titel ragt */
     --title-h: 9.5rem;
-    /* Phone-Oberkante: ragt 376 px ins Foto (Figma bei 834 px Höhe), mindestens 3,75 rem unter dem Titel */
-    --phone-top: max(calc(27svh + var(--title-h) + 3.75rem), calc(100svh - 392px));
+    /* Phone-Oberkante: ragt 376 px ins Foto (Figma bei 834 px Höhe), mindestens 3,75 rem unter dem Titel, dazu 24 px tiefer */
+    --phone-top: calc(max(calc(27svh + var(--title-h) + 3.75rem), calc(100svh - 392px)) + 24px);
   }
   @media (min-width: 40rem) { .hero-all { --title-h: 6.75rem; } }
   @media (min-width: 48rem) { .hero-all { --title-h: 7.5rem; } }
@@ -64,35 +64,25 @@
   @media (prefers-reduced-motion: reduce) { .hero__bg { display: none; } .title { color: var(--color-label); } }
   .title { text-shadow: 0 1px 3px rgb(0 0 0 / .3), 0 5px 25px rgb(0 0 0 / .45); }
   @media (prefers-reduced-motion: reduce) { .title { text-shadow: none; } }
-  /* Der Text steht immer in der Fenstermitte. Auf niedrigen Fenstern (unter 45rem) wird das Phone am Ende des Fotos abgeschnitten, damit es nicht in den Text ragt. */
-  @media (max-height: 45rem) and (prefers-reduced-motion: reduce) { .phone { clip-path: inset(0 0 calc(100% - (100svh - var(--phone-top))) 0); } }
 
-  /* Fade-in-up beim Laden, danach bleibt alles stehen */
-  .fade-up { animation: fade-up .9s cubic-bezier(.2, .7, .2, 1) .15s backwards; }
-  .fade-blur { animation: fade-blur 1s cubic-bezier(.2, .7, .2, 1) .1s backwards; }
-  .fade-up--late { animation-delay: .4s; }
-  @media (prefers-reduced-motion: reduce) { .fade-up, .fade-blur, .reveal { animation: none; } }
+  @media (prefers-reduced-motion: reduce) { .reveal { animation: none; } }
   /* Scrollgesteuert: beginnt, wenn der Text unten ins Bild kommt, und ist fertig, wenn er die Fenstermitte erreicht */
   @supports (animation-timeline: view()) { .reveal { animation: fade-blur linear both; animation-timeline: view(); animation-range: cover 5% cover 50%; } }
 
   /* ---------- Phone-Mockup (Figma: PhotosView + Bezel): feste Größe, skaliert nie mit dem Fenster ---------- */
-  /* Der Hero läuft mit dem Scrollen (JS setzt --ty für den Titel, --sy/--sx für das Phone): Titel startet in der Mitte, das Phone
-     kommt von unten, neigt sich zurück und verlässt das Bild schneller als die Seite (Parallax). */
-  .phone { position: absolute; z-index: 1; top: var(--phone-top); left: 0; right: 0; margin-inline: auto; height: 643.55px; width: calc(643.55px * 675 / 1380);
-    transform: translateY(var(--sy, 0px)) perspective(1100px) rotateX(var(--sx, 0deg)); will-change: transform; }
+  /* Intro: erst nur das Foto, dann fährt das Phone hoch (JS setzt .is-phone nach 1,2 s oder beim Scrollen), dann kommt der Titel (.is-title).
+     Danach scrollt alles ganz normal mit der Seite, das Phone verlässt das Bild zusammen mit dem Hero. */
+  .hero { align-items: flex-start; padding-top: 27svh; }
+  /* Unter dem Foto bleibt so viel Platz, wie das Phone hineinragt, damit "Let them compete" erst danach in der Mitte steht */
+  .hero-run { padding-bottom: max(0px, calc(var(--phone-top) + 643.55px - 100svh)); }
+  .phone { position: absolute; z-index: 1; top: var(--phone-top); left: 0; right: 0; margin-inline: auto; height: 643.55px; width: calc(643.55px * 675 / 1380); }
   .phone__inner { position: absolute; inset: 0; }
-  .hero__title { transform: translateY(var(--ty, 0px)); opacity: var(--to, 1); filter: blur(var(--tb, 0px)); }
-  /* Läufer: Das Hero bleibt 1,6 Fensterhöhen lang stehen (Titel, Phone, Neigung per Scroll), danach scrollt alles zusammen weg */
-  html.js .hero-run { height: 260svh; }
-  /* Ohne JavaScript oder mit reduzierter Bewegung: statisches Layout, das Phone ragt unten ins Foto */
-  @media (prefers-reduced-motion: reduce) {
-    .hero { position: relative; align-items: flex-start; padding-top: 27svh; }
-    html.js .hero-run { height: auto; }
-    .phone { transform: none; }
-    .hero__title { transform: none; opacity: 1; }
+  @media (prefers-reduced-motion: no-preference) {
+    html.js .phone { transform: translateY(calc(100svh - var(--phone-top) + 80px)); transition: transform 1.2s cubic-bezier(.2, .7, .2, 1); will-change: transform; }
+    html.js .hero.is-phone .phone { transform: none; }
+    html.js .hero__title { opacity: 0; }
+    html.js .hero.is-title .hero__title { opacity: 1; animation: fade-blur 1s cubic-bezier(.2, .7, .2, 1) backwards; }
   }
-  html:not(.js) .hero { align-items: flex-start; padding-top: 27svh; }
-  html:not(.js) .hero { position: relative; }
   /* leichte Neigung zum Zeiger (JS setzt --rx/--ry) */
   [data-tilt] { transform: perspective(1100px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) scale(var(--s, 1)); transition: transform .2s cubic-bezier(.2, .7, .2, 1); }
   [data-tilt].is-leaving { transition-duration: .6s; }
@@ -152,4 +142,3 @@
 }
 
 @keyframes fade-blur { from { opacity: 0; filter: blur(12px); transform: translateY(1.75rem); } to { opacity: 1; filter: none; transform: none; } }
-@keyframes fade-up { from { opacity: 0; transform: translateY(1.75rem); } to { opacity: 1; transform: none; } }

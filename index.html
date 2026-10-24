@@ -20,7 +20,7 @@
       <!--
         Vier Abschnitte, jeder mindestens eine Fensterhöhe (min-h-svh): 1. Hero (Foto, später Video), 2. "Let them compete",
         3. Features (Bühne bleibt stehen, Phone und Text wechseln beim Scrollen), 4. Call to Action mit Footer.
-        Das Phone steht über Hero und Abschnitt 2 und ragt unten ins Foto hinein.
+        Beim Laden steht nur das Foto, dann fährt das Phone hoch und der Titel kommt rein; danach scrollt alles normal.
       -->
       <div class="hero-all relative">
         <div class="header-rail"><header class="site-header sticky top-0 z-20 grid h-22 grid-cols-[1fr_auto] md:grid-cols-[1fr_auto_1fr] items-center px-4 sm:px-6 2xl:px-[calc((100%-1280px)/2+24px)]" data-header>
@@ -33,7 +33,7 @@
         </header></div>
 
         <div class="hero-run">
-        <section class="hero sticky top-0 z-[2] flex h-svh items-center justify-center" aria-labelledby="intro-title">
+        <section class="hero relative flex h-svh justify-center" aria-labelledby="intro-title">
           <div class="hero__bg absolute inset-0" aria-hidden="true"></div>
           <h2 id="intro-title" class="title hero__title relative mx-auto px-4 text-center font-bold text-white text-balance lg:text-wrap lg:max-w-[14.5em] text-[40px] sm:text-[45px] md:text-[50px] lg:text-[60px] 2xl:text-[70px] leading-[1.2]" data-i18n="intro.title">
             Your phone is full of photos that look the same?
@@ -121,7 +121,7 @@
         <footer class="site-footer absolute inset-x-0 bottom-0 grid grid-cols-3 items-end gap-y-4 px-4 py-6 text-left sm:px-6">
           <div class="col-start-1 row-start-2 lg:row-start-1 flex flex-col items-start gap-2">
             <div class="lang">
-              <button type="button" class="lang__current text-[13px]/[18px] font-semibold underline" aria-haspopup="true" aria-expanded="false" data-lang-current>English</button>
+              <button type="button" class="lang__current text-[13px]/[18px] font-semibold" aria-haspopup="true" aria-expanded="false" data-lang-current>English</button>
               <ul class="lang__list text-[13px]/[18px] font-semibold" hidden data-lang-list></ul>
             </div>
             <p class="text-[11px]/[13px] font-normal" data-i18n="footer.copy">© Favopic, 2026. All rights reserved.</p>
