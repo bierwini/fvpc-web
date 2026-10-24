@@ -78,18 +78,21 @@
   /* ---------- Phone-Mockup (Figma: PhotosView + Bezel): feste Größe, skaliert nie mit dem Fenster ---------- */
   /* Der Hero läuft mit dem Scrollen (JS setzt --ty für den Titel, --sy/--sx für das Phone): Titel startet in der Mitte, das Phone
      kommt von unten, neigt sich zurück und verlässt das Bild schneller als die Seite (Parallax). */
-  .phone { position: absolute; z-index: 1; top: calc(100svh + 60px); left: 0; right: 0; margin-inline: auto; height: 643.55px; width: calc(643.55px * 675 / 1380);
+  .phone { position: absolute; z-index: 1; top: var(--phone-top); left: 0; right: 0; margin-inline: auto; height: 643.55px; width: calc(643.55px * 675 / 1380);
     transform: translateY(var(--sy, 0px)) perspective(1100px) rotateX(var(--sx, 0deg)); will-change: transform; }
   .phone__inner { position: absolute; inset: 0; }
-  .hero__title { transform: translateY(var(--ty, 0px)); opacity: var(--to, 1); }
+  .hero__title { transform: translateY(var(--ty, 0px)); opacity: var(--to, 1); filter: blur(var(--tb, 0px)); }
+  /* Läufer: Das Hero bleibt 1,6 Fensterhöhen lang stehen (Titel, Phone, Neigung per Scroll), danach scrollt alles zusammen weg */
+  html.js .hero-run { height: 260svh; }
   /* Ohne JavaScript oder mit reduzierter Bewegung: statisches Layout, das Phone ragt unten ins Foto */
   @media (prefers-reduced-motion: reduce) {
-    .hero { align-items: flex-start; padding-top: 27svh; }
-    .phone { top: var(--phone-top); transform: none; }
+    .hero { position: relative; align-items: flex-start; padding-top: 27svh; }
+    html.js .hero-run { height: auto; }
+    .phone { transform: none; }
     .hero__title { transform: none; opacity: 1; }
   }
   html:not(.js) .hero { align-items: flex-start; padding-top: 27svh; }
-  html:not(.js) .phone { top: var(--phone-top); }
+  html:not(.js) .hero { position: relative; }
   /* leichte Neigung zum Zeiger (JS setzt --rx/--ry) */
   [data-tilt] { transform: perspective(1100px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) scale(var(--s, 1)); transition: transform .2s cubic-bezier(.2, .7, .2, 1); }
   [data-tilt].is-leaving { transition-duration: .6s; }
@@ -112,10 +115,11 @@
   /* Phone-Screenshot: 634 px hoch wie im Figma, nur auf niedrigen Fenstern kleiner, damit der Abschnitt nie über die Fensterhöhe wächst */
   .device-shot { position: relative; flex: none; height: min(634px, calc(100svh - var(--pad-top) - 62px - var(--gap) - var(--pad-bottom))); aspect-ratio: 1404 / 1902; }
   .device-shot::before { content: ''; position: absolute; left: 50%; top: 50%; height: 91.5%; aspect-ratio: 1; transform: translate(-50%, -50%); background: url('./img/feature-glow.webp') center / contain no-repeat; }
-  .device-shot img { position: relative; width: 100%; height: 100%; object-fit: contain; }
+  .device-shot > img { position: relative; width: 100%; height: 100%; object-fit: contain; }
+  .mock { position: relative; height: 100%; aspect-ratio: 675 / 1380; margin-inline: auto; }
   @media (prefers-reduced-motion: reduce) { .device-shot::before { display: none; } }
-  /* Mit JavaScript: Bühne bleibt 4 x 60 svh lang stehen, JS blendet Text und Phone je nach Scrollposition über (--o, --b, --y) */
-  html.js .features { height: calc(100svh + 4 * 60svh); }
+  /* Mit JavaScript: Bühne bleibt n x 60 svh lang stehen, JS blendet Text und Phone je nach Scrollposition über (--o, --b, --y) */
+  html.js .features { height: calc(100svh + var(--steps, 5) * 60svh); }
   html.js .features__stage { position: sticky; top: 0; height: 100svh; display: grid; }
   html.js .feature { grid-area: 1 / 1; --o: 0; }
   html.js .feature:first-child { --o: 1; }
