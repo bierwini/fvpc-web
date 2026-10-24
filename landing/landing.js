@@ -46,24 +46,14 @@ if (header && photo) {
 /* ---------- Pointer-Animationen (nur mit echter Maus, ohne reduzierte Bewegung) ---------- */
 const live = () => matchMedia('(hover: hover) and (pointer: fine)').matches && !matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-// Buttons bleiben stehen, der Zoom wächst von der Mausposition aus.
-document.querySelectorAll('.btn').forEach((el) => {
-  el.addEventListener('pointermove', (e) => {
-    if (!live()) return;
-    const r = el.getBoundingClientRect();
-    el.style.setProperty('--ox', `${e.clientX - r.left}px`);
-    el.style.setProperty('--oy', `${e.clientY - r.top}px`);
-  });
-});
-
-// Hero-Phone neigt sich leicht zum Zeiger (max. 3,5°).
+// Hero-Phone neigt sich dem Zeiger entgegen (max. 3,5°): die Seite, auf der die Maus ist, kommt näher.
 document.querySelectorAll('[data-tilt]').forEach((el) => {
   el.addEventListener('pointermove', (e) => {
     if (!live()) return;
     const r = el.getBoundingClientRect();
     el.classList.remove('is-leaving');
-    el.style.setProperty('--ry', `${((e.clientX - r.left) / r.width - 0.5) * 7}deg`);
-    el.style.setProperty('--rx', `${-((e.clientY - r.top) / r.height - 0.5) * 7}deg`);
+    el.style.setProperty('--ry', `${-((e.clientX - r.left) / r.width - 0.5) * 7}deg`);
+    el.style.setProperty('--rx', `${((e.clientY - r.top) / r.height - 0.5) * 7}deg`);
   });
   el.addEventListener('pointerleave', () => {
     el.classList.add('is-leaving');

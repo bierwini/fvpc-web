@@ -20,7 +20,7 @@
 @layer components {
   /* ---------- Header: klebt oben, solange Hero und "Let them compete" im Bild sind; weiß auf dem Foto, danach dunkel ---------- */
   .site-header { color: #fff; background: linear-gradient(rgb(0 0 0 / .4), rgb(0 0 0 / 0)); transition: color .2s; }
-  .site-header .btn:not(.btn--accent) { color: inherit; }
+  .site-header .btn:not(.btn--accent):not(.btn--light) { color: inherit; }
   .site-header.is-light { color: var(--color-label); background: linear-gradient(rgb(255 255 255 / .92) 60%, rgb(255 255 255 / 0)); }
   .site-header--page { position: relative; height: 4.5rem; padding: 0 1rem; display: flex; align-items: center; background: none; color: inherit; }
   .logo { line-height: 1; transition: opacity .2s; }
@@ -29,27 +29,29 @@
 
   /* ---------- Liquid-Glass-Button (Figma: Button - Liquid Glass - Text) ---------- */
   .btn {
-    position: relative; isolation: isolate; display: inline-flex; align-items: center; justify-content: center; min-height: 2.5rem; padding: 0 1.5rem;
-    line-height: 1; white-space: nowrap; cursor: pointer; border: 0; border-radius: 999px; color: var(--color-label-vibrant);
+    position: relative; isolation: isolate; display: inline-flex; align-items: center; justify-content: center; padding: 12px 24px;
+    font-size: 17px; line-height: 22px; font-weight: 500; white-space: nowrap; cursor: pointer; border: 0; border-radius: 999px; color: var(--color-label-vibrant);
     background: var(--glass-fill); box-shadow: var(--shadow-glass);
     -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.8); backdrop-filter: blur(var(--glass-blur)) saturate(1.8);
-    transition: transform .25s cubic-bezier(.2, .7, .2, 1), filter .2s, box-shadow .25s; transform-origin: var(--ox, 50%) var(--oy, 50%);
+    transition: box-shadow .2s, transform .2s, filter .2s;
   }
-  /* Glanzkante: 1 px Verlauf rund um den Button (Maske schneidet die Mitte aus) */
+  /* Glanzkante: 1 px Rand (Maske schneidet die Mitte aus), darüber läuft beim Hover ein heller Streifen entlang */
   .btn::after {
     content: ''; position: absolute; inset: 0; border-radius: inherit; padding: 1px; pointer-events: none;
-    background: linear-gradient(135deg, rgb(255 255 255 / .9), rgb(255 255 255 / 0) 40%, rgb(255 255 255 / 0) 60%, rgb(255 255 255 / .6));
+    background: linear-gradient(115deg, rgb(255 255 255 / .35) 35%, rgb(255 255 255 / 1) 50%, rgb(255 255 255 / .35) 65%) 100% 0 / 300% 100% no-repeat;
     -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor;
     mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
   }
   @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) { .btn:not(.btn--accent):not(.btn--prominent) { background: rgb(255 255 255 / .85); } }
   .btn--accent { color: #fff; background: var(--color-accent); box-shadow: 0 2px 12px rgb(0 136 255 / .35), inset 0 1px 0 rgb(255 255 255 / .35); }
   .btn--prominent { color: #fff; background: url('./img/rainbow.jpg') center / cover; box-shadow: 0 2px 12px rgb(0 0 0 / .15); }
-  /* Hover: Der Button bleibt stehen und zoomt von der Mausposition aus (JS setzt --ox/--oy). */
-  @media (hover: hover) { .btn:hover { transform: scale(1.06); filter: brightness(1.06); box-shadow: 0 6px 20px rgb(0 0 0 / .18), inset 0 1px 0 rgb(255 255 255 / .7); } }
-  .btn:active { transform: scale(.97); filter: brightness(.96); }
+  .btn--light { color: #222; background: rgb(255 255 255 / .72); }
+  .site-header .btn.btn--light { color: #222; }
+  /* Hover: heller Streifen läuft einmal über den Rand. Drücken: Schatten verschwindet, der Button sitzt "tiefer". */
+  @media (hover: hover) { .btn:hover::after { animation: btn-shine .9s ease-out; } }
+  .btn:active { transform: translateY(1px); filter: brightness(.97); box-shadow: inset 0 2px 6px rgb(0 0 0 / .22); }
   .btn:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
-  @media (prefers-reduced-motion: reduce) { .btn { transition: none; } .btn:hover, .btn:active { transform: none; } }
+  @media (prefers-reduced-motion: reduce) { .btn:hover::after { animation: none; } .btn { transition: none; } .btn:active { transform: none; } }
   .logo:hover, .site-footer a:hover, .lang button:hover { opacity: .65; }
   .site-footer a, .lang button { transition: opacity .2s; }
 
@@ -60,8 +62,6 @@
     --title-h: 9.5rem;
     /* Phone-Oberkante: ragt 376 px ins Foto (Figma bei 834 px Höhe), mindestens 3,75 rem unter dem Titel */
     --phone-top: max(calc(27svh + var(--title-h) + 3.75rem), calc(100svh - 392px));
-    /* Wie weit das Phone unter das Foto in den zweiten Abschnitt ragt */
-    --over: max(0px, calc(var(--phone-top) + 643.55px - 100svh));
   }
   @media (min-width: 40rem) { .hero-all { --title-h: 6.75rem; } }
   @media (min-width: 48rem) { .hero-all { --title-h: 7.5rem; } }
@@ -73,8 +73,8 @@
   @media (prefers-reduced-motion: reduce) { .hero__bg { display: none; } .title { color: var(--color-label); } }
   .title { text-shadow: 0 5px 25px rgb(0 0 0 / .25); }
   @media (prefers-reduced-motion: reduce) { .title { text-shadow: none; } }
-  /* Figma: 143 px unter dem Phone, danach Luft bis zum nächsten Abschnitt */
-  .compete { padding-top: calc(var(--over) + 143px); padding-bottom: 4rem; }
+  /* Der Text steht immer in der Fenstermitte; auf niedrigen Fenstern (unter 45rem) entfällt das Phone, damit es nicht in den Text ragt. */
+  @media (max-height: 45rem) { .phone { display: none; } }
 
   /* Fade-in-up beim Laden, danach bleibt alles stehen */
   .fade-up { animation: fade-up .9s cubic-bezier(.2, .7, .2, 1) .15s backwards; }
@@ -99,10 +99,11 @@
 
   /* ---------- Features: eine Bühne, Schritte wechseln beim Scrollen ---------- */
   .features { position: relative; overflow-x: clip; }
-  .feature { display: flex; flex-direction: column; align-items: center; gap: 35px; height: 100svh; padding: max(60px, calc((100svh - 734px) / 2)) 1rem 0; text-align: center; }
+  .feature { --pad-top: clamp(1rem, 7svh, 60px); --gap: clamp(.75rem, 4svh, 35px); --pad-bottom: clamp(1rem, 5svh, 40px);
+    display: flex; flex-direction: column; align-items: center; gap: var(--gap); height: 100svh; padding: var(--pad-top) 1rem 0; text-align: center; }
   .feature__text { position: relative; z-index: 3; display: flex; flex-direction: column; align-items: center; color: #1a1a1a; }
   /* Phone-Screenshot: 634 px hoch wie im Figma, nur auf niedrigen Fenstern kleiner, damit der Abschnitt nie über die Fensterhöhe wächst */
-  .device-shot { position: relative; flex: none; height: min(634px, calc(100svh - 197px)); aspect-ratio: 1404 / 1902; }
+  .device-shot { position: relative; flex: none; height: min(634px, calc(100svh - var(--pad-top) - 62px - var(--gap) - var(--pad-bottom))); aspect-ratio: 1404 / 1902; }
   .device-shot::before { content: ''; position: absolute; left: 50%; top: 50%; height: 91.5%; aspect-ratio: 1; transform: translate(-50%, -50%); background: url('./img/feature-glow.webp') center / contain no-repeat; }
   .device-shot img { position: relative; width: 100%; height: 100%; object-fit: contain; }
   @media (prefers-reduced-motion: reduce) { .device-shot::before { display: none; } }
@@ -140,4 +141,5 @@
   .legal p { margin: 0 0 1em; }
 }
 
+@keyframes btn-shine { from { background-position: 100% 0; } to { background-position: 0 0; } }
 @keyframes fade-up { from { opacity: 0; transform: translateY(1.75rem); } to { opacity: 1; transform: none; } }
