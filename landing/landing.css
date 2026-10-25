@@ -128,11 +128,11 @@
   @media (prefers-reduced-motion: reduce) { .device-shot::before { display: none; } }
   /* Mit JavaScript: Bühne bleibt n x 60 svh lang stehen, JS blendet Text und Phone je nach Scrollposition über (--o, --b, --y) */
   html.js .features { height: calc(100svh + var(--steps, 5) * 60svh); }
-  html.js .features__stage { position: sticky; top: 0; height: 100svh; display: grid; background: var(--color-background); }
+  html.js .features__stage { position: sticky; top: 0; height: 100svh; display: grid; }
   html.js .feature { grid-area: 1 / 1; --o: 0; }
   html.js .feature:first-child { --o: 1; }
   html.js .feature__text { opacity: var(--o); filter: blur(var(--b, 0px)); transform: translateY(var(--y, 0px)); }
-  html.js .device-shot { opacity: var(--o); transform: translateY(var(--y, 0px)); }
+  html.js .device-shot { opacity: var(--o); transform: translateY(var(--dy, 0px)); }
 
   /* "How?" mit Glas-Popover, mittig unter dem Link */
   .tip { position: relative; display: inline-block; }
