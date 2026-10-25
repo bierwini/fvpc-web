@@ -6,16 +6,14 @@
     <title>Imprint – Favopic</title>
     <link rel="stylesheet" href="../landing/landing.css" />
   </head>
-  <body>
-    <header class="site-header is-light sticky top-0 z-20 grid h-22 grid-cols-[1fr_auto] md:grid-cols-[1fr_auto_1fr] items-center px-4 sm:px-6 2xl:px-[calc((100%-1280px)/2+24px)]">
-      <a class="logo inline-flex items-center gap-[7px] justify-self-start text-wordmark font-bold" href="../" aria-label="Favopic – home">
+  <body class="flex min-h-svh flex-col">
+    <header class="site-header is-light sticky top-0 z-20 flex h-22 items-center px-4 sm:px-6 2xl:px-[calc((100%-1280px)/2+24px)]">
+      <a class="logo inline-flex items-center gap-[7px] text-wordmark font-bold" href="../" aria-label="Favopic – home">
         <img class="size-10 rounded-[22%]" src="../landing/img/app-icon.png" alt="" width="256" height="256" />
         <span>Favopic</span>
       </a>
-      <a class="btn" href="https://apps.apple.com/" target="_blank" rel="noopener">Download App</a>
-      <a class="btn btn--light hidden md:inline-flex justify-self-end" href="../app/">Try Web</a>
     </header>
-    <main class="legal text-body">
+    <main class="legal w-full flex-1 text-body">
       <h1>Imprint</h1>
       <p><em>Placeholder text. Replace with the real legal text before publishing.</em></p>
       <p>
@@ -34,5 +32,18 @@
         architecto beatae vitae dicta sunt explicabo.
       </p>
     </main>
+    <footer class="site-footer grid grid-cols-3 items-end gap-y-4 px-4 py-6 text-left sm:px-6">
+      <p class="col-start-1 row-start-2 lg:row-start-1 text-[11px]/[13px] font-normal">© Favopic, 2026. All rights reserved.</p>
+      <div class="col-start-2 row-start-2 lg:row-start-1 flex items-center justify-self-center gap-6">
+        <a href="https://www.instagram.com/" target="_blank" rel="noopener" aria-label="Instagram"><img class="size-[18px]" src="../landing/img/icon-instagram.svg" alt="" width="18" height="18" /></a>
+        <a href="https://www.tiktok.com/" target="_blank" rel="noopener" aria-label="TikTok"><img class="size-[18px]" src="../landing/img/icon-tiktok.svg" alt="" width="18" height="18" /></a>
+      </div>
+      <ul class="col-start-3 row-start-1 row-span-2 lg:row-span-1 flex flex-col items-end gap-0 justify-self-end text-[13px]/[18px] font-semibold lg:flex-row lg:gap-4">
+        <li><a href="../contact/">Contact</a></li>
+        <li><a href="../terms/">Terms</a></li>
+        <li><a href="../privacy/">Privacy</a></li>
+        <li><a href="../imprint/">Imprint</a></li>
+      </ul>
+    </footer>
   </body>
 </html>

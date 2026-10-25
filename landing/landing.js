@@ -96,9 +96,20 @@ const ctaItems = [...document.querySelectorAll('.cta-item')];
 const lastShot = articles[articles.length - 1]?.querySelector('.device-shot');
 const ctaDone = new Set();
 const footer = document.querySelector('.site-footer');
+const ctaStage = document.querySelector('.cta__stage');
+let lastS = scrollY;
+let drop = 0; // so weit ist die CTA beim Hochscrollen mit dem Footer nach unten gefahren
 function updateCta() {
   if (!cta || !lastShot || calm.matches) return;
-  cta.style.setProperty('--footer-h', `${footer.offsetHeight}px`);
+  const fh = footer.offsetHeight;
+  cta.style.setProperty('--footer-h', `${fh}px`);
+  // Beim Hochscrollen fahren Footer und CTA zusammen nach unten.
+  const ds = scrollY - lastS;
+  lastS = scrollY;
+  const shown = scrollY - (document.documentElement.scrollHeight - innerHeight - fh); // sichtbare Footer-Höhe
+  if (ds < 0) { if (shown > 0) drop = Math.min(fh, drop - ds); } // danach scrollt die ganze Section ohnehin mit der Seite
+  else drop = Math.max(0, drop - ds);
+  ctaStage.style.transform = drop ? `translateY(${drop}px)` : '';
   const t = 50 - lastShot.getBoundingClientRect().bottom; // > 0: das Phone ist weniger als 50 px vor dem Ausgang
   ctaItems.forEach((el, i) => {
     const raw = ease(span(t - 18 * i, 0, 45));
