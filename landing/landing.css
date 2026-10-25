@@ -55,7 +55,7 @@
 
   /* ---------- Hero + "Let them compete": gemeinsamer Raster-Hintergrund, das Phone steht über beiden ---------- */
   .hero-all {
-    background: var(--color-background) url('./img/grid.svg') 0 0 / 256px 256px fixed; /* Raster steht fest, Inhalt scrollt darüber */
+    background: var(--color-background) url('./img/grid.svg') 0 0 / 256px 256px;
     /* Höhe des Titels (zwei Zeilen) je Breakpoint, damit das Phone nie in den Titel ragt */
     --title-h: 9.5rem;
     /* Phone-Oberkante: ragt 376 px ins Foto (Figma bei 834 px Höhe), mindestens 3,75 rem unter dem Titel, dazu 24 px tiefer */
@@ -74,15 +74,18 @@
 
   /* "Let them compete": Bühne bleibt eine Weile stehen (JS setzt --o, --b, --y für Ein- und Ausblenden) */
   .compete__stage { position: relative; }
+  .cta { padding-bottom: var(--footer-h, 5.25rem); }
   .compete__text { opacity: var(--o, 1); filter: blur(var(--b, 0px)); transform: translateY(var(--y, 0px)); }
   @media (prefers-reduced-motion: no-preference) {
     html.js .compete { height: 145svh; }
     html.js .compete__stage { position: sticky; top: 0; height: 100svh; min-height: 0; }
-    /* Weiße Fläche über dem festen Raster (JS setzt --co am .hero-all), unter dem Text */
-    html.js .hero-all { isolation: isolate; }
-    html.js .hero-all::after { content: ''; position: fixed; inset: 0; z-index: -1; pointer-events: none; background: var(--color-background); opacity: var(--co, 0); }
-    html.js .features { margin-top: -70svh; }
+    /* Das Raster steht fest im Fenster (eigene Fläche statt Hintergrund, damit es nicht am Ende des Abschnitts endet), JS blendet es über --co aus */
+    html.js .hero-all { isolation: isolate; background-image: none; }
+    html.js .hero-all::before { content: ''; position: fixed; inset: 0; z-index: -1; pointer-events: none; background: url('./img/grid.svg') 0 0 / 256px 256px; opacity: calc(1 - var(--co, 0)); }
+    html.js .features { margin-top: calc(-50svh - 35px); }
     /* Call to Action: Überschrift, Button und Badge kommen nacheinander (JS setzt --o, --b, --y) */
+    /* Die Bühne steht, der Footer scrollt von unten ein (JS setzt --footer-h) */
+    html.js .cta__stage { position: sticky; top: 0; }
     html.js .cta-item { opacity: var(--o, 1); filter: blur(var(--b, 0px)); transform: translateY(var(--y, 0px)); }
   }
 
@@ -126,8 +129,8 @@
   .device-shot > img { position: relative; width: 100%; height: 100%; object-fit: contain; }
   .mock { position: relative; height: 100%; aspect-ratio: 675 / 1380; margin-inline: auto; }
   @media (prefers-reduced-motion: reduce) { .device-shot::before { display: none; } }
-  /* Mit JavaScript: Bühne bleibt n x 60 svh lang stehen, JS blendet Text und Phone je nach Scrollposition über (--o, --b, --y) */
-  html.js .features { height: calc(100svh + var(--steps, 5) * 60svh); }
+  /* Mit JavaScript: Bühne bleibt n x 75 svh lang stehen, JS blendet Text und Phone je nach Scrollposition über (--o, --b, --y) */
+  html.js .features { height: calc(100svh + var(--steps, 5) * 75svh); }
   html.js .features__stage { position: sticky; top: 0; height: 100svh; display: grid; }
   html.js .feature { grid-area: 1 / 1; --o: 0; --to: 0; }
   html.js .feature:first-child { --o: 1; --to: 1; }
