@@ -91,13 +91,22 @@ function updateCompete(s, H) {
   if (header) header.style.transform = `translateY(${-up * hh * 1.05}px)`;
 }
 
-// Call to Action: Wird einmal ausgelöst, wenn das Phone des letzten Features fast draußen ist (wie der Hero-Titel am Anfang), und bleibt dann stehen.
+// Call to Action: Überschrift, Button, Badge und Footer blenden nacheinander ein, wenn das Phone des letzten Features fast draußen ist.
+// Was einmal da ist, bleibt (auch beim Zurückscrollen).
 const cta = document.querySelector('#get-the-app');
-let ctaShown = false;
+const ctaItems = [...document.querySelectorAll('.cta-item'), document.querySelector('.site-footer')];
+const ctaSeen = new Map();
 function updateCta() {
-  if (ctaShown || !cta || cta.getBoundingClientRect().top > 150) return;
-  ctaShown = true;
-  cta.classList.add('is-shown');
+  if (!cta || calm.matches) return;
+  const top = cta.getBoundingClientRect().top; // 0 = Abschnitt füllt das Fenster
+  ctaItems.forEach((el, i) => {
+    const k = Math.max(ctaSeen.get(el) ?? 0, ease(span(150 - 25 * i - top, 0, 60)));
+    ctaSeen.set(el, k);
+    el.style.setProperty('--o', String(k));
+    el.style.setProperty('--b', `${4 * (1 - k)}px`);
+    el.style.setProperty('--y', `${10 * (1 - k)}px`);
+    el.style.pointerEvents = k > 0.5 ? '' : 'none';
+  });
 }
 
 // Features: Die Bühne steht schon, während "Let them compete" hinausgeht. Das erste Feature startet dabei (Text von unten, Phone nur ein), danach überblenden die
@@ -110,7 +119,7 @@ function updateFeatures() {
   const enter = span(u, 0, 0.5);
   const p = Math.min(n - 1, Math.max(0, u - 0.5)); // 0..n-1, ganze Zahl = Feature steht
   const i0 = Math.min(n - 2, Math.floor(p));
-  const x = clamp01((p - i0 - 0.15) / 0.7); // Überblendung im mittleren Teil jedes Schritts
+  const x = clamp01((p - i0 - 0.3) / 0.4); // kurze Überblendung, davor und danach steht das Feature
   // Text: Der alte blendet in der ersten Hälfte aus (nach oben), der neue in der zweiten ein (von unten), so überdecken sie sich kaum.
   // Phone: echter Crossfade an Ort und Stelle. Beide mit kleinem Blur.
   const out = span(x, 0, 0.6);

@@ -39,6 +39,7 @@
     transition: background-color .2s ease, box-shadow .2s ease;
   }
   .btn--light { color: #222; background: #fff; }
+  .site-header.is-light .btn--light { box-shadow: inset 0 0 0 1px #000; } /* auf weißem Grund sichtbar */
   .btn--rainbow { background: url('./img/rainbow.jpg') center / cover; }
   @media (hover: hover) {
     .btn:hover { background: color-mix(in srgb, var(--color-accent) 88%, #000); }
@@ -81,11 +82,10 @@
     /* Das Raster steht fest im Fenster (eigene Fläche statt Hintergrund, damit es nicht am Ende des Abschnitts endet), JS blendet es über --co aus */
     html.js .hero-all { isolation: isolate; background-image: none; }
     html.js .hero-all::before { content: ''; position: fixed; inset: 0; z-index: -1; pointer-events: none; background: url('./img/grid.svg') 0 0 / 256px 256px; opacity: calc(1 - var(--co, 0)); }
-    html.js .features { margin-top: -65svh; }
+    html.js .features { margin-top: -50svh; }
     /* Call to Action: Überschrift, Button und Badge kommen nacheinander (JS setzt --o, --b, --y) */
-    /* Der Call to Action wird ausgelöst (JS setzt .is-shown, wenn das Phone fast draußen ist) und bleibt dann stehen: Überschrift, Button, Badge, Footer nacheinander */
-    html.js .cta-item, html.js .site-footer { opacity: 0; }
-    html.js .cta.is-shown .cta-item, html.js .cta.is-shown .site-footer { animation: fade-blur-sm .8s cubic-bezier(.2, .7, .2, 1) calc(var(--i, 0) * .15s) both; }
+    /* Call to Action: Überschrift, Button, Badge und Footer blenden nacheinander ein, wenn das Phone fast draußen ist (JS setzt --o, --b, --y per Scroll) und bleiben dann stehen */
+    html.js .cta-item, html.js .site-footer { opacity: var(--o, 0); filter: blur(var(--b, 0px)); transform: translateY(var(--y, 0px)); }
   }
 
   /* ---------- Phone-Mockup (Figma: PhotosView + Bezel): feste Größe, skaliert nie mit dem Fenster ---------- */
@@ -162,5 +162,4 @@
   .legal p { margin: 0 0 1em; }
 }
 
-@keyframes fade-blur-sm { from { opacity: 0; filter: blur(4px); transform: translateY(.75rem); } to { opacity: 1; filter: none; transform: none; } }
 @keyframes fade-blur { from { opacity: 0; filter: blur(12px); transform: translateY(1.75rem); } to { opacity: 1; filter: none; transform: none; } }
