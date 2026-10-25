@@ -91,24 +91,13 @@ function updateCompete(s, H) {
   if (header) header.style.transform = `translateY(${-up * hh * 1.05}px)`;
 }
 
-// Call to Action: Überschrift, Button und Badge kommen kurz nacheinander, wenn das Phone des letzten Features fast draußen ist.
-// Sobald sie einmal da sind, bleiben sie (auch beim Zurückscrollen).
+// Call to Action: Wird einmal ausgelöst, wenn das Phone des letzten Features fast draußen ist (wie der Hero-Titel am Anfang), und bleibt dann stehen.
 const cta = document.querySelector('#get-the-app');
-const ctaItems = [...document.querySelectorAll('.cta-item')];
-const footer = document.querySelector('.site-footer');
-const ctaSeen = new Map();
+let ctaShown = false;
 function updateCta() {
-  if (!cta || calm.matches) return;
-  cta.style.setProperty('--footer-h', `${footer.offsetHeight}px`);
-  const top = cta.getBoundingClientRect().top; // 0 = Bühne steht
-  ctaItems.forEach((el, i) => {
-    const k = Math.max(ctaSeen.get(el) ?? 0, ease(span(150 - 25 * i - top, 0, 60)));
-    ctaSeen.set(el, k);
-    el.style.setProperty('--o', String(k));
-    el.style.setProperty('--b', `${3 * (1 - k)}px`);
-    el.style.setProperty('--y', `${10 * (1 - k)}px`);
-    el.style.pointerEvents = k > 0.5 ? '' : 'none';
-  });
+  if (ctaShown || !cta || cta.getBoundingClientRect().top > 150) return;
+  ctaShown = true;
+  cta.classList.add('is-shown');
 }
 
 // Features: Die Bühne steht schon, während "Let them compete" hinausgeht. Das erste Feature startet dabei (Text von unten, Phone nur ein), danach überblenden die
