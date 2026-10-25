@@ -81,7 +81,7 @@ function updateCompete(s, H) {
   const yc = H / 2 - Math.max(0, s - 1.45 * H); // Mitte des Textes im Fenster, sobald die Haltezeit vorbei ist
   const near = span(200 - yc, 0, 110); // Blur, kurz bevor der Text den Header erreicht
   const gone = span(200 - yc, 30, 160);
-  const up = clamp01((100 - yc) / 100); // Header und Raster gehen mit dem Text raus
+  const up = clamp01((240 - yc) / 120); // Header und Raster gehen schon vor dem Blur mit dem Text raus
   competeText.style.setProperty('--o', String(into * (1 - gone)));
   competeText.style.setProperty('--b', `${8 * (1 - into) + 8 * near}px`);
   competeText.style.setProperty('--y', `${12 * (1 - into)}px`);
@@ -89,21 +89,20 @@ function updateCompete(s, H) {
   if (header) header.style.transform = `translateY(${-up * header.offsetHeight * 1.05}px)`;
 }
 
-// Call to Action: Überschrift, Button und Badge kommen nacheinander, je weiter der Abschnitt ins Bild scrollt
-const cta = document.querySelector('#get-the-app');
+// Call to Action: Überschrift, Button und Badge kommen nacheinander (je nach Position im Fenster), erst wenn das Phone fast draußen ist
 const ctaItems = [...document.querySelectorAll('.cta-item')];
 function updateCta(H) {
-  if (!cta || calm.matches) return;
-  const r = clamp01((H - cta.getBoundingClientRect().top) / H);
-  ctaItems.forEach((el, i) => {
-    const k = ease(span(r, 0.35 + 0.18 * i, 0.7 + 0.15 * i));
+  if (calm.matches) return;
+  ctaItems.forEach((el) => {
+    const r = el.getBoundingClientRect();
+    const k = ease((0.72 * H - (r.top + r.height / 2)) / 110);
     el.style.setProperty('--o', String(k));
-    el.style.setProperty('--b', `${6 * (1 - k)}px`);
-    el.style.setProperty('--y', `${14 * (1 - k)}px`);
+    el.style.setProperty('--b', `${4 * (1 - k)}px`);
+    el.style.setProperty('--y', `${12 * (1 - k)}px`);
   });
 }
 
-// Features: Die Bühne steht, sobald "Let them compete" weg ist. Das erste Feature (Text und Phone) kommt von unten, danach überblenden die
+// Features: Die Bühne steht schon, während "Let them compete" hinausgeht. Das erste Feature startet dabei (Text von unten, Phone nur ein), danach überblenden die
 // Schritte ineinander (Crossfade mit kleinem Blur, nur der Text versetzt sich leicht).
 function updateFeatures() {
   if (!features) return;
@@ -114,17 +113,25 @@ function updateFeatures() {
   const p = Math.min(n - 1, Math.max(0, u - 0.5)); // 0..n-1, ganze Zahl = Feature steht
   const i0 = Math.min(n - 2, Math.floor(p));
   const x = clamp01((p - i0 - 0.3) / 0.4); // Überblendung im mittleren Teil jedes Schritts
+  // Text: Der alte blendet in der ersten Hälfte aus (nach oben), der neue in der zweiten ein (von unten), so überdecken sie sich kaum.
+  // Phone: echter Crossfade an Ort und Stelle. Beide mit kleinem Blur.
+  const out = span(x, 0, 0.6);
+  const inn = span(x, 0.4, 1);
   articles.forEach((a, i) => {
-    let o = i === i0 ? 1 - x : i === i0 + 1 ? x : 0;
-    let b = i === i0 ? 2 * x : i === i0 + 1 ? 2 * (1 - x) : 0; // kleiner Blur nur im Crossfade, kein Versatz
-    let y = i === i0 ? -8 * x : i === i0 + 1 ? 8 * (1 - x) : 0; // nur der Textblock versetzt sich, das Phone bleibt stehen
-    let dy = 0;
-    if (i === 0) { o *= enter; y += 20 * (1 - enter); dy = 20 * (1 - enter); b += 4 * (1 - enter); } // nur der Einstieg kommt von unten (Text und Phone)
-    a.style.setProperty('--o', String(o));
-    a.style.setProperty('--b', calm.matches ? '0px' : `${b}px`);
+    const old = i === i0;
+    const next = i === i0 + 1;
+    let to = old ? 1 - out : next ? inn : 0;
+    let po = old ? 1 - x : next ? x : 0;
+    let tb = old ? 3 * out : next ? 3 * (1 - inn) : 0;
+    let pb = old ? 2 * x : next ? 2 * (1 - x) : 0;
+    let y = old ? -8 * out : next ? 8 * (1 - inn) : 0;
+    if (i === 0) { to *= enter; po *= enter; y += 20 * (1 - enter); tb += 4 * (1 - enter); pb += 4 * (1 - enter); } // Einstieg: Text von unten, Phone nur ein
+    a.style.setProperty('--to', String(to));
+    a.style.setProperty('--o', String(po));
+    a.style.setProperty('--b', calm.matches ? '0px' : `${tb}px`);
+    a.style.setProperty('--pb', calm.matches ? '0px' : `${pb}px`);
     a.style.setProperty('--y', calm.matches ? '0px' : `${y}px`);
-    a.style.setProperty('--dy', calm.matches ? '0px' : `${dy}px`);
-    a.style.pointerEvents = o > 0.5 ? '' : 'none';
+    a.style.pointerEvents = to > 0.5 ? '' : 'none';
   });
 }
 
