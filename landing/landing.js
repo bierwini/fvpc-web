@@ -21,7 +21,7 @@ const header = document.querySelector('[data-header]');
 const photo = document.querySelector('.hero__bg');
 const clamp01 = (v) => Math.min(1, Math.max(0, v));
 let ticking = false;
-features?.style.setProperty('--steps', String(articles.length + 0.5));
+features?.style.setProperty('--steps', String(articles.length));
 
 /* Intro: erst nur das Foto, nach 1,2 s (oder beim ersten Scrollen) fährt das Phone hoch, 1,1 s später kommt der Titel.
    Bis alles an seinem Platz steht, scrollt die Seite nicht; Scrollen startet nur das Intro. */
@@ -69,30 +69,48 @@ function updatePhone(s, H) {
   phone.style.visibility = s >= H ? 'hidden' : '';
 }
 
-// Features: Die Bühne steht schon, während "Let them compete" hinausgeht. Zuerst blendet sie (weiße Fläche, Raster weg, erstes Feature) ein,
-// danach wechselt jeder Schritt per Scroll (Fade mit kleinem Versatz).
+// "Let them compete" blendet ein (Fade-Up mit Blur), bleibt stehen und blendet nach oben aus; dabei scrollt der Header weg und das Raster wird weiß
+const compete = document.querySelector('.compete');
+const competeText = document.querySelector('.compete__text');
+const ease = (v) => 1 - (1 - clamp01(v)) ** 3;
+function updateCompete(s, H) {
+  if (!compete || calm.matches) return;
+  const into = ease(span(s, 0.7 * H, H));
+  const out = ease(span(s, 1.45 * H, 1.8 * H));
+  competeText.style.setProperty('--o', String(into * (1 - out)));
+  competeText.style.setProperty('--b', `${10 * (1 - into) + 10 * out}px`);
+  competeText.style.setProperty('--y', `${28 * (1 - into) - 28 * out}px`);
+  compete.style.setProperty('--co', String(out));
+  if (header) header.style.transform = `translateY(${-out * header.offsetHeight * 1.05}px)`;
+}
+
+// Features: Die Bühne steht, sobald "Let them compete" weg ist. Das erste Feature (Text und Phone) kommt von unten, danach überblenden die
+// Schritte ineinander (Crossfade, kleiner Versatz), ohne Blur.
 function updateFeatures() {
   if (!features) return;
+  const n = articles.length;
   const stepLen = 0.6 * innerHeight;
   const u = -features.getBoundingClientRect().top / stepLen; // Schritte seit die Bühne steht
   const enter = span(u, 0, 0.5);
-  const t = Math.min(articles.length, Math.max(0, u - 0.5)); // 0..n, jeder Schritt hat eine Strecke
-  features.style.setProperty('--so', String(enter));
+  const p = Math.min(n - 1, Math.max(0, u - 0.5)); // 0..n-1, ganze Zahl = Feature steht
+  const i0 = Math.min(n - 2, Math.floor(p));
+  const x = clamp01((p - i0 - 0.3) / 0.4); // Überblendung im mittleren Teil jedes Schritts
   articles.forEach((a, i) => {
-    let d = t - (i + 0.5); // Abstand zur Mitte des Schritts
-    if ((i === 0 && d < 0) || (i === articles.length - 1 && d > 0)) d = 0; // erster steht schon da, letzter bleibt bis zum Ende
-    let g = clamp01((Math.abs(d) - 0.2) / 0.3); // 0 = voll da, 1 = weg
-    if (i === 0) g = Math.max(g, 1 - enter);
-    a.style.setProperty('--o', String(1 - g));
-    a.style.setProperty('--b', calm.matches ? '0px' : `${1 * g}px`);
-    a.style.setProperty('--y', calm.matches ? '0px' : `${(d > 0 ? -10 : 10) * g}px`);
-    a.style.pointerEvents = g > 0.5 ? 'none' : '';
+    let o = i === i0 ? 1 - x : i === i0 + 1 ? x : 0;
+    let y = i === i0 ? -8 * x : i === i0 + 1 ? 8 * (1 - x) : 0;
+    let b = 0;
+    if (i === 0) { o *= enter; y += 36 * (1 - enter); b = 4 * (1 - enter); }
+    a.style.setProperty('--o', String(o));
+    a.style.setProperty('--b', calm.matches ? '0px' : `${b}px`);
+    a.style.setProperty('--y', calm.matches ? '0px' : `${y}px`);
+    a.style.pointerEvents = o > 0.5 ? '' : 'none';
   });
 }
 
 function update() {
   ticking = false;
   updatePhone(scrollY, innerHeight);
+  updateCompete(scrollY, innerHeight);
   updateFeatures();
   // Header: weiß auf dem Foto, dunkel mit weißem Verlauf, sobald das Foto den Header verlassen hat
   if (header && photo) {

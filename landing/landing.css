@@ -19,8 +19,9 @@
 
 @layer components {
   /* ---------- Header: klebt oben, solange Hero und "Let them compete" im Bild sind; weiß auf dem Foto, danach dunkel ---------- */
-  /* Die Schiene endet 88 px vor dem Ende von "Let them compete": Der Header scrollt weg, bevor die Features stehen. */
+  /* Die Schiene endet 88 px vor dem Ende von "Let them compete": Der Header scrollt weg, bevor die Features stehen (mit JS siehe unten). */
   .header-rail { position: absolute; inset: 0 0 auto; height: calc(100% - 5.5rem); pointer-events: none; z-index: 20; }
+  html.js .header-rail { height: 100%; } /* mit Bewegung scrollt JS den Header während des Ausblendens von "Let them compete" nach oben */
   .site-header { pointer-events: auto; color: #fff; background: linear-gradient(rgb(0 0 0 / .4), rgb(0 0 0 / 0)); transition: color .2s; }
   .site-header.is-light { color: var(--color-label); background: linear-gradient(rgb(255 255 255 / .92) 60%, rgb(255 255 255 / 0)); }
   .site-header--page { position: relative; height: 4.5rem; padding: 0 1rem; display: flex; align-items: center; background: none; color: inherit; }
@@ -72,8 +73,18 @@
   @media (prefers-reduced-motion: reduce) { .title { text-shadow: none; } }
 
   @media (prefers-reduced-motion: reduce) { .reveal { animation: none; } }
-  /* Scrollgesteuert: beginnt kurz bevor das Phone den Hero verlässt, und ist fertig, wenn der Text die Fenstermitte erreicht */
-  @supports (animation-timeline: view()) { .reveal { animation: fade-blur linear both; animation-timeline: view(); animation-range: cover 38% cover 50%; } }
+  /* Scrollgesteuert (Find your favorite photos): beginnt, wenn der Text unten ins Bild kommt, und ist fertig, wenn er die Fenstermitte erreicht */
+  @supports (animation-timeline: view()) { .reveal { animation: fade-blur linear both; animation-timeline: view(); animation-range: cover 10% cover 50%; } }
+
+  /* "Let them compete": Bühne bleibt eine Weile stehen (JS setzt --o, --b, --y für Ein- und Ausblenden, --co für das weiße Raster) */
+  .compete__stage { position: relative; }
+  .compete__text { opacity: var(--o, 1); filter: blur(var(--b, 0px)); transform: translateY(var(--y, 0px)); }
+  @media (prefers-reduced-motion: no-preference) {
+    html.js .compete { height: 180svh; }
+    html.js .compete__stage { position: sticky; top: 0; height: 100svh; min-height: 0; }
+    html.js .compete__stage::before { content: ''; position: absolute; inset: 0; z-index: -1; background: var(--color-background); opacity: var(--co, 0); }
+    html.js .features { margin-top: -100svh; }
+  }
 
   /* ---------- Phone-Mockup (Figma: PhotosView + Bezel): feste Größe, skaliert nie mit dem Fenster ---------- */
   /* Intro: erst nur das Foto, dann fährt das Phone hoch (JS setzt .is-phone nach 1,2 s oder beim ersten Scrollen), dann kommt der Titel (.is-title).
@@ -116,15 +127,12 @@
   .mock { position: relative; height: 100%; aspect-ratio: 675 / 1380; margin-inline: auto; }
   @media (prefers-reduced-motion: reduce) { .device-shot::before { display: none; } }
   /* Mit JavaScript: Bühne bleibt n x 60 svh lang stehen, JS blendet Text und Phone je nach Scrollposition über (--o, --b, --y) */
-  /* Die Bühne steht schon, während "Let them compete" hinausgeht (Überlappung 40 svh), und blendet das Raster mit einer weißen Fläche aus */
-  html.js .features { height: calc(100svh + var(--steps, 5.5) * 60svh); margin-top: -40svh; }
-  html.js .header-rail { height: calc(100% - 40svh - 5.5rem); }
-  html.js .features__stage::before { content: ''; position: absolute; inset: 0; z-index: -1; background: var(--color-background); opacity: var(--so, 0); }
-  html.js .features__stage { position: sticky; top: 0; height: 100svh; display: grid; }
+  html.js .features { height: calc(100svh + var(--steps, 5) * 60svh); }
+  html.js .features__stage { position: sticky; top: 0; height: 100svh; display: grid; background: var(--color-background); }
   html.js .feature { grid-area: 1 / 1; --o: 0; }
   html.js .feature:first-child { --o: 1; }
   html.js .feature__text { opacity: var(--o); filter: blur(var(--b, 0px)); transform: translateY(var(--y, 0px)); }
-  html.js .device-shot { opacity: var(--o); }
+  html.js .device-shot { opacity: var(--o); transform: translateY(var(--y, 0px)); }
 
   /* "How?" mit Glas-Popover, mittig unter dem Link */
   .tip { position: relative; display: inline-block; }

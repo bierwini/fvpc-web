@@ -18,7 +18,7 @@
   <body>
     <main>
       <!--
-        Vier Abschnitte, jeder mindestens eine Fensterhöhe (min-h-svh): 1. Hero (Foto, später Video), 2. "Let them compete",
+        Vier Abschnitte, jeder mindestens eine Fensterhöhe (min-h-svh): 1. Hero (Foto, später Video), 2. "Let them compete" (bleibt stehen, blendet nach oben aus),
         3. Features (Bühne bleibt stehen, Phone und Text wechseln beim Scrollen), 4. Call to Action mit Footer.
         Beim Laden steht nur das Foto, dann fährt das Phone hoch und der Titel kommt rein; danach scrollt alles normal.
       -->
@@ -46,10 +46,12 @@
         </section>
         </div>
 
-        <section class="compete flex min-h-svh items-center justify-center px-4" aria-labelledby="hero-title">
-          <h1 id="hero-title" class="reveal text-center font-bold text-balance text-[40px] md:text-[45px] lg:text-[60px] 2xl:text-[70px] leading-[1.2]" data-i18n="hero.title">
-            Let them compete. Keep the best.
-          </h1>
+        <section class="compete" aria-labelledby="hero-title">
+          <div class="compete__stage flex min-h-svh items-center justify-center px-4">
+            <h1 id="hero-title" class="compete__text text-center font-bold text-balance text-[40px] md:text-[45px] lg:text-[60px] 2xl:text-[70px] leading-[1.2]" data-i18n="hero.title">
+              Let them compete. Keep the best.
+            </h1>
+          </div>
         </section>
       </div>
 
@@ -112,8 +114,8 @@
 
       <!-- Call to Action und Footer teilen sich eine Fensterhöhe -->
       <section id="get-the-app" class="relative flex min-h-svh flex-col items-center justify-center gap-6 px-4 pt-14 pb-28 text-center" aria-labelledby="cta-title">
-        <h2 id="cta-title" class="text-balance text-[30px] sm:text-[40px] leading-[1.2] font-bold" data-i18n="cta.title">Find your favorite photos.</h2>
-        <div class="flex flex-col items-center gap-6">
+        <h2 id="cta-title" class="reveal text-balance text-[30px] sm:text-[40px] leading-[1.2] font-bold" data-i18n="cta.title">Find your favorite photos.</h2>
+        <div class="reveal flex flex-col items-center gap-6">
           <a class="btn btn--rainbow" href="https://apps.apple.com/" target="_blank" rel="noopener" data-i18n="btn.download">Download App</a>
           <a class="block h-10 w-[120px]" href="https://apps.apple.com/" target="_blank" rel="noopener" aria-label="Download on the App Store"><img class="size-full" src="./landing/img/app-store-badge.png" alt="" width="120" height="40" /></a>
         </div>
