@@ -3,8 +3,15 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'self'" />
     <title>Contact – Favopic</title>
+    <meta name="description" content="Get in touch with the Favopic team." />
+    <link rel="icon" type="image/png" href="../landing/img/favicon.png" />
+    <link rel="apple-touch-icon" href="../landing/img/apple-touch-icon.png" />
+    <meta name="robots" content="index,follow" />
+    <meta name="theme-color" content="#ffffff" />
     <link rel="stylesheet" href="../landing/landing.css" />
+    <script type="module" src="../landing/contact.js"></script>
   </head>
   <body class="flex min-h-svh flex-col">
     <header class="site-header is-light sticky top-0 z-20 flex h-22 items-center px-4 sm:px-6 2xl:px-[calc((100%-1280px)/2+24px)]">
@@ -13,21 +20,52 @@
         <span>Favopic</span>
       </a>
     </header>
-    <main class="legal w-full flex-1 text-body">
-      <h1>Contact</h1>
-      <p><em>Placeholder. The contact form follows here.</em></p>
+    <main class="legal contact w-full flex-1 text-body">
+      <h1 data-i18n="contact.title">Let's Talk</h1>
+      <p class="contact__sub" data-i18n="contact.sub">Ready to speak with our team</p>
+      <form class="form" id="contact-form" method="post" data-endpoint="" novalidate>
+        <div class="field">
+          <label for="cf-name" data-i18n="contact.name">Name</label>
+          <input id="cf-name" name="name" type="text" autocomplete="name" required maxlength="100" />
+        </div>
+        <div class="field">
+          <label for="cf-email" data-i18n="contact.email">Email</label>
+          <input id="cf-email" name="email" type="email" autocomplete="email" required maxlength="254" />
+        </div>
+        <div class="field">
+          <label for="cf-country" data-i18n="contact.country">Country</label>
+          <select id="cf-country" name="country" autocomplete="country" required></select>
+        </div>
+        <div class="field">
+          <label for="cf-message" data-i18n="contact.message">Message</label>
+          <textarea id="cf-message" name="message" rows="6" required minlength="10" maxlength="3000"></textarea>
+        </div>
+        <div class="hp" aria-hidden="true">
+          <label for="cf-website">Website</label>
+          <input id="cf-website" name="website" type="text" tabindex="-1" autocomplete="off" />
+        </div>
+        <p class="form__note" data-i18n="contact.note">We only use your details to answer your message.</p>
+        <button class="btn" type="submit" data-i18n="contact.send">Send</button>
+        <p class="form__status" role="status" aria-live="polite" hidden></p>
+      </form>
     </main>
     <footer class="site-footer grid grid-cols-3 items-end gap-y-4 px-4 py-6 text-left sm:px-6">
-      <p class="col-start-1 row-start-2 lg:row-start-1 text-[11px]/[13px] font-normal">© Favopic, 2026. All rights reserved.</p>
+      <div class="col-start-1 row-start-2 lg:row-start-1 flex flex-col items-start gap-2">
+      <div class="lang">
+        <button type="button" class="lang__current text-[13px]/[18px] font-semibold" aria-haspopup="true" aria-expanded="false" data-lang-current>English</button>
+        <ul class="lang__list text-[13px]/[18px] font-semibold" hidden data-lang-list></ul>
+      </div>
+      <p class="text-[11px]/[13px] font-normal" data-i18n="footer.copy">© Favopic, 2026. All rights reserved.</p>
+      </div>
       <div class="col-start-2 row-start-2 lg:row-start-1 flex items-center justify-self-center gap-6">
         <a href="https://www.instagram.com/" target="_blank" rel="noopener" aria-label="Instagram"><img class="size-[18px]" src="../landing/img/icon-instagram.svg" alt="" width="18" height="18" /></a>
         <a href="https://www.tiktok.com/" target="_blank" rel="noopener" aria-label="TikTok"><img class="size-[18px]" src="../landing/img/icon-tiktok.svg" alt="" width="18" height="18" /></a>
       </div>
       <ul class="col-start-3 row-start-1 row-span-2 lg:row-span-1 flex flex-col items-end gap-0 justify-self-end text-[13px]/[18px] font-semibold lg:flex-row lg:gap-4">
-        <li><a href="../contact/">Contact</a></li>
-        <li><a href="../terms/">Terms</a></li>
-        <li><a href="../privacy/">Privacy</a></li>
-        <li><a href="../imprint/">Imprint</a></li>
+        <li><a href="../contact/" data-i18n="footer.contact">Contact</a></li>
+        <li><a href="../terms/" data-i18n="footer.terms">Terms</a></li>
+        <li><a href="../privacy/" data-i18n="footer.privacy">Privacy</a></li>
+        <li><a href="../imprint/" data-i18n="footer.imprint">Imprint</a></li>
       </ul>
     </footer>
   </body>
