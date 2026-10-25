@@ -21,7 +21,7 @@ const header = document.querySelector('[data-header]');
 const photo = document.querySelector('.hero__bg');
 const clamp01 = (v) => Math.min(1, Math.max(0, v));
 let ticking = false;
-features?.style.setProperty('--steps', String(articles.length));
+features?.style.setProperty('--steps', String(articles.length - 0.2));
 
 /* Intro: erst nur das Foto, nach 1,2 s (oder beim ersten Scrollen) fährt das Phone hoch, 1,1 s später kommt der Titel.
    Bis alles an seinem Platz steht, scrollt die Seite nicht; Scrollen startet nur das Intro. */
@@ -70,7 +70,7 @@ function updatePhone(s, H) {
 }
 
 // "Let them compete": kommt kurz vor der Mitte rein (Fade-Up mit Blur), bleibt stehen und scrollt dann scharf mit der Seite nach oben.
-// Sobald es den Header berührt, nimmt es ihn mit raus, und das Raster blendet dabei aus.
+// Sobald es den Header berührt, nimmt es ihn mit raus. Stößt es oben an, blendet das Raster aus.
 const compete = document.querySelector('.compete');
 const competeText = document.querySelector('.compete__text');
 const heroAll = document.querySelector('.hero-all');
@@ -85,25 +85,26 @@ function updateCompete(s, H) {
   competeText.style.setProperty('--o', String(into));
   competeText.style.setProperty('--b', `${8 * (1 - into)}px`);
   competeText.style.setProperty('--y', `${12 * (1 - into)}px`);
-  heroAll.style.setProperty('--co', String(clamp01((touch - yc) / (touch - 35)))); // Raster blendet auf dem Weg bis zum Header aus
+  heroAll.style.setProperty('--co', String(span(120 - yc, 0, 120))); // Raster blendet aus, wenn der Text oben anstößt
   if (header) header.style.transform = `translateY(${-up * hh * 1.05}px)`;
 }
 
-// Call to Action: Überschrift, Button und Badge blenden nacheinander ein, wenn das Phone des letzten Features fast draußen ist.
+// Call to Action: Überschrift, Button und Badge blenden nacheinander ein, 50 px bevor das Phone des letzten Features draußen ist.
 // Beim Zurückscrollen blenden sie wieder aus, solange sie nicht ganz da sind. Sobald sie einmal ganz stehen, bleiben sie.
 const cta = document.querySelector('#get-the-app');
 const ctaItems = [...document.querySelectorAll('.cta-item')];
+const lastShot = articles[articles.length - 1]?.querySelector('.device-shot');
 const ctaDone = new Set();
 function updateCta() {
-  if (!cta || calm.matches) return;
-  const top = cta.getBoundingClientRect().top; // 0 = die Bühne steht
+  if (!cta || !lastShot || calm.matches) return;
+  const t = 50 - lastShot.getBoundingClientRect().bottom; // > 0: das Phone ist weniger als 50 px vor dem Ausgang
   ctaItems.forEach((el, i) => {
-    const raw = ease(span(150 - 25 * i - top, 0, 60));
+    const raw = ease(span(t - 18 * i, 0, 45));
     if (raw >= 1) ctaDone.add(el);
     const k = ctaDone.has(el) ? 1 : raw;
     el.style.setProperty('--o', String(k));
     el.style.setProperty('--b', `${4 * (1 - k)}px`);
-    el.style.setProperty('--y', `${10 * (1 - k)}px`);
+    el.style.setProperty('--y', `${6 * (1 - k)}px`);
     el.style.pointerEvents = k > 0.5 ? '' : 'none';
   });
 }
@@ -113,12 +114,12 @@ function updateCta() {
 function updateFeatures() {
   if (!features) return;
   const n = articles.length;
-  const stepLen = 0.75 * innerHeight;
+  const stepLen = 0.85 * innerHeight;
   const u = -features.getBoundingClientRect().top / stepLen; // Schritte seit die Bühne steht
-  const enter = span(u, 0, 0.5);
-  const p = Math.min(n - 1, Math.max(0, u - 0.5)); // 0..n-1, ganze Zahl = Feature steht
+  const enter = span(u, 0, 0.3);
+  const p = Math.min(n - 1, Math.max(0, u - 0.3)); // 0..n-1, ganze Zahl = Feature steht
   const i0 = Math.min(n - 2, Math.floor(p));
-  const x = clamp01((p - i0 - 0.3) / 0.4); // kurze Überblendung, davor und danach steht das Feature
+  const x = clamp01((p - i0 - 0.375) / 0.25); // kurze Überblendung, davor und danach steht das Feature lange
   // Text: Der alte blendet in der ersten Hälfte aus (nach oben), der neue in der zweiten ein (von unten), so überdecken sie sich kaum.
   // Phone: echter Crossfade an Ort und Stelle. Beide mit kleinem Blur.
   const out = span(x, 0, 0.6);
@@ -130,7 +131,7 @@ function updateFeatures() {
     let po = old ? 1 - x : next ? x : 0;
     let tb = old ? 4 * out : next ? 4 * (1 - inn) : 0;
     let pb = old ? 2 * x : next ? 2 * (1 - x) : 0;
-    let y = old ? -16 * out : next ? 16 * (1 - inn) : 0;
+    let y = old ? -10 * out : next ? 10 * (1 - inn) : 0;
     if (i === 0) { to *= enter; po *= enter; y += 20 * (1 - enter); tb += 4 * (1 - enter); pb += 4 * (1 - enter); } // Einstieg: Text von unten, Phone nur ein
     a.style.setProperty('--to', String(to));
     a.style.setProperty('--o', String(po));

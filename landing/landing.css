@@ -82,11 +82,10 @@
     /* Das Raster steht fest im Fenster (eigene Fläche statt Hintergrund, damit es nicht am Ende des Abschnitts endet), JS blendet es über --co aus */
     html.js .hero-all { isolation: isolate; background-image: none; }
     html.js .hero-all::before { content: ''; position: fixed; inset: 0; z-index: -1; pointer-events: none; background: url('./img/grid.svg') 0 0 / 256px 256px; opacity: calc(1 - var(--co, 0)); }
-    html.js .features { margin-top: -52svh; }
-    /* Call to Action: Überschrift, Button und Badge kommen nacheinander (JS setzt --o, --b, --y) */
+    html.js .features { margin-top: calc(-50svh - 60px); }
     /* Call to Action: Überschrift, Button und Badge blenden nacheinander ein, wenn das Phone fast draußen ist (JS setzt --o, --b, --y per Scroll) und bleiben dann stehen.
        Die Bühne steht danach noch 30 svh, der Footer scrollt erst dann von unten ein, sodass der Call to Action kurz allein steht. */
-    html.js .cta { padding-bottom: 30svh; }
+    html.js .cta { height: 130svh; }
     html.js .cta__stage { position: sticky; top: 0; }
     html.js .cta-item { opacity: var(--o, 0); filter: blur(var(--b, 0px)); transform: translateY(var(--y, 0px)); }
   }
@@ -129,10 +128,9 @@
   .device-shot { position: relative; flex: none; height: min(634px, calc(100svh - var(--pad-top) - 62px - var(--gap) - var(--pad-bottom))); aspect-ratio: 1404 / 1902; }
   .device-shot::before { content: ''; position: absolute; left: 50%; top: 50%; height: 91.5%; aspect-ratio: 1; transform: translate(-50%, -50%); background: url('./img/feature-glow.webp') center / contain no-repeat; }
   .device-shot > img { position: relative; width: 100%; height: 100%; object-fit: contain; }
-  .mock { position: relative; height: 100%; aspect-ratio: 675 / 1380; margin-inline: auto; }
   @media (prefers-reduced-motion: reduce) { .device-shot::before { display: none; } }
-  /* Mit JavaScript: Bühne bleibt n x 75 svh lang stehen, JS blendet Text und Phone je nach Scrollposition über (--o, --b, --y) */
-  html.js .features { height: calc(100svh + var(--steps, 5) * 75svh); }
+  /* Mit JavaScript: Bühne bleibt n x 85 svh lang stehen, JS blendet Text und Phone je nach Scrollposition über (--o, --b, --y) */
+  html.js .features { height: calc(100svh + var(--steps, 4) * 85svh); }
   html.js .features__stage { position: sticky; top: 0; height: 100svh; display: grid; }
   html.js .feature { grid-area: 1 / 1; --o: 0; --to: 0; }
   html.js .feature:first-child { --o: 1; --to: 1; }
@@ -145,7 +143,7 @@
   /* Weiße Sprechblase wie der Try-Web-Button, kleiner Radius, runder Pfeil auf "How?" */
   .tip__bubble {
     position: absolute; z-index: 5; top: calc(100% + .625rem); left: 50%; width: min(18.5rem, calc(100vw - 2rem)); margin-left: calc(min(18.5rem, calc(100vw - 2rem)) / -2);
-    padding: .625rem .875rem; text-align: left; font-size: 13px; line-height: 18px; color: #222; background: #fff; border-radius: 20px; box-shadow: 0 6px 24px rgb(0 0 0 / .12);
+    padding: .625rem .875rem; text-align: left; font-size: 13px; line-height: 18px; color: #222; background: #fff; border-radius: 24px; box-shadow: 0 4px 16px rgb(0 0 0 / .06);
     visibility: hidden; opacity: 0; transform: translateY(-.4rem) scale(.96); transform-origin: 50% 0; pointer-events: none;
     transition: opacity .2s, visibility .2s, transform .25s cubic-bezier(.2, .7, .2, 1);
   }
