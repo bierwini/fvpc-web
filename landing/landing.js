@@ -21,7 +21,7 @@ const header = document.querySelector('[data-header]');
 const photo = document.querySelector('.hero__bg');
 const clamp01 = (v) => Math.min(1, Math.max(0, v));
 let ticking = false;
-features?.style.setProperty('--steps', String(articles.length));
+features?.style.setProperty('--steps', String(articles.length + 0.5));
 
 /* Intro: erst nur das Foto, nach 1,2 s (oder beim ersten Scrollen) fährt das Phone hoch, 1,1 s später kommt der Titel.
    Bis alles an seinem Platz steht, scrollt die Seite nicht; Scrollen startet nur das Intro. */
@@ -60,49 +60,40 @@ if (hero && !calm.matches) {
   }
 }
 
-// Das Phone ist ein einziges Objekt: Es scrollt mit dem Hero bis auf die Position des ersten Features und bleibt dort stehen, blendet kurz vor
-// "Let them compete" aus und kommt mit dem ersten Feature wieder (das Feature hat dafür nur einen unsichtbaren Platzhalter).
-const shot = articles[0]?.querySelector('.device-shot');
-const stage = document.querySelector('.features__stage');
+// Das Phone scrollt mit dem Hero und wird im letzten Viertel schneller, sodass es zusammen mit dem Hero verschwindet
 const PHONE_H = 643.55;
-function updatePhone(s, H, featureOpacity) {
-  if (!phone || !shot || !stage || calm.matches) return;
-  const base = phone.offsetTop; // Position ohne Transform (CSS top)
-  const shotRect = shot.getBoundingClientRect();
-  const pinned = shotRect.top - stage.getBoundingClientRect().top; // Platzhalter-Position, sobald die Bühne steht
-  const inFeatures = features.getBoundingClientRect().top < H;
-  const y = inFeatures ? shotRect.top : Math.max(pinned, base - s);
-  const o = inFeatures ? featureOpacity : 1 - span(s, 0.7 * H, 0.95 * H);
-  phone.style.setProperty('--py', `${y - base}px`);
-  phone.style.setProperty('--k', String(shotRect.height / PHONE_H));
-  phone.style.setProperty('--po', String(o));
-  phone.style.visibility = o <= 0.001 ? 'hidden' : '';
+function updatePhone(s, H) {
+  if (!phone || calm.matches) return;
+  const gone = (phone.offsetTop + PHONE_H - H + 24) * span(s, 0.7 * H, H) ** 2; // so viel schneller als die Seite
+  phone.style.setProperty('--py', `${-gone}px`);
+  phone.style.visibility = s >= H ? 'hidden' : '';
 }
 
+// Features: Die Bühne steht schon, während "Let them compete" hinausgeht. Zuerst blendet sie (weiße Fläche, Raster weg, erstes Feature) ein,
+// danach wechselt jeder Schritt per Scroll (Fade mit kleinem Versatz).
 function updateFeatures() {
-  if (!features) return 1;
+  if (!features) return;
   const stepLen = 0.6 * innerHeight;
-  const top = features.getBoundingClientRect().top;
-  const enter = clamp01((top - 0.15 * innerHeight) / (0.7 * innerHeight)); // das erste Feature blendet beim Hereinscrollen ein
-  const t = Math.min(articles.length, Math.max(0, -top / stepLen)); // 0..n, jeder Schritt hat eine Strecke
-  let first = 1;
+  const u = -features.getBoundingClientRect().top / stepLen; // Schritte seit die Bühne steht
+  const enter = span(u, 0, 0.5);
+  const t = Math.min(articles.length, Math.max(0, u - 0.5)); // 0..n, jeder Schritt hat eine Strecke
+  features.style.setProperty('--so', String(enter));
   articles.forEach((a, i) => {
     let d = t - (i + 0.5); // Abstand zur Mitte des Schritts
     if ((i === 0 && d < 0) || (i === articles.length - 1 && d > 0)) d = 0; // erster steht schon da, letzter bleibt bis zum Ende
     let g = clamp01((Math.abs(d) - 0.2) / 0.3); // 0 = voll da, 1 = weg
-    if (i === 0) g = Math.max(g, enter);
-    if (i === 0) first = 1 - g;
+    if (i === 0) g = Math.max(g, 1 - enter);
     a.style.setProperty('--o', String(1 - g));
-    a.style.setProperty('--b', calm.matches ? '0px' : `${2 * g}px`);
+    a.style.setProperty('--b', calm.matches ? '0px' : `${1 * g}px`);
     a.style.setProperty('--y', calm.matches ? '0px' : `${(d > 0 ? -10 : 10) * g}px`);
     a.style.pointerEvents = g > 0.5 ? 'none' : '';
   });
-  return first;
 }
 
 function update() {
   ticking = false;
-  updatePhone(scrollY, innerHeight, updateFeatures());
+  updatePhone(scrollY, innerHeight);
+  updateFeatures();
   // Header: weiß auf dem Foto, dunkel mit weißem Verlauf, sobald das Foto den Header verlassen hat
   if (header && photo) {
     const noPhoto = getComputedStyle(photo).display === 'none';
