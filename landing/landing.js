@@ -69,8 +69,8 @@ function updatePhone(s, H) {
   phone.style.visibility = s >= H ? 'hidden' : '';
 }
 
-// "Let them compete": kommt kurz vor der Mitte rein (Fade-Up mit Blur), bleibt stehen und scrollt dann ganz normal mit der Seite nach oben.
-// Erst kurz vor dem Header blurt es, dann scrollen Text und Header zusammen nach oben raus, und das Raster wird dabei weiß.
+// "Let them compete": kommt kurz vor der Mitte rein (Fade-Up mit Blur), bleibt stehen und scrollt dann scharf mit der Seite nach oben.
+// Sobald es den Header berührt, nimmt es ihn mit raus, und das Raster blendet dabei aus.
 const compete = document.querySelector('.compete');
 const competeText = document.querySelector('.compete__text');
 const heroAll = document.querySelector('.hero-all');
@@ -80,28 +80,27 @@ function updateCompete(s, H) {
   const into = ease(span(s, 0.82 * H, H));
   const yc = H / 2 - Math.max(0, s - 1.45 * H); // Mitte des Textes im Fenster, sobald die Haltezeit vorbei ist
   const hh = header ? header.offsetHeight : 88;
-  const touch = hh + 35; // Der Text berührt den Header; ab da gehen beide zusammen raus
-  const near = span(touch + 80 - yc, 0, 90); // Blur, kurz bevor er den Header berührt
-  const gone = span(touch + 80 - yc, 60, touch + 80 - 35); // weg, wenn auch der Header weg ist
+  const touch = hh + 35; // Der Text berührt den Header; ab da nimmt er ihn mit nach oben
   const up = clamp01((touch - yc) / hh); // Header scrollt genauso schnell wie der Text
-  competeText.style.setProperty('--o', String(into * (1 - gone)));
-  competeText.style.setProperty('--b', `${8 * (1 - into) + 8 * near}px`);
+  competeText.style.setProperty('--o', String(into));
+  competeText.style.setProperty('--b', `${8 * (1 - into)}px`);
   competeText.style.setProperty('--y', `${12 * (1 - into)}px`);
-  heroAll.style.setProperty('--co', String(clamp01((touch + 80 - yc) / (touch + 80 - 35)))); // Raster blendet über den ganzen Weg aus
+  heroAll.style.setProperty('--co', String(clamp01((touch - yc) / (touch - 35)))); // Raster blendet auf dem Weg bis zum Header aus
   if (header) header.style.transform = `translateY(${-up * hh * 1.05}px)`;
 }
 
-// Call to Action: Überschrift, Button, Badge und Footer blenden nacheinander ein, wenn das Phone des letzten Features fast draußen ist.
-// Was einmal da ist, bleibt (auch beim Zurückscrollen).
+// Call to Action: Überschrift, Button und Badge blenden nacheinander ein, wenn das Phone des letzten Features fast draußen ist.
+// Beim Zurückscrollen blenden sie wieder aus, solange sie nicht ganz da sind. Sobald sie einmal ganz stehen, bleiben sie.
 const cta = document.querySelector('#get-the-app');
-const ctaItems = [...document.querySelectorAll('.cta-item'), document.querySelector('.site-footer')];
-const ctaSeen = new Map();
+const ctaItems = [...document.querySelectorAll('.cta-item')];
+const ctaDone = new Set();
 function updateCta() {
   if (!cta || calm.matches) return;
-  const top = cta.getBoundingClientRect().top; // 0 = Abschnitt füllt das Fenster
+  const top = cta.getBoundingClientRect().top; // 0 = die Bühne steht
   ctaItems.forEach((el, i) => {
-    const k = Math.max(ctaSeen.get(el) ?? 0, ease(span(150 - 25 * i - top, 0, 60)));
-    ctaSeen.set(el, k);
+    const raw = ease(span(150 - 25 * i - top, 0, 60));
+    if (raw >= 1) ctaDone.add(el);
+    const k = ctaDone.has(el) ? 1 : raw;
     el.style.setProperty('--o', String(k));
     el.style.setProperty('--b', `${4 * (1 - k)}px`);
     el.style.setProperty('--y', `${10 * (1 - k)}px`);
