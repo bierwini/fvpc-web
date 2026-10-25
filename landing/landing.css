@@ -24,13 +24,10 @@
   html.js .header-rail { height: 100%; } /* mit Bewegung scrollt JS den Header während des Ausblendens von "Let them compete" nach oben */
   .site-header { pointer-events: auto; color: #fff; background: linear-gradient(rgb(0 0 0 / .4), rgb(0 0 0 / 0)); transition: color .2s; }
   .site-header.is-light { color: var(--color-label); background: linear-gradient(rgb(255 255 255 / .92) 60%, rgb(255 255 255 / 0)); }
-  .site-header--page { position: relative; height: 4.5rem; padding: 0 1rem; display: flex; align-items: center; background: none; color: inherit; }
   .logo { line-height: 1; transition: color .2s ease; }
   /* Hover wie beim Try-Web-Button: ein Tick dunkler (weiß wird #e8e8ed) */
   .site-header:not(.is-light) .logo:hover { color: #e8e8ed; }
   .site-header.is-light .logo:hover { color: color-mix(in srgb, var(--color-label) 70%, white); }
-  .logo__mark { width: 40px; height: 40px; border-radius: 22%; }
-  .site-header--page .logo { display: inline-flex; align-items: center; gap: 7px; }
 
   /* ---------- Buttons wie bei Apple: blau mit weißer Schrift, oder weiß mit dunkler Schrift ---------- */
   .btn {
@@ -84,8 +81,8 @@
     html.js .hero-all::before { content: ''; position: fixed; inset: 0; z-index: -1; pointer-events: none; background: url('./img/grid.svg') 0 0 / 256px 256px; opacity: calc(1 - var(--co, 0)); }
     html.js .features { margin-top: calc(-50svh - 60px); }
     /* Call to Action: Überschrift, Button und Badge blenden nacheinander ein, wenn das Phone fast draußen ist (JS setzt --o, --b, --y per Scroll) und bleiben dann stehen.
-       Die Bühne steht danach noch 30 svh, der Footer scrollt erst dann von unten ein, sodass der Call to Action kurz allein steht. */
-    html.js .cta { height: 130svh; }
+       Die Bühne steht, und sofort danach scrollt der Footer von unten ein (JS setzt --footer-h auf seine Höhe). */
+    html.js .cta { height: calc(100svh + var(--footer-h, 6rem)); }
     html.js .cta__stage { position: sticky; top: 0; }
     html.js .cta-item { opacity: var(--o, 0); filter: blur(var(--b, 0px)); transform: translateY(var(--y, 0px)); }
   }

@@ -95,8 +95,10 @@ const cta = document.querySelector('#get-the-app');
 const ctaItems = [...document.querySelectorAll('.cta-item')];
 const lastShot = articles[articles.length - 1]?.querySelector('.device-shot');
 const ctaDone = new Set();
+const footer = document.querySelector('.site-footer');
 function updateCta() {
   if (!cta || !lastShot || calm.matches) return;
+  cta.style.setProperty('--footer-h', `${footer.offsetHeight}px`);
   const t = 50 - lastShot.getBoundingClientRect().bottom; // > 0: das Phone ist weniger als 50 px vor dem Ausgang
   ctaItems.forEach((el, i) => {
     const raw = ease(span(t - 18 * i, 0, 45));
