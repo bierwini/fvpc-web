@@ -69,23 +69,40 @@ function updatePhone(s, H) {
   phone.style.visibility = s >= H ? 'hidden' : '';
 }
 
-// "Let them compete" blendet ein (Fade-Up mit Blur), bleibt stehen und blendet nach oben aus; dabei scrollt der Header weg und das Raster wird weiß
+// "Let them compete": kommt kurz vor der Mitte rein (Fade-Up mit Blur), bleibt stehen, scrollt dann mit der Seite nach oben und blendet dabei aus.
+// Kurz bevor es den Header erreicht, scrollt der Header raus und das Raster wird weiß.
 const compete = document.querySelector('.compete');
 const competeText = document.querySelector('.compete__text');
+const heroAll = document.querySelector('.hero-all');
 const ease = (v) => 1 - (1 - clamp01(v)) ** 3;
 function updateCompete(s, H) {
   if (!compete || calm.matches) return;
-  const into = ease(span(s, 0.7 * H, H));
-  const out = ease(span(s, 1.45 * H, 1.8 * H));
+  const into = ease(span(s, 0.82 * H, H));
+  const out = ease(span(s, 1.45 * H, 1.78 * H));
+  const leave = ease(span(s, 1.72 * H, 1.95 * H));
   competeText.style.setProperty('--o', String(into * (1 - out)));
-  competeText.style.setProperty('--b', `${10 * (1 - into) + 10 * out}px`);
-  competeText.style.setProperty('--y', `${28 * (1 - into) - 28 * out}px`);
-  compete.style.setProperty('--co', String(out));
-  if (header) header.style.transform = `translateY(${-out * header.offsetHeight * 1.05}px)`;
+  competeText.style.setProperty('--b', `${8 * (1 - into) + 8 * out}px`);
+  competeText.style.setProperty('--y', `${12 * (1 - into) - 12 * out}px`);
+  heroAll.style.setProperty('--co', String(leave));
+  if (header) header.style.transform = `translateY(${-leave * header.offsetHeight * 1.05}px)`;
+}
+
+// Call to Action: Überschrift, Button und Badge kommen nacheinander, je weiter der Abschnitt ins Bild scrollt
+const cta = document.querySelector('#get-the-app');
+const ctaItems = [...document.querySelectorAll('.cta-item')];
+function updateCta(H) {
+  if (!cta || calm.matches) return;
+  const r = clamp01((H - cta.getBoundingClientRect().top) / H);
+  ctaItems.forEach((el, i) => {
+    const k = ease(span(r, 0.35 + 0.18 * i, 0.7 + 0.15 * i));
+    el.style.setProperty('--o', String(k));
+    el.style.setProperty('--b', `${6 * (1 - k)}px`);
+    el.style.setProperty('--y', `${14 * (1 - k)}px`);
+  });
 }
 
 // Features: Die Bühne steht, sobald "Let them compete" weg ist. Das erste Feature (Text und Phone) kommt von unten, danach überblenden die
-// Schritte ineinander (Crossfade, kleiner Versatz), ohne Blur.
+// Schritte ineinander (Crossfade mit kleinem Blur, ohne Versatz).
 function updateFeatures() {
   if (!features) return;
   const n = articles.length;
@@ -97,9 +114,9 @@ function updateFeatures() {
   const x = clamp01((p - i0 - 0.3) / 0.4); // Überblendung im mittleren Teil jedes Schritts
   articles.forEach((a, i) => {
     let o = i === i0 ? 1 - x : i === i0 + 1 ? x : 0;
-    let y = i === i0 ? -8 * x : i === i0 + 1 ? 8 * (1 - x) : 0;
-    let b = 0;
-    if (i === 0) { o *= enter; y += 36 * (1 - enter); b = 4 * (1 - enter); }
+    let b = i === i0 ? 2 * x : i === i0 + 1 ? 2 * (1 - x) : 0; // kleiner Blur nur im Crossfade, kein Versatz
+    let y = 0;
+    if (i === 0) { o *= enter; y = 20 * (1 - enter); b += 4 * (1 - enter); } // nur der Einstieg kommt von unten
     a.style.setProperty('--o', String(o));
     a.style.setProperty('--b', calm.matches ? '0px' : `${b}px`);
     a.style.setProperty('--y', calm.matches ? '0px' : `${y}px`);
@@ -111,6 +128,7 @@ function update() {
   ticking = false;
   updatePhone(scrollY, innerHeight);
   updateCompete(scrollY, innerHeight);
+  updateCta(innerHeight);
   updateFeatures();
   // Header: weiß auf dem Foto, dunkel mit weißem Verlauf, sobald das Foto den Header verlassen hat
   if (header && photo) {

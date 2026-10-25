@@ -72,18 +72,18 @@
   .title { text-shadow: 0 1px 3px rgb(0 0 0 / .3), 0 5px 25px rgb(0 0 0 / .45); }
   @media (prefers-reduced-motion: reduce) { .title { text-shadow: none; } }
 
-  @media (prefers-reduced-motion: reduce) { .reveal { animation: none; } }
-  /* Scrollgesteuert (Find your favorite photos): beginnt, wenn der Text unten ins Bild kommt, und ist fertig, wenn er die Fenstermitte erreicht */
-  @supports (animation-timeline: view()) { .reveal { animation: fade-blur linear both; animation-timeline: view(); animation-range: cover 10% cover 50%; } }
-
-  /* "Let them compete": Bühne bleibt eine Weile stehen (JS setzt --o, --b, --y für Ein- und Ausblenden, --co für das weiße Raster) */
+  /* "Let them compete": Bühne bleibt eine Weile stehen (JS setzt --o, --b, --y für Ein- und Ausblenden) */
   .compete__stage { position: relative; }
   .compete__text { opacity: var(--o, 1); filter: blur(var(--b, 0px)); transform: translateY(var(--y, 0px)); }
   @media (prefers-reduced-motion: no-preference) {
-    html.js .compete { height: 180svh; }
+    html.js .compete { height: 145svh; }
     html.js .compete__stage { position: sticky; top: 0; height: 100svh; min-height: 0; }
-    html.js .compete__stage::before { content: ''; position: absolute; inset: 0; z-index: -1; background: var(--color-background); opacity: var(--co, 0); }
-    html.js .features { margin-top: -100svh; }
+    /* Weiße Fläche über dem festen Raster (JS setzt --co am .hero-all), unter dem Text */
+    html.js .hero-all { isolation: isolate; }
+    html.js .hero-all::after { content: ''; position: fixed; inset: 0; z-index: -1; pointer-events: none; background: var(--color-background); opacity: var(--co, 0); }
+    html.js .features { margin-top: -40svh; }
+    /* Call to Action: Überschrift, Button und Badge kommen nacheinander (JS setzt --o, --b, --y) */
+    html.js .cta-item { opacity: var(--o, 1); filter: blur(var(--b, 0px)); transform: translateY(var(--y, 0px)); }
   }
 
   /* ---------- Phone-Mockup (Figma: PhotosView + Bezel): feste Größe, skaliert nie mit dem Fenster ---------- */
