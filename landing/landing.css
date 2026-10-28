@@ -81,9 +81,7 @@
     html.js .hero-all::before { content: ''; position: fixed; inset: 0; z-index: -1; pointer-events: none; background: url('./img/grid.svg') 0 0 / 256px 256px; opacity: calc(1 - var(--co, 0)); }
     html.js .features { margin-top: calc(-50svh - 60px); }
     /* Call to Action: Überschrift, Button und Badge blenden nacheinander ein, wenn das Phone fast draußen ist (JS setzt --o, --b, --y per Scroll) und bleiben dann stehen.
-       Die Bühne steht, und sofort danach scrollt der Footer von unten ein (JS setzt --footer-h auf seine Höhe). */
-    html.js .cta { height: calc(100svh + var(--footer-h, 6rem)); }
-    html.js .cta__stage { position: sticky; top: 0; }
+       CTA und Footer bilden eine Fensterhöhe und scrollen normal gemeinsam ein und aus. */
     html.js .cta-item { opacity: var(--o, 0); filter: blur(var(--b, 0px)); transform: translateY(var(--y, 0px)); }
   }
 
@@ -121,8 +119,8 @@
   /* Erst schrumpfen die Abstände (von 135 px auf 40 px), erst danach das Phone. 696 px = 634 px Phone + 62 px Text. */
   .feature { --a: max(calc(100svh - 696px), 40px); --pad-top: min(60px, calc(var(--a) * .44)); --gap: min(35px, calc(var(--a) * .26)); --pad-bottom: min(40px, calc(var(--a) * .3));
     --ph: min(634px, calc(100svh - var(--pad-top) - 62px - var(--gap) - var(--pad-bottom)));
-    /* Auf hohen Fenstern (Phone voll groß) steht Text + Phone mittig im Fenster, auf niedrigen bleibt es oben wie in Figma */
-    display: flex; flex-direction: column; align-items: center; gap: var(--gap); height: 100svh; padding: max(var(--pad-top), calc((100svh - 62px - var(--gap) - var(--ph)) / 2)) 1rem 0; text-align: center; }
+    /* Text + Phone stehen immer mittig im Fenster */
+    display: flex; flex-direction: column; align-items: center; gap: var(--gap); height: 100svh; padding: calc((100svh - 62px - var(--gap) - var(--ph)) / 2) 1rem 0; text-align: center; }
   .feature__text { position: relative; z-index: 3; display: flex; flex-direction: column; align-items: center; color: #1a1a1a; }
   /* Phone-Screenshot: 634 px hoch wie im Figma, nur auf niedrigen Fenstern kleiner, damit der Abschnitt nie über die Fensterhöhe wächst */
   .device-shot { position: relative; flex: none; height: var(--ph); aspect-ratio: 1404 / 1902; }

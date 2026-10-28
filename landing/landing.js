@@ -95,24 +95,8 @@ const cta = document.querySelector('#get-the-app');
 const ctaItems = [...document.querySelectorAll('.cta-item')];
 const lastShot = articles[articles.length - 1]?.querySelector('.device-shot');
 const ctaDone = new Set();
-const footer = document.querySelector('.site-footer');
-const ctaStage = document.querySelector('.cta__stage');
-let lastS = scrollY;
-let armed = false; // wahr, sobald man aus dem Footer hochgescrollt ist
-let drop = 0; // so weit ist die CTA dabei mit dem Footer nach unten gefahren
 function updateCta() {
   if (!cta || !lastShot || calm.matches) return;
-  const fh = footer.offsetHeight;
-  cta.style.setProperty('--footer-h', `${fh}px`);
-  // Hochscrollen aus dem Footer: Footer und CTA fahren zusammen nach unten (ds), danach nimmt die Section die CTA ohnehin mit.
-  // Beim erneuten Runterscrollen läuft es genauso rückwärts: CTA und Footer kommen gemeinsam hoch und stehen dann zusammen.
-  // Das gilt, bis man die CTA ganz verlassen hat. Beim ersten Mal (nicht "armed") bleibt die CTA dagegen mittig stehen und nur der Footer kommt von unten.
-  const shown = scrollY - (document.documentElement.scrollHeight - innerHeight - fh); // sichtbare Footer-Höhe (< 0: darüber)
-  if (scrollY < lastS && shown > -fh) armed = true;
-  if (cta.getBoundingClientRect().top >= innerHeight) armed = false; // erst wenn die CTA ganz draußen ist, gilt wieder der erste Durchlauf
-  lastS = scrollY;
-  drop = armed ? Math.max(0, Math.min(fh - shown, fh + shown, fh)) : 0;
-  ctaStage.style.transform = drop ? `translateY(${drop}px)` : '';
   const t = 50 - lastShot.getBoundingClientRect().bottom; // > 0: das Phone ist weniger als 50 px vor dem Ausgang
   ctaItems.forEach((el, i) => {
     const raw = ease(span(t - 18 * i, 0, 45));

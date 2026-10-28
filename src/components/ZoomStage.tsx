@@ -15,7 +15,7 @@ const MAX_ZOOM = 8; // relativ zur Fill-Größe; nach unten begrenzt die Fit-Gr�
 const TAP_SLOP = 6; // px: darunter zählt eine Berührung als Tap, nicht als Verschieben
 
 /**
- * Zoom 1 = Fill (Fenster komplett gefüllt, Bild beschnitten). Herauszoomen geht bis Fit (Bild komplett sichtbar).
+ * Zoom 1 = Fill (Fenster komplett gefüllt, Bild beschnitten). Herauszoomen geht bis Fit (Bild komplett sichtbar); jedes Bild startet bei Fit.
  * zoomed: über Fill hinaus, fit: genau Fit erreicht, fill: dazwischen bzw. Fill.
  */
 export type ZoomState = 'zoomed' | 'fit' | 'fill';
@@ -47,6 +47,8 @@ interface View {
   z: number;
   tx: number;
   ty: number;
+  /** Noch nicht angefasst: steht auf Fit. */
+  auto: boolean;
 }
 
 const clamp = (v: number, min: number, max: number) => Math.min(Math.max(v, min), max);
@@ -70,15 +72,6 @@ export const ZoomStage = forwardRef<ZoomStageHandle, ZoomStageProps>(function Zo
   const latest = useRef({ activeId, otherId, onZoomStateChange });
   latest.current = { activeId, otherId, onZoomStateChange };
 
-  const getView = useCallback((id: ImageId): View => {
-    let v = views.current.get(id);
-    if (!v) {
-      v = { z: 1, tx: 0, ty: 0 };
-      views.current.set(id, v);
-    }
-    return v;
-  }, []);
-
   /** Angezeigte Größe eines Bildes in der Fill-Ansicht (Zoom 1). */
   const imageSize = useCallback((id: ImageId) => {
     const el = layerRef.current?.querySelector<HTMLElement>(`[data-image-id="${id}"]`);
@@ -94,6 +87,24 @@ export const ZoomStage = forwardRef<ZoomStageHandle, ZoomStageProps>(function Zo
       return Math.min(1, root.clientWidth / w, root.clientHeight / h);
     },
     [imageSize],
+  );
+
+  /** Ein Bild startet im Fit-Zustand ("auto"), bis der Nutzer zoomt, verschiebt oder einen Button nutzt; bis dahin folgt es der Fenstergröße und dem Laden des Bildes. */
+  const getView = useCallback(
+    (id: ImageId): View => {
+      let v = views.current.get(id);
+      if (!v) {
+        v = { z: 1, tx: 0, ty: 0, auto: true };
+        views.current.set(id, v);
+      }
+      if (v.auto) {
+        v.z = minZoom(id);
+        v.tx = 0;
+        v.ty = 0;
+      }
+      return v;
+    },
+    [minZoom],
   );
 
   /** Das Bild darf das Fenster nie "verlassen"; ist es kleiner als das Fenster, bleibt es zentriert. */
@@ -132,6 +143,7 @@ export const ZoomStage = forwardRef<ZoomStageHandle, ZoomStageProps>(function Zo
   const zoomAt = useCallback(
     (cx: number, cy: number, factor: number) => {
       const v = getView(latest.current.activeId);
+      v.auto = false;
       const next = clamp(v.z * factor, minZoom(latest.current.activeId), MAX_ZOOM);
       const k = next / v.z;
       v.tx = cx - (cx - v.tx) * k;
@@ -152,6 +164,7 @@ export const ZoomStage = forwardRef<ZoomStageHandle, ZoomStageProps>(function Zo
     () => ({
       resetZoom() {
         const v = getView(latest.current.activeId);
+        v.auto = false;
         v.z = 1;
         v.tx = 0;
         v.ty = 0;
@@ -159,6 +172,7 @@ export const ZoomStage = forwardRef<ZoomStageHandle, ZoomStageProps>(function Zo
       },
       zoomToFit() {
         const v = getView(latest.current.activeId);
+        v.auto = false;
         v.z = minZoom(latest.current.activeId);
         v.tx = 0;
         v.ty = 0;
@@ -174,6 +188,7 @@ export const ZoomStage = forwardRef<ZoomStageHandle, ZoomStageProps>(function Zo
         // Ausschnitt auch bei unterschiedlichen Seitenverhältnissen.
         const u = s.w ? 0.5 - source.tx / (source.z * s.w) : 0.5;
         const w = s.h ? 0.5 - source.ty / (source.z * s.h) : 0.5;
+        target.auto = false;
         target.z = source.z;
         target.tx = -(u - 0.5) * source.z * t.w;
         target.ty = -(w - 0.5) * source.z * t.h;
@@ -197,6 +212,19 @@ export const ZoomStage = forwardRef<ZoomStageHandle, ZoomStageProps>(function Zo
     const root = rootRef.current!;
     const observer = new ResizeObserver(apply);
     observer.observe(root);
+    // Ändert sich die Größe eines Bildes (Seitenverhältnis wird erst nach dem Laden gesetzt), muss der Fit-Zoom neu berechnet werden.
+    const layer = layerRef.current!;
+    const watched = new Set<Element>();
+    const watchImages = () =>
+      layer.querySelectorAll('[data-image-id]').forEach((img) => {
+        if (!watched.has(img)) {
+          watched.add(img);
+          observer.observe(img);
+        }
+      });
+    watchImages();
+    const mutations = new MutationObserver(watchImages);
+    mutations.observe(layer, { childList: true, subtree: true });
     // Wheel muss non-passive registriert werden, damit preventDefault die Seite nicht mitzoomt/scrollt.
     const onWheel = (e: WheelEvent) => {
       e.preventDefault();
@@ -206,6 +234,7 @@ export const ZoomStage = forwardRef<ZoomStageHandle, ZoomStageProps>(function Zo
     root.addEventListener('wheel', onWheel, { passive: false });
     return () => {
       observer.disconnect();
+      mutations.disconnect();
       root.removeEventListener('wheel', onWheel);
     };
   }, [apply, toCenter, zoomAt]);
@@ -233,6 +262,7 @@ export const ZoomStage = forwardRef<ZoomStageHandle, ZoomStageProps>(function Zo
       if (g.moved) {
         // Verschieben ist auch ohne Zoom möglich, wenn das Bild (Fill) über das Fenster hinausragt.
         const v = getView(latest.current.activeId);
+        v.auto = false;
         v.tx += cur.x - prev.x;
         v.ty += cur.y - prev.y;
         apply();
@@ -244,6 +274,7 @@ export const ZoomStage = forwardRef<ZoomStageHandle, ZoomStageProps>(function Zo
       const distPrev = Math.hypot(prev.x - o.x, prev.y - o.y) || 1;
       const distNow = Math.hypot(cur.x - o.x, cur.y - o.y);
       const v = getView(latest.current.activeId);
+      v.auto = false;
       v.tx += midNow.x - midPrev.x;
       v.ty += midNow.y - midPrev.y;
       zoomAt(midNow.x, midNow.y, distNow / distPrev);
