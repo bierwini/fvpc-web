@@ -136,7 +136,8 @@ export const ZoomStage = forwardRef<ZoomStageHandle, ZoomStageProps>(function Zo
     const state: ZoomState = v.z > 1.001 ? 'zoomed' : min < 0.999 && v.z <= min + 0.001 ? 'fit' : 'fill';
     root.dataset.zoomed = String(state === 'zoomed');
     // Nach einer Nutzeraktion merkt sich der Grundmodus Fit oder Fill (hineingezoomt zählt als Fill, "dazwischen" ändert nichts).
-    if (!v.auto) {
+    // Gibt es kein eigenes Fit (Fit = Fill) und ist nicht hineingezoomt, wurde nichts gewählt.
+    if (!v.auto && (min < 0.999 || v.z > 1.001)) {
       if (state === 'fit') baseMode.current = 'fit';
       else if (v.z >= 0.999) baseMode.current = 'fill';
     }
