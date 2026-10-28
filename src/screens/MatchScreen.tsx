@@ -47,7 +47,7 @@ export function MatchScreen({
   const activeIndex = selection.matchKey === matchKey ? selection.index : 0;
   const activeId = match[activeIndex];
 
-  // Jedes Duell startet bei Fit (Bild komplett sichtbar); Hineinzoomen geht bis über Fill, der Zoom gilt nur für ein Duell.
+  // Jedes Foto startet im zuletzt gewählten Modus (zuerst Fit, Bild komplett sichtbar); der Zoom selbst gilt nur für ein Duell.
   const [zoomState, setZoomState] = useState<ZoomState>('fill');
   const stageRef = useRef<ZoomStageHandle>(null);
   const otherId = match[activeIndex === 0 ? 1 : 0];

@@ -15,7 +15,7 @@ const MAX_ZOOM = 8; // relativ zur Fill-Größe; nach unten begrenzt die Fit-Gr�
 const TAP_SLOP = 6; // px: darunter zählt eine Berührung als Tap, nicht als Verschieben
 
 /**
- * Zoom 1 = Fill (Fenster komplett gefüllt, Bild beschnitten). Herauszoomen geht bis Fit (Bild komplett sichtbar); jedes Bild startet bei Fit.
+ * Zoom 1 = Fill (Fenster komplett gefüllt, Bild beschnitten). Herauszoomen geht bis Fit (Bild komplett sichtbar); jedes Bild startet im zuletzt gewählten Modus (zuerst Fit).
  * zoomed: über Fill hinaus, fit: genau Fit erreicht, fill: dazwischen bzw. Fill.
  */
 export type ZoomState = 'zoomed' | 'fit' | 'fill';
@@ -66,6 +66,8 @@ export const ZoomStage = forwardRef<ZoomStageHandle, ZoomStageProps>(function Zo
   const layerRef = useRef<HTMLDivElement>(null);
   const views = useRef(new Map<ImageId, View>());
   const lastState = useRef<ZoomState>('fill');
+  // Gewählter Grundmodus für Fotos, die noch nicht angefasst wurden; gilt über alle Duelle (der Zoom selbst nicht).
+  const baseMode = useRef<'fit' | 'fill'>('fit');
   const pointers = useRef(new Map<number, { x: number; y: number }>());
   const gesture = useRef({ moved: false, multi: false, startX: 0, startY: 0 });
   // Aktuelle Props für die Callbacks unten, die bewusst nur einmal angelegt werden.
@@ -89,7 +91,7 @@ export const ZoomStage = forwardRef<ZoomStageHandle, ZoomStageProps>(function Zo
     [imageSize],
   );
 
-  /** Ein Bild startet im Fit-Zustand ("auto"), bis der Nutzer zoomt, verschiebt oder einen Button nutzt; bis dahin folgt es der Fenstergröße und dem Laden des Bildes. */
+  /** Ein Bild startet im gewählten Grundmodus (zuerst Fit, "auto"), bis der Nutzer zoomt, verschiebt oder einen Button nutzt; bis dahin folgt es der Fenstergröße und dem Laden des Bildes. */
   const getView = useCallback(
     (id: ImageId): View => {
       let v = views.current.get(id);
@@ -98,7 +100,7 @@ export const ZoomStage = forwardRef<ZoomStageHandle, ZoomStageProps>(function Zo
         views.current.set(id, v);
       }
       if (v.auto) {
-        v.z = minZoom(id);
+        v.z = baseMode.current === 'fit' ? minZoom(id) : 1;
         v.tx = 0;
         v.ty = 0;
       }
@@ -133,6 +135,11 @@ export const ZoomStage = forwardRef<ZoomStageHandle, ZoomStageProps>(function Zo
     const min = minZoom(id);
     const state: ZoomState = v.z > 1.001 ? 'zoomed' : min < 0.999 && v.z <= min + 0.001 ? 'fit' : 'fill';
     root.dataset.zoomed = String(state === 'zoomed');
+    // Nach einer Nutzeraktion merkt sich der Grundmodus Fit oder Fill (hineingezoomt zählt als Fill, "dazwischen" ändert nichts).
+    if (!v.auto) {
+      if (state === 'fit') baseMode.current = 'fit';
+      else if (v.z >= 0.999) baseMode.current = 'fill';
+    }
     if (state !== lastState.current) {
       lastState.current = state;
       latest.current.onZoomStateChange(state);
