@@ -199,15 +199,21 @@ export const ZoomStage = forwardRef<ZoomStageHandle, ZoomStageProps>(function Zo
     ref,
     () => ({
       pressFitFill() {
-        const id = latest.current.activeId;
+        const { activeId: id, otherId } = latest.current;
         const { target, disabled } = buttonFor(id);
         if (disabled) return;
         const v = getView(id);
-        v.auto = false;
-        v.z = target === 'fill' ? 1 : minZoom(id);
-        v.fill = target === 'fill';
-        v.tx = 0;
-        v.ty = 0;
+        const reset = v.z > 1.001 && target === 'fill'; // nur ein hineingezoomtes Bild zurücksetzen, kein Moduswechsel
+        const place = (viewId: ImageId, view: View) => {
+          view.auto = false;
+          view.z = target === 'fill' ? 1 : minZoom(viewId);
+          view.fill = target === 'fill';
+          view.tx = 0;
+          view.ty = 0;
+        };
+        place(id, v);
+        // Wechselt man zwischen Fit und Fill, gilt das auch für das andere Bild des Duells.
+        if (!reset) place(otherId, getView(otherId));
         apply();
       },
       syncFromOther() {
