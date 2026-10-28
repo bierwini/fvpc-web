@@ -74,6 +74,8 @@ export const ZoomStage = forwardRef<ZoomStageHandle, ZoomStageProps>(function Zo
   const lastButton = useRef('');
   // Gewählter Grundmodus für Fotos, die noch nicht angefasst wurden; gilt über alle Duelle (der Zoom selbst nicht).
   const baseMode = useRef<'fit' | 'fill'>('fit');
+  // Grundmodus zu Beginn des Duells: unberührte Bilder richten sich danach, auch wenn das andere Bild des Duells gezoomt wird.
+  const duelMode = useRef<'fit' | 'fill'>('fit');
   const pointers = useRef(new Map<number, { x: number; y: number }>());
   const gesture = useRef({ moved: false, multi: false, startX: 0, startY: 0 });
   // Aktuelle Props für die Callbacks unten, die bewusst nur einmal angelegt werden.
@@ -106,7 +108,7 @@ export const ZoomStage = forwardRef<ZoomStageHandle, ZoomStageProps>(function Zo
         views.current.set(id, v);
       }
       if (v.auto) {
-        v.fill = baseMode.current === 'fill';
+        v.fill = duelMode.current === 'fill';
         v.z = v.fill ? 1 : minZoom(id);
         v.tx = 0;
         v.ty = 0;
@@ -203,7 +205,7 @@ export const ZoomStage = forwardRef<ZoomStageHandle, ZoomStageProps>(function Zo
         const { target, disabled } = buttonFor(id);
         if (disabled) return;
         const v = getView(id);
-        const reset = v.z > 1.001 && target === 'fill'; // nur ein hineingezoomtes Bild zurücksetzen, kein Moduswechsel
+        const switchesMode = v.fill !== (target === 'fill'); // nur ein Wechsel zwischen gewähltem Fit und Fill gilt für beide Bilder
         const place = (viewId: ImageId, view: View) => {
           view.auto = false;
           view.z = target === 'fill' ? 1 : minZoom(viewId);
@@ -213,7 +215,7 @@ export const ZoomStage = forwardRef<ZoomStageHandle, ZoomStageProps>(function Zo
         };
         place(id, v);
         // Wechselt man zwischen Fit und Fill, gilt das auch für das andere Bild des Duells.
-        if (!reset) place(otherId, getView(otherId));
+        if (switchesMode) place(otherId, getView(otherId));
         apply();
       },
       syncFromOther() {
@@ -244,6 +246,7 @@ export const ZoomStage = forwardRef<ZoomStageHandle, ZoomStageProps>(function Zo
   // Neues Duell => alle Zoom-Zustände verwerfen (jedes Duell startet bei Fill).
   useLayoutEffect(() => {
     views.current.clear();
+    duelMode.current = baseMode.current;
     apply();
   }, [resetKey, apply]);
 
