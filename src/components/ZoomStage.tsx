@@ -29,8 +29,8 @@ export interface FitFillButton {
 export interface ZoomStageHandle {
   /** Der Fit/Fill-Button wurde gedrückt: wendet seine aktuelle Aktion auf das angezeigte Bild an. */
   pressFitFill: () => void;
-  /** Zoom + Ausschnitt des anderen Bildes auf das angezeigte Bild übertragen. */
-  syncFromOther: () => void;
+  /** Sync an/aus: Beim Einschalten wird der Zustand des anderen Bildes auf das angezeigte übertragen, danach bleiben beide gleich. */
+  setSync: (on: boolean) => void;
 }
 
 interface ZoomStageProps {
@@ -73,6 +73,7 @@ export const ZoomStage = forwardRef<ZoomStageHandle, ZoomStageProps>(function Zo
   const views = useRef(new Map<ImageId, View>());
   const lastButton = useRef('');
   // Gewählter Grundmodus für Fotos, die noch nicht angefasst wurden; gilt über alle Duelle (der Zoom selbst nicht).
+  const syncOn = useRef(false);
   const baseMode = useRef<'fit' | 'fill'>('fit');
   // Grundmodus zu Beginn des Duells: unberührte Bilder richten sich danach, auch wenn das andere Bild des Duells gezoomt wird.
   const duelMode = useRef<'fit' | 'fill'>('fit');
@@ -153,6 +154,27 @@ export const ZoomStage = forwardRef<ZoomStageHandle, ZoomStageProps>(function Zo
     [getView, minZoom],
   );
 
+  /** Zustand eines Bildes auf ein anderes übertragen: Fit bleibt Fit (jeweils eigenes Maß), der Ausschnitt über den Bildpunkt in der Fenstermitte (stimmt auch bei anderem Seitenverhältnis). */
+  const copyView = useCallback(
+    (fromId: ImageId, toId: ImageId) => {
+      const source = getView(fromId);
+      const target = getView(toId);
+      const s = imageSize(fromId);
+      const t = imageSize(toId);
+      const u = s.w ? 0.5 - source.tx / (source.z * s.w) : 0.5;
+      const w = s.h ? 0.5 - source.ty / (source.z * s.h) : 0.5;
+      const fromMin = minZoom(fromId);
+      const atFit = fromMin < 0.999 && source.z <= fromMin + 0.001;
+      source.auto = false;
+      target.auto = false;
+      target.fill = source.fill;
+      target.z = atFit ? minZoom(toId) : source.z;
+      target.tx = -(u - 0.5) * target.z * t.w;
+      target.ty = -(w - 0.5) * target.z * t.h;
+    },
+    [getView, imageSize, minZoom],
+  );
+
   const apply = useCallback(() => {
     const root = rootRef.current;
     const layer = layerRef.current;
@@ -160,6 +182,11 @@ export const ZoomStage = forwardRef<ZoomStageHandle, ZoomStageProps>(function Zo
     const id = latest.current.activeId;
     const v = getView(id);
     clampView(id, v);
+    if (syncOn.current) {
+      // Sync: das andere Bild bekommt immer denselben Zustand (der Button wirkt dadurch auf beide).
+      copyView(id, latest.current.otherId);
+      clampView(latest.current.otherId, getView(latest.current.otherId));
+    }
     layer.style.transform = `translate(${v.tx}px, ${v.ty}px) scale(${v.z})`;
     const min = minZoom(id);
     const button = buttonFor(id);
@@ -175,7 +202,7 @@ export const ZoomStage = forwardRef<ZoomStageHandle, ZoomStageProps>(function Zo
       lastButton.current = key;
       latest.current.onButtonChange(button);
     }
-  }, [buttonFor, clampView, getView, minZoom]);
+  }, [buttonFor, clampView, copyView, getView, minZoom]);
 
   /** Zoom um einen Punkt (relativ zur Fenstermitte), der dabei unter dem Finger/Zeiger bleibt. */
   const zoomAt = useCallback(
@@ -218,25 +245,13 @@ export const ZoomStage = forwardRef<ZoomStageHandle, ZoomStageProps>(function Zo
         if (switchesMode) place(otherId, getView(otherId));
         apply();
       },
-      syncFromOther() {
-        const { activeId: to, otherId: from } = latest.current;
-        const source = getView(from);
-        const target = getView(to);
-        const s = imageSize(from);
-        const t = imageSize(to);
-        // Gemeinsamer Nenner: welcher Bildpunkt (0..1) liegt in der Fenstermitte? Dadurch stimmt der
-        // Ausschnitt auch bei unterschiedlichen Seitenverhältnissen.
-        const u = s.w ? 0.5 - source.tx / (source.z * s.w) : 0.5;
-        const w = s.h ? 0.5 - source.ty / (source.z * s.h) : 0.5;
-        target.auto = false;
-        target.fill = source.fill;
-        target.z = source.z;
-        target.tx = -(u - 0.5) * source.z * t.w;
-        target.ty = -(w - 0.5) * source.z * t.h;
+      setSync(on) {
+        syncOn.current = on;
+        if (on) copyView(latest.current.otherId, latest.current.activeId);
         apply();
       },
     }),
-    [apply, buttonFor, getView, imageSize, minZoom],
+    [apply, buttonFor, copyView, getView, minZoom],
   );
 
   // Layout-Effekte laufen vor dem Paint: kein Frame, in dem ein Bild mit dem Zoom des anderen steht.

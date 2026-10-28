@@ -49,6 +49,7 @@ export function MatchScreen({
 
   // Jedes Foto startet im zuletzt gewählten Modus (zuerst Fit, Bild komplett sichtbar); der Zoom selbst gilt nur für ein Duell.
   const [fitFillState, setFitFillState] = useState<FitFillButton>({ action: 'expand', target: 'fill', disabled: false });
+  const [synced, setSynced] = useState(false);
   const stageRef = useRef<ZoomStageHandle>(null);
   const otherId = match[activeIndex === 0 ? 1 : 0];
 
@@ -105,8 +106,13 @@ export function MatchScreen({
           </button>
           <button
             type="button"
-            aria-label="Sync zoom and position with the other photo"
-            onClick={() => stageRef.current?.syncFromOther()}
+            className={synced ? 'is-on' : undefined}
+            aria-pressed={synced}
+            aria-label="Keep zoom and position of both photos in sync"
+            onClick={() => {
+              stageRef.current?.setSync(!synced);
+              setSynced(!synced);
+            }}
           >
             Sync
           </button>

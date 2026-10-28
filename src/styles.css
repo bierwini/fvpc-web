@@ -69,6 +69,7 @@ body { font-family: system-ui, sans-serif; }
 .bar--bottom { bottom: 0; }
 .bar progress { flex: 1; }
 .toolbar-group { display: flex; gap: .25rem; }
+.toolbar-group button.is-on { color: #fff; background: var(--color-accent, #0071e3); border-color: var(--color-accent, #0071e3); } /* Sync aktiv */
 
 /* ---------- Ranking ---------- */
 .screen--ranking { display: grid; grid-template-rows: auto 1fr auto; height: 100%; padding: 0; }
