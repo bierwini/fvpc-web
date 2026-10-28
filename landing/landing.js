@@ -106,10 +106,10 @@ function updateCta() {
   cta.style.setProperty('--footer-h', `${fh}px`);
   // Hochscrollen aus dem Footer: Footer und CTA fahren zusammen nach unten (ds), danach nimmt die Section die CTA ohnehin mit.
   // Beim erneuten Runterscrollen läuft es genauso rückwärts: CTA und Footer kommen gemeinsam hoch und stehen dann zusammen.
-  // Beim ersten Mal (nicht "armed") bleibt die CTA dagegen mittig stehen und nur der Footer kommt von unten.
+  // Das gilt, bis man die CTA ganz verlassen hat. Beim ersten Mal (nicht "armed") bleibt die CTA dagegen mittig stehen und nur der Footer kommt von unten.
   const shown = scrollY - (document.documentElement.scrollHeight - innerHeight - fh); // sichtbare Footer-Höhe (< 0: darüber)
   if (scrollY < lastS && shown > -fh) armed = true;
-  if (shown <= -fh) armed = false;
+  if (cta.getBoundingClientRect().top >= innerHeight) armed = false; // erst wenn die CTA ganz draußen ist, gilt wieder der erste Durchlauf
   lastS = scrollY;
   drop = armed ? Math.max(0, Math.min(fh - shown, fh + shown, fh)) : 0;
   ctaStage.style.transform = drop ? `translateY(${drop}px)` : '';

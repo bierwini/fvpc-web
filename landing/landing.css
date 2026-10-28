@@ -90,7 +90,8 @@
   /* ---------- Phone-Mockup (Figma: PhotosView + Bezel): feste Größe, skaliert nie mit dem Fenster ---------- */
   /* Intro: erst nur das Foto, dann fährt das Phone hoch (JS setzt .is-phone nach 1,2 s oder beim ersten Scrollen), dann kommt der Titel (.is-title).
      Bis das Intro fertig ist, scrollt die Seite nicht. */
-  .hero { align-items: flex-start; padding-top: 27svh; }
+  /* Titel mittig zwischen Header (5.5 rem) und Phone; bei hohen Fenstern wächst der Abstand oben und unten gleich, nie weniger als die 27 svh aus Figma */
+  .hero { align-items: flex-start; padding-top: max(27svh, calc((5.5rem + var(--phone-top) - var(--title-h)) / 2)); }
   /* Statisch (ohne JavaScript, reduzierte Bewegung): Unter dem Foto bleibt so viel Platz, wie das Phone hineinragt, damit "Let them compete" erst danach in der Mitte steht */
   .hero-run { padding-bottom: max(0px, calc(var(--phone-top) + 643.55px - 100svh)); }
   .phone { position: absolute; z-index: 1; top: var(--phone-top); left: 0; right: 0; margin-inline: auto; height: 643.55px; width: calc(643.55px * 675 / 1380); }
@@ -119,10 +120,12 @@
   .features { position: relative; overflow-x: clip; }
   /* Erst schrumpfen die Abstände (von 135 px auf 40 px), erst danach das Phone. 696 px = 634 px Phone + 62 px Text. */
   .feature { --a: max(calc(100svh - 696px), 40px); --pad-top: min(60px, calc(var(--a) * .44)); --gap: min(35px, calc(var(--a) * .26)); --pad-bottom: min(40px, calc(var(--a) * .3));
-    display: flex; flex-direction: column; align-items: center; gap: var(--gap); height: 100svh; padding: var(--pad-top) 1rem 0; text-align: center; }
+    --ph: min(634px, calc(100svh - var(--pad-top) - 62px - var(--gap) - var(--pad-bottom)));
+    /* Auf hohen Fenstern (Phone voll groß) steht Text + Phone mittig im Fenster, auf niedrigen bleibt es oben wie in Figma */
+    display: flex; flex-direction: column; align-items: center; gap: var(--gap); height: 100svh; padding: max(var(--pad-top), calc((100svh - 62px - var(--gap) - var(--ph)) / 2)) 1rem 0; text-align: center; }
   .feature__text { position: relative; z-index: 3; display: flex; flex-direction: column; align-items: center; color: #1a1a1a; }
   /* Phone-Screenshot: 634 px hoch wie im Figma, nur auf niedrigen Fenstern kleiner, damit der Abschnitt nie über die Fensterhöhe wächst */
-  .device-shot { position: relative; flex: none; height: min(634px, calc(100svh - var(--pad-top) - 62px - var(--gap) - var(--pad-bottom))); aspect-ratio: 1404 / 1902; }
+  .device-shot { position: relative; flex: none; height: var(--ph); aspect-ratio: 1404 / 1902; }
   .device-shot::before { content: ''; position: absolute; left: 50%; top: 50%; height: 91.5%; aspect-ratio: 1; transform: translate(-50%, -50%); background: url('./img/feature-glow.webp') center / contain no-repeat; }
   .device-shot > img { position: relative; width: 100%; height: 100%; object-fit: contain; }
   @media (prefers-reduced-motion: reduce) { .device-shot::before { display: none; } }
