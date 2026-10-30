@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-edition="web">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -8,6 +8,14 @@
       name="description"
       content="Find your favorite photos with Favopic: compare two photos at a time. Your photos stay on your device."
     />
+    <meta name="theme-color" content="#ffffff" />
+    <link rel="icon" type="image/png" href="./landing/img/favicon.png" />
+    <link rel="apple-touch-icon" href="./landing/img/apple-touch-icon.png" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Favopic" />
+    <meta property="og:title" content="Favopic – Find your favorite photos" />
+    <meta property="og:description" content="Compare two photos at a time and keep the best. Your photos stay on your device." />
+    <meta name="twitter:card" content="summary_large_image" />
     <!-- Progressive Enhancement: Scroll-Effekte gelten nur mit JavaScript (Klasse "js"). -->
     <script>
       document.documentElement.classList.add('js');
@@ -16,150 +24,124 @@
     <script type="module" src="./landing/landing.js"></script>
   </head>
   <body>
-    <header class="site-header">
-      <a class="logo text-2xl md:text-4xl font-bold" href="./" aria-label="Favopic – home">
-        <span class="logo__mark" aria-hidden="true">◻</span>
-        <span>Favopic</span>
-      </a>
-
-      <!-- Je nach Edition: Web => App starten, iOS => noch nicht verfügbar (nicht klickbar) -->
-      <a class="btn text-base md:text-lg font-medium" data-for="web" href="./app/">Start App</a>
-      <button type="button" class="btn text-base md:text-lg font-medium" data-for="ios" disabled>Available soon</button>
-
-      <div class="edition" role="group" aria-label="Edition">
-        <button type="button" class="text-base md:text-lg font-medium" data-edition-option="ios" aria-pressed="false">
-          iOS<span class="edition__long"> Edition</span>
-        </button>
-        <button type="button" class="text-base md:text-lg font-medium" data-edition-option="web" aria-pressed="true">
-          Web<span class="edition__long"> Edition</span>
-        </button>
-      </div>
-    </header>
-
     <main>
       <!--
-        Intro + Hero teilen sich einen Hintergrund (Grid). Er bleibt stehen, während der Hero-Text
-        hereinscrollt, und scrollt danach mit der Hülle hinaus.
+        Vier Abschnitte, jeder mindestens eine Fensterhöhe (min-h-svh): 1. Hero (Foto, später Video), 2. "Let them compete" (bleibt stehen, blendet nach oben aus),
+        3. Features (Bühne bleibt stehen, Phone und Text wechseln beim Scrollen), 4. Call to Action mit Footer.
+        Beim Laden steht nur das Foto, dann fährt das Phone hoch und der Titel kommt rein; danach scrollt alles normal.
       -->
-      <div class="hero-wrap">
-        <div class="hero-wrap__bg" aria-hidden="true"></div>
-        <div class="hero-wrap__content">
-          <section class="section section--intro" aria-labelledby="intro-title">
-            <h2 id="intro-title" class="title fade-up text-4xl md:text-6xl lg:text-7xl font-bold leading-tight text-balance">
-              Your phone is full of photos that look the same?
-            </h2>
-          </section>
+      <div class="hero-all relative">
+        <div class="header-rail"><header class="site-header sticky top-0 z-20 grid h-22 grid-cols-[1fr_auto] md:grid-cols-[1fr_auto_1fr] items-center px-4 sm:px-6 2xl:px-[calc((100%-1280px)/2+24px)]" data-header>
+          <a class="logo inline-flex items-center gap-[7px] justify-self-start text-wordmark font-bold" href="./" aria-label="Favopic – home">
+            <img class="size-10 rounded-[22%]" src="./landing/img/app-icon.png" alt="" width="256" height="256" />
+            <span>Favopic</span>
+          </a>
+          <a class="btn" href="https://apps.apple.com/" target="_blank" rel="noopener" data-i18n="btn.download">Download App</a>
+          <a class="btn btn--light hidden md:inline-flex justify-self-end" href="./app/" data-i18n="btn.tryweb">Try Web</a>
+        </header></div>
 
-          <section class="section section--hero" aria-labelledby="hero-title">
-            <h1 id="hero-title" class="large-title text-5xl md:text-7xl lg:text-8xl font-bold leading-none">
-              Find your favorite<br />photos with Favopic
-            </h1>
-            <p class="subtitle text-xl md:text-2xl lg:text-4xl font-medium leading-tight">and enjoy your library again!</p>
-          </section>
+        <div class="hero-run">
+        <section class="hero relative flex h-svh justify-center" aria-labelledby="intro-title">
+          <div class="hero__bg absolute inset-0" aria-hidden="true"></div>
+          <h2 id="intro-title" class="title hero__title relative mx-auto px-4 text-center font-bold text-white text-balance lg:text-wrap lg:max-w-[14.5em] text-[40px] sm:text-[45px] md:text-[50px] lg:text-[60px] 2xl:text-[70px] leading-[1.2]" data-i18n="intro.title">
+            Your phone is full of photos that look the same?
+          </h2>
+
+        <div class="phone" aria-hidden="true"><div class="phone__inner" data-tilt>
+          <div class="phone__screen"><img src="./landing/img/tile-01.jpg" alt="" width="256" height="256" loading="eager" /><img src="./landing/img/tile-02.jpg" alt="" width="256" height="256" loading="eager" /><img src="./landing/img/tile-03.jpg" alt="" width="256" height="256" loading="eager" /><img src="./landing/img/tile-04.jpg" alt="" width="256" height="256" loading="eager" /><img src="./landing/img/tile-05.jpg" alt="" width="256" height="256" loading="eager" /><img src="./landing/img/tile-06.jpg" alt="" width="256" height="256" loading="eager" /><img src="./landing/img/tile-07.jpg" alt="" width="256" height="256" loading="eager" /><img src="./landing/img/tile-08.jpg" alt="" width="256" height="256" loading="eager" /><img src="./landing/img/tile-09.jpg" alt="" width="256" height="256" loading="eager" /><img src="./landing/img/tile-10.jpg" alt="" width="256" height="256" loading="lazy" /><img src="./landing/img/tile-11.jpg" alt="" width="256" height="256" loading="lazy" /><img src="./landing/img/tile-12.jpg" alt="" width="256" height="256" loading="lazy" /><img src="./landing/img/tile-13.jpg" alt="" width="256" height="256" loading="lazy" /><img src="./landing/img/tile-14.jpg" alt="" width="256" height="256" loading="lazy" /><img src="./landing/img/tile-15.jpg" alt="" width="256" height="256" loading="lazy" /><img src="./landing/img/tile-16.jpg" alt="" width="256" height="256" loading="lazy" /><img src="./landing/img/tile-17.jpg" alt="" width="256" height="256" loading="lazy" /><img src="./landing/img/tile-18.jpg" alt="" width="256" height="256" loading="lazy" /><img src="./landing/img/tile-19.jpg" alt="" width="256" height="256" loading="lazy" /><img src="./landing/img/tile-20.jpg" alt="" width="256" height="256" loading="lazy" /><img src="./landing/img/tile-21.jpg" alt="" width="256" height="256" loading="lazy" /></div>
+              <img class="phone__bezel" src="./landing/img/phone-bezel.png" alt="" width="675" height="1380" />
+        </div></div>
+        </section>
         </div>
+
+        <section class="compete" aria-labelledby="hero-title">
+          <div class="compete__stage flex min-h-svh items-center justify-center px-4">
+            <h1 id="hero-title" class="compete__text text-center font-bold text-balance text-[40px] md:text-[45px] lg:text-[60px] 2xl:text-[70px] leading-[1.2]" data-i18n="hero.title">
+              Let them compete. Keep the best.
+            </h1>
+          </div>
+        </section>
       </div>
 
       <!--
-        Features: Eine feste Bühne bleibt stehen, beim Scrollen wechselt der aktive Schritt.
-        Alle vier Schritte stehen im HTML (Suchmaschinen, Screenreader, Fallback ohne JS oder in
-        sehr niedrigen Fenstern: dann stehen sie einfach untereinander).
+        Features: Eine Bühne (genau eine Fensterhöhe) bleibt stehen, Text und Phone wechseln beim Scrollen.
+        Alle vier Schritte stehen im HTML (Suchmaschinen, Screenreader); ohne JavaScript stehen sie untereinander.
       -->
       <section class="features" aria-label="Features">
         <div class="features__stage">
-          <article class="feature is-active" data-step="0">
-            <h2 class="headline text-xl md:text-3xl font-bold leading-tight text-balance">Intuitive 1vs1 comparison</h2>
-            <div class="device-slot">
-              <div class="device" role="img" aria-label="Placeholder for a screenshot">
-                <span data-for="ios">iPhone placeholder</span>
-                <span data-for="web">Desktop placeholder</span>
-                <span class="device__label">1vs1 comparison</span>
-              </div>
+          <article class="feature" data-step="0">
+            <div class="feature__text">
+              <h2 class="text-title-1 font-bold [@media(max-height:40rem)]:text-[22px]/[28px]" data-i18n="f1.title">Two shots at a time.</h2>
+              <p class="text-title-2 font-bold [@media(max-height:40rem)]:text-[17px]/[22px]" data-i18n="f1.sub">You pick the winner.</p>
             </div>
-            <p class="body-text text-sm md:text-base font-medium">
-              Photos stay on your device. No photo is uploaded.
-              <span class="tip">
-                <button type="button" class="tip__trigger" aria-describedby="blob-tip">How?</button>
-                <span id="blob-tip" role="tooltip" class="tip__bubble text-sm">
-                  Your photos are never uploaded. Your browser only creates temporary links to the
-                  files on your device. They exist in memory only and are deleted as soon as you
-                  reset, close the tournament or leave the page.
-                </span>
-              </span>
-            </p>
+            <div class="device-shot"><img src="./landing/img/feature-compare.webp" alt="Favopic comparing two similar photos side by side" width="1404" height="1902" /></div>
           </article>
 
           <article class="feature" data-step="1">
-            <h2 class="headline text-xl md:text-3xl font-bold leading-tight text-balance">Rankings with bulk actions</h2>
-            <div class="device-slot">
-              <div class="device" role="img" aria-label="Placeholder for a screenshot">
-                <span data-for="ios">iPhone placeholder</span>
-                <span data-for="web">Desktop placeholder</span>
-                <span class="device__label">Rankings</span>
-              </div>
+            <div class="feature__text">
+              <h2 class="text-title-1 font-bold [@media(max-height:40rem)]:text-[22px]/[28px]" data-i18n="f2.title">Get rankings, delete the rest.</h2>
+              <p class="text-title-2 font-bold [@media(max-height:40rem)]:text-[17px]/[22px]" data-i18n="f2.sub">Delete, favorite or share many at once.</p>
             </div>
-            <p class="body-text text-sm md:text-base font-medium">Placeholder text for rankings with bulk actions.</p>
+            <div class="device-shot"><img src="./landing/img/feature-ranking.webp" alt="Favopic ranking with the winner on top and the action menu open" width="1404" height="1902" /></div>
           </article>
 
           <article class="feature" data-step="2">
-            <h2 class="headline text-xl md:text-3xl font-bold leading-tight text-balance">Intelligent suggestions</h2>
-            <div class="device-slot">
-              <div class="device" role="img" aria-label="Placeholder for a screenshot">
-                <span data-for="ios">iPhone placeholder</span>
-                <span data-for="web">Desktop placeholder</span>
-                <span class="device__label">Suggestions</span>
-              </div>
+            <div class="feature__text">
+              <h2 class="text-title-1 font-bold [@media(max-height:40rem)]:text-[22px]/[28px]" data-i18n="f3.title">Similar shots, grouped for you.</h2>
+              <p class="flex items-center justify-center gap-1 text-title-2 font-bold [@media(max-height:40rem)]:text-[17px]/[22px]">
+                <img class="size-6" src="./landing/img/icon-lock.svg" alt="" width="24" height="24" />
+                <span><span data-i18n="f3.sub">Photos stay on your device.</span>
+                  <span class="tip">
+                    <button type="button" class="tip__trigger text-body font-semibold" aria-describedby="blob-tip" data-i18n="tip.trigger">How?</button>
+                    <span id="blob-tip" role="tooltip" class="tip__bubble font-semibold" data-i18n="tip.text">Favopic finds similar photos right on your iPhone. Your photos stay on your device: nothing is uploaded and everything is processed locally.</span>
+                  </span>
+                </span>
+              </p>
             </div>
-            <p class="body-text text-sm md:text-base font-medium">Placeholder text for intelligent suggestions.</p>
+            <div class="device-shot"><img src="./landing/img/feature-suggestions.webp" alt="Favopic suggestions: groups of similar photos found on the device" width="1404" height="1902" /></div>
           </article>
 
           <article class="feature" data-step="3">
-            <h2 class="headline text-xl md:text-3xl font-bold leading-tight text-balance">Clean photos as a habit</h2>
-            <div class="device-slot">
-              <div class="device" role="img" aria-label="Placeholder for a screenshot">
-                <span data-for="ios">iPhone placeholder</span>
-                <span data-for="web">Desktop placeholder</span>
-                <span class="device__label">Habit</span>
-              </div>
+            <div class="feature__text">
+              <h2 class="text-title-1 font-bold [@media(max-height:40rem)]:text-[22px]/[28px]" data-i18n="f4.title">Enjoy your library again.</h2>
+              <p class="text-title-2 font-bold [@media(max-height:40rem)]:text-[17px]/[22px]" data-i18n="f4.sub">Make clean photos a habit.</p>
             </div>
-            <p class="body-text text-sm md:text-base font-medium">Placeholder text for cleaning photos as a habit.</p>
+            <div class="device-shot"><img src="./landing/img/feature-summary.webp" alt="Favopic summary with statistics and a clean photo library" width="1404" height="1902" /></div>
           </article>
         </div>
 
-        <!-- Scrollstrecke: je Schritt eine Fensterhöhe (nur mit JS und ohne reduzierte Bewegung) -->
-        <div class="features__steps" aria-hidden="true">
-          <div></div>
-          <div></div>
-          <div></div>
-          <div></div>
-        </div>
       </section>
 
-      <!-- Footer liegt unten im letzten Screen, der CTA bleibt in der Fenstermitte. -->
-      <div class="last-screen">
-        <section id="get-the-app" class="section" aria-labelledby="cta-title">
-          <h2 id="cta-title" class="headline text-2xl md:text-4xl font-bold leading-tight text-balance">
-            Gain back control of your library and focus on your best memories!
-          </h2>
-          <a class="btn btn--large text-base md:text-lg font-medium" data-for="web" href="./app/">Start App</a>
-          <button type="button" class="btn btn--large text-base md:text-lg font-medium" data-for="ios" disabled>Available soon</button>
-          <div class="store-badge text-xs" role="img" aria-label="Download on the App Store – available soon">
-            App Store badge placeholder<br />Available soon
-          </div>
-        </section>
+      <!-- Call to Action und Footer teilen sich eine Fensterhöhe -->
+      <section id="get-the-app" class="cta relative text-center" aria-labelledby="cta-title">
+        <div class="cta__stage flex h-svh flex-col items-center justify-center gap-6 px-4">
+        <h2 id="cta-title" class="cta-item text-balance text-[30px] sm:text-[40px] leading-[1.2] font-bold" data-i18n="cta.title">Find your favorite photos.</h2>
+        <div class="flex flex-col items-center gap-6">
+          <a class="cta-item btn btn--rainbow" href="https://apps.apple.com/" target="_blank" rel="noopener" data-i18n="btn.download">Download App</a>
+          <a class="cta-item block h-10 w-[120px]" href="https://apps.apple.com/" target="_blank" rel="noopener" aria-label="Download on the App Store"><img class="size-full" src="./landing/img/app-store-badge.png" alt="" width="120" height="40" /></a>
+        </div>
+        </div>
 
-        <footer class="site-footer">
-          <ul class="footer__links text-sm font-normal">
-            <li><a href="./terms/">Terms</a></li>
-            <li><a href="./privacy/">Privacy</a></li>
-            <li><a href="./imprint/">Imprint</a></li>
-          </ul>
-          <p class="footer__copy text-xs font-normal">© 2026 Favopic. All rights reserved.</p>
-          <div class="footer__social">
-            <a class="icon-placeholder text-xs font-normal" href="#" aria-label="Instagram">IG</a>
-            <a class="icon-placeholder text-xs font-normal" href="#" aria-label="TikTok">TT</a>
+        <footer class="site-footer absolute inset-x-0 bottom-0 grid grid-cols-3 items-end gap-y-4 px-4 py-6 text-left sm:px-6">
+          <div class="col-start-1 row-start-2 lg:row-start-1 flex flex-col items-start gap-2">
+            <div class="lang">
+              <button type="button" class="lang__current text-[13px]/[18px] font-semibold" aria-haspopup="true" aria-expanded="false" data-lang-current>English</button>
+              <ul class="lang__list text-[13px]/[18px] font-semibold" hidden data-lang-list></ul>
+            </div>
+            <p class="text-[11px]/[13px] font-normal" data-i18n="footer.copy">© Favopic, 2026. All rights reserved.</p>
           </div>
+          <div class="col-start-2 row-start-2 lg:row-start-1 flex items-center justify-self-center gap-6">
+            <a href="https://www.instagram.com/" target="_blank" rel="noopener" aria-label="Instagram"><img class="size-[18px]" src="./landing/img/icon-instagram.svg" alt="" width="18" height="18" /></a>
+            <a href="https://www.tiktok.com/" target="_blank" rel="noopener" aria-label="TikTok"><img class="size-[18px]" src="./landing/img/icon-tiktok.svg" alt="" width="18" height="18" /></a>
+          </div>
+          <ul class="col-start-3 row-start-1 row-span-2 lg:row-span-1 flex flex-col items-end gap-0 justify-self-end text-[13px]/[18px] font-semibold lg:flex-row lg:gap-4">
+            <li><a href="./contact/" data-i18n="footer.contact">Contact</a></li>
+            <li><a href="./terms/" data-i18n="footer.terms">Terms</a></li>
+            <li><a href="./privacy/" data-i18n="footer.privacy">Privacy</a></li>
+            <li><a href="./imprint/" data-i18n="footer.imprint">Imprint</a></li>
+          </ul>
         </footer>
-      </div>
+      </section>
     </main>
   </body>
 </html>

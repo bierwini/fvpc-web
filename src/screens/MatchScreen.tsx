@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react';
 import { ConfirmSheet, Sheet } from '../components/Sheet';
-import { ZoomStage, type ZoomStageHandle, type ZoomState } from '../components/ZoomStage';
+import { ZoomStage, type ZoomStageHandle, type FitFillButton } from '../components/ZoomStage';
 import type { ImageId, Matchup, TournamentImage } from '../tournament/types';
 
 interface MatchScreenProps {
@@ -47,21 +47,25 @@ export function MatchScreen({
   const activeIndex = selection.matchKey === matchKey ? selection.index : 0;
   const activeId = match[activeIndex];
 
-  // Jedes Duell startet bei Fill (Zoom 1); Herauszoomen geht bis Fit, der Zoom gilt nur für ein Duell.
-  const [zoomState, setZoomState] = useState<ZoomState>('fill');
+  // Jedes Foto startet im zuletzt gewählten Modus (zuerst Fit, Bild komplett sichtbar); der Zoom selbst gilt nur für ein Duell.
+  const [fitFillState, setFitFillState] = useState<FitFillButton>({ action: 'expand', target: 'fill', disabled: false });
+  const [synced, setSynced] = useState(false);
   const stageRef = useRef<ZoomStageHandle>(null);
   const otherId = match[activeIndex === 0 ? 1 : 0];
 
-  // Fit/Fill-Button. Das Zeichen zeigt die Aktion: ↗↙ (Pfeile nach innen) oder ↙↗ (nach außen, "Fill").
-  //   gezoomt (über Fill): ↗↙, setzt den Zoom zurück auf Fill.
-  //   Fit erreicht (herausgezoomt oder per Button): ↙↗, setzt auf Fill.
-  //   sonst (Fill oder dazwischen): ↗↙, zoomt auf Fit.
-  const fitFill =
-    zoomState === 'zoomed'
-      ? { icon: '↗↙', aria: 'Reset zoom', onClick: () => stageRef.current?.resetZoom() }
-      : zoomState === 'fit'
-        ? { icon: '↙↗', aria: 'Scale to fill window', onClick: () => stageRef.current?.resetZoom() }
-        : { icon: '↗↙', aria: 'Scale to fit window', onClick: () => stageRef.current?.zoomToFit() };
+  // Fit/Fill-Button. Das Zeichen zeigt die Aktion: ↙↗ (Pfeile nach außen, "expand") oder ↗↙ (nach innen, "collapse").
+  //   Die Regeln (wann welche Aktion, wohin es springt) stehen in ZoomStage (buttonFor).
+  const fitFill = {
+    icon: fitFillState.action === 'expand' ? '↙↗' : '↗↙',
+    aria:
+      fitFillState.target === 'fill'
+        ? fitFillState.action === 'expand'
+          ? 'Scale to fill window'
+          : 'Reset zoom'
+        : 'Scale to fit window',
+    disabled: fitFillState.disabled,
+    onClick: () => stageRef.current?.pressFitFill(),
+  };
 
   const [closeOpen, setCloseOpen] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
@@ -77,7 +81,7 @@ export function MatchScreen({
         resetKey={matchKey}
         activeId={activeId}
         otherId={otherId}
-        onZoomStateChange={setZoomState}
+        onButtonChange={setFitFillState}
         label={`Showing photo ${activeIndex === 0 ? 'A' : 'B'} – click to switch, pinch or scroll to zoom`}
         onTap={() => setSelection({ matchKey, index: activeIndex === 0 ? 1 : 0 })}
       >
@@ -97,13 +101,18 @@ export function MatchScreen({
 
       <header className="bar bar--top">
         <div className="toolbar-group" role="group" aria-label="Tools">
-          <button type="button" aria-label={fitFill.aria} onClick={fitFill.onClick}>
+          <button type="button" aria-label={fitFill.aria} disabled={fitFill.disabled} onClick={fitFill.onClick}>
             <span aria-hidden="true">{fitFill.icon}</span>
           </button>
           <button
             type="button"
-            aria-label="Sync zoom and position with the other photo"
-            onClick={() => stageRef.current?.syncFromOther()}
+            className={synced ? 'is-on' : undefined}
+            aria-pressed={synced}
+            aria-label="Keep zoom and position of both photos in sync"
+            onClick={() => {
+              stageRef.current?.setSync(!synced);
+              setSynced(!synced);
+            }}
           >
             Sync
           </button>

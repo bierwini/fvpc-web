@@ -69,6 +69,7 @@ body { font-family: system-ui, sans-serif; }
 .bar--bottom { bottom: 0; }
 .bar progress { flex: 1; }
 .toolbar-group { display: flex; gap: .25rem; }
+.toolbar-group button.is-on { color: #fff; background: var(--color-accent, #0071e3); border-color: var(--color-accent, #0071e3); } /* Sync aktiv */
 
 /* ---------- Ranking ---------- */
 .screen--ranking { display: grid; grid-template-rows: auto 1fr auto; height: 100%; padding: 0; }
@@ -85,7 +86,7 @@ body { font-family: system-ui, sans-serif; }
 @media (min-width: 56rem) {
   .rank-grid { grid-template-columns: repeat(12, 1fr); }
   .rank-grid__item--first { grid-column: span 7; aspect-ratio: auto; height: clamp(18rem, 55vh, 40rem); }
-  .rank-grid__item--second { grid-column: span 5; aspect-ratio: auto; } /* streckt sich auf die Höhe von #1 */
+  .rank-grid__item--second { grid-column: span 5; aspect-ratio: auto; height: clamp(18rem, 55vh, 40rem); } /* gleiche Höhe wie #1, das Bild wird zugeschnitten und bestimmt die Zeilenhöhe nicht */
 }
 
 .rank-grid figure { position: relative; margin: 0; width: 100%; height: 100%; }

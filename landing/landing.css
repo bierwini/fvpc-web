@@ -1,155 +1,185 @@
-/* Tailwind nur mit Theme + Utilities (ohne Preflight-Reset), damit die nativen Controls wie bisher aussehen.
-   Schriftgrößen kommen ausschließlich aus der Tailwind-Standardskala (Klassen im HTML), nicht aus diesem CSS. */
+/* Tailwind nur mit Theme + Utilities (ohne Preflight-Reset). Layout und Typografie stehen als Tailwind-Klassen im HTML
+   (Breakpoints sm 640, md 768, lg 1024, xl 1280, 2xl 1536 wie in den Figma-Frames); hier nur, was Tailwind nicht abdeckt. */
 @layer theme, base, components, utilities;
 @import 'tailwindcss/theme.css' layer(theme);
 @import 'tailwindcss/utilities.css' layer(utilities);
+@import '../src/design/tokens.css' layer(theme);
 
-/* Plain Styles wie in der Web-App (Systemschrift, native Controls). Das Design folgt später. */
-* { box-sizing: border-box; }
-:root {
-  --header-h: 4.5rem;
-  --gutter: clamp(1rem, 4vw, 3rem);
-  /* Ein "Screen": Fensterhöhe, mindestens 34rem. */
-  --screen: 100vh;
-  --screen: max(100svh, 34rem);
-  /* Scrollstrecke pro Feature-Schritt (kürzer = schneller durch die Funktionen). */
-  --step: calc(var(--screen) * .5);
-  /* Abstand Intro-Text -> Hero-Text, in Bildschirmhöhen. */
-  --hero-gap: .7;
-}
-@media (min-width: 48rem) { :root { --header-h: 6rem; } }
-html { scroll-behavior: smooth; }
-@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
-body { margin: 0; font-family: system-ui, sans-serif; line-height: 1.4; }
-a { color: inherit; }
-
-/* ---------- Header: liegt über dem Inhalt der ersten Seite und scrollt mit der Seite weg ---------- */
-.site-header {
-  position: absolute; top: 0; left: 0; right: 0; z-index: 10; height: var(--header-h);
-  display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: .5rem;
-  padding: 0 var(--gutter); background: #fff;
-}
-.logo { display: inline-flex; align-items: center; gap: .4rem; line-height: 1; text-decoration: none; justify-self: start; }
-.edition { justify-self: end; display: flex; }
-.edition button { border-radius: 0; font-family: inherit; }
-.edition button[aria-pressed='true'] { background: Highlight; color: HighlightText; }
-[data-edition='web'] [data-for='ios'], [data-edition='ios'] [data-for='web'] { display: none; }
-@media (max-width: 36rem) { .edition__long { display: none; } }
-
-/* Link im Look eines nativen Buttons */
-.btn {
-  display: inline-block; padding: .35rem .9rem; font-family: inherit;
-  text-decoration: none; text-align: center;
-  color: ButtonText; background: ButtonFace; border: 1px solid ButtonBorder; border-radius: .3rem;
-}
-.btn[disabled] { color: GrayText; cursor: not-allowed; }
-.btn--large { padding: .6rem 1.6rem; }
-
-/* ---------- Sektionen: genau ein Screen hoch, Inhalt in der echten Fenstermitte ----------
-   Oben und unten bleibt Platz für Header bzw. Footer, die über dem Inhalt liegen. */
-.section {
-  min-height: var(--screen);
-  padding: var(--header-h) var(--gutter);
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  text-align: center; gap: clamp(1rem, 3vh, 2rem);
+@layer base {
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { margin: 0; font-family: var(--font-sans); line-height: 1.4; color: var(--color-label); background: var(--color-background); -webkit-font-smoothing: antialiased; }
+  h1, h2, p, ul { margin: 0; }
+  ul { padding: 0; list-style: none; }
+  a { color: inherit; text-decoration: none; }
+  button { font: inherit; color: inherit; }
+  img { display: block; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 }
 
-/* ---------- Intro + Hero: gemeinsamer Hintergrund (Platzhalter: Linien-Grid) ----------
-   Grid-Layout: Hintergrund und Inhalt liegen in derselben Zelle. Der Hintergrund klebt oben, solange man
-   bis zum Hero scrollt, und wird am Ende der Hülle normal losgelassen (scrollt mit raus). */
-.hero-wrap { display: grid; }
-.hero-wrap > * { grid-area: 1 / 1; }
-.hero-wrap__bg {
-  position: sticky; top: 0; align-self: start; height: var(--screen);
-  background-color: #fff;
-  background-image:
-    linear-gradient(#f1f1f1 1px, transparent 1px),
-    linear-gradient(90deg, #f1f1f1 1px, transparent 1px);
-  background-size: 64px 64px;
-}
-.hero-wrap__content { position: relative; z-index: 1; }
-/* Der Hero rückt näher an das Intro: Abstand der Texte = --hero-gap Bildschirmhöhen. */
-.section--hero { margin-top: calc(var(--screen) * (var(--hero-gap) - 1)); }
+@layer components {
+  /* ---------- Header: klebt oben, solange Hero und "Let them compete" im Bild sind; weiß auf dem Foto, danach dunkel ---------- */
+  /* Die Schiene endet 88 px vor dem Ende von "Let them compete": Der Header scrollt weg, bevor die Features stehen (mit JS siehe unten). */
+  .header-rail { position: absolute; inset: 0 0 auto; height: calc(100% - 5.5rem); pointer-events: none; z-index: 20; }
+  html.js .header-rail { height: 100%; } /* mit Bewegung scrollt JS den Header während des Ausblendens von "Let them compete" nach oben */
+  .site-header { pointer-events: auto; color: #fff; background: linear-gradient(rgb(0 0 0 / .4), rgb(0 0 0 / 0)); transition: color .2s; }
+  .site-header.is-light { color: var(--color-label); background: linear-gradient(rgb(255 255 255 / .92) 60%, rgb(255 255 255 / 0)); }
+  .logo { line-height: 1; transition: color .2s ease; }
+  /* Hover wie beim Try-Web-Button: ein Tick dunkler (weiß wird #e8e8ed) */
+  .site-header:not(.is-light) .logo:hover { color: #e8e8ed; }
+  .site-header.is-light .logo:hover { color: color-mix(in srgb, var(--color-label) 70%, white); }
 
-/* Fade-in-up beim Laden (Standard-CSS-Animation), danach bleibt der Text stehen. */
-@keyframes fade-up { from { opacity: 0; transform: translateY(1.75rem); } to { opacity: 1; transform: none; } }
-.fade-up { animation: fade-up .9s cubic-bezier(.2, .7, .2, 1) .15s both; }
-@media (prefers-reduced-motion: reduce) { .fade-up { animation: none; } }
+  /* ---------- Buttons wie bei Apple: blau mit weißer Schrift, oder weiß mit dunkler Schrift ---------- */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; padding: 11px 21px; font-size: 17px; line-height: 22px; font-weight: 500;
+    white-space: nowrap; cursor: pointer; border: 0; border-radius: 980px; color: #fff; background: var(--color-accent);
+    transition: background-color .2s ease, box-shadow .2s ease;
+  }
+  .btn--light { color: #222; background: #fff; }
+  .site-header.is-light .btn--light { box-shadow: inset 0 0 0 1px #000; } /* auf weißem Grund sichtbar */
+  .btn--rainbow { background: url('./img/rainbow.jpg') center / cover; }
+  @media (hover: hover) {
+    .btn:hover { background: color-mix(in srgb, var(--color-accent) 88%, #000); }
+    .btn--light:hover { background: #f5f5f7; }
+    .btn--rainbow:hover { background: url('./img/rainbow.jpg') center / cover; box-shadow: inset 0 0 0 999px rgb(0 0 0 / .08); }
+  }
+  .btn:active { background: color-mix(in srgb, var(--color-accent) 76%, #000); }
+  .btn--light:active { background: #e8e8ed; }
+  .btn--rainbow:active { background: url('./img/rainbow.jpg') center / cover; box-shadow: inset 0 0 0 999px rgb(0 0 0 / .16); }
+  .btn:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+  @media (prefers-reduced-motion: reduce) { .btn { transition: none; } }
+  .site-footer a:hover, .lang button:hover { opacity: .65; }
+  .site-footer a, .lang button { transition: opacity .2s; }
 
-/* Texte skalieren mit der Fensterbreite */
-.title { margin: 0; max-width: 24ch; }
-.large-title { margin: 0; }
-.subtitle { margin: 0; }
-.headline { margin: 0; max-width: 30ch; }
-.body-text { margin: 0; }
+  /* ---------- Hero + "Let them compete": gemeinsamer Raster-Hintergrund, das Phone steht über beiden ---------- */
+  .hero-all {
+    background: var(--color-background) url('./img/grid.svg') 0 0 / 256px 256px;
+    /* Höhe des Titels (zwei Zeilen) je Breakpoint, damit das Phone nie in den Titel ragt */
+    --title-h: 9.5rem;
+    /* Phone-Oberkante: ragt 376 px ins Foto (Figma bei 834 px Höhe), mindestens 3,75 rem unter dem Titel, dazu 24 px tiefer */
+    --phone-top: calc(max(calc(27svh + var(--title-h) + 3.75rem), calc(100svh - 392px)) + 24px);
+  }
+  @media (min-width: 40rem) { .hero-all { --title-h: 6.75rem; } }
+  @media (min-width: 48rem) { .hero-all { --title-h: 7.5rem; } }
+  @media (min-width: 64rem) { .hero-all { --title-h: 9rem; } }
+  @media (min-width: 96rem) { .hero-all { --title-h: 10.5rem; } }
+  .hero__bg { background: url('./img/hero.jpg') center top / cover; }
+  /* Dunkler Overlay (Figma: schwarz 25 %): weiße Schrift bleibt lesbar, egal welches Motiv später läuft */
+  .hero__bg::after { content: ''; position: absolute; inset: 0; background: rgb(0 0 0 / .25); }
+  @media (prefers-reduced-motion: reduce) { .hero__bg { display: none; } .title { color: var(--color-label); } }
+  .title { text-shadow: 0 1px 3px rgb(0 0 0 / .3), 0 5px 25px rgb(0 0 0 / .45); }
+  @media (prefers-reduced-motion: reduce) { .title { text-shadow: none; } }
 
-/* Features: vier Schritte untereinander, jeder genau ein Screen hoch (Fallback); der Geräte-Platzhalter skaliert mit dem Platz. */
-.feature {
-  /* Der Header ist hier schon weggescrollt: nur wenig Rand oben und unten, damit der Platzhalter groß wird. */
-  height: var(--screen); padding: 2rem var(--gutter);
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  text-align: center; gap: clamp(1rem, 3vh, 2rem);
+  /* "Let them compete": Bühne bleibt eine Weile stehen (JS setzt --o, --b, --y für Ein- und Ausblenden) */
+  .compete__stage { position: relative; }
+  .compete__text { opacity: var(--o, 1); filter: blur(var(--b, 0px)); transform: translateY(var(--y, 0px)); }
+  @media (prefers-reduced-motion: no-preference) {
+    html.js .compete { height: 145svh; }
+    html.js .compete__stage { position: sticky; top: 0; height: 100svh; min-height: 0; }
+    /* Das Raster steht fest im Fenster (eigene Fläche statt Hintergrund, damit es nicht am Ende des Abschnitts endet), JS blendet es über --co aus */
+    html.js .hero-all { isolation: isolate; background-image: none; }
+    html.js .hero-all::before { content: ''; position: fixed; inset: 0; z-index: -1; pointer-events: none; background: url('./img/grid.svg') 0 0 / 256px 256px; opacity: calc(1 - var(--co, 0)); }
+    html.js .features { margin-top: calc(-50svh - 60px); }
+    /* Call to Action: Überschrift, Button und Badge blenden nacheinander ein, wenn das Phone fast draußen ist (JS setzt --o, --b, --y per Scroll) und bleiben dann stehen.
+       CTA und Footer bilden eine Fensterhöhe und scrollen normal gemeinsam ein und aus. */
+    html.js .cta-item { opacity: var(--o, 0); filter: blur(var(--b, 0px)); transform: translateY(var(--y, 0px)); }
+  }
+
+  /* ---------- Phone-Mockup (Figma: PhotosView + Bezel): feste Größe, skaliert nie mit dem Fenster ---------- */
+  /* Intro: erst nur das Foto, dann fährt das Phone hoch (JS setzt .is-phone nach 1,2 s oder beim ersten Scrollen), dann kommt der Titel (.is-title).
+     Bis das Intro fertig ist, scrollt die Seite nicht. */
+  /* Titel mittig zwischen Header (5.5 rem) und Phone; bei hohen Fenstern wächst der Abstand oben und unten gleich, nie weniger als die 27 svh aus Figma */
+  .hero { align-items: flex-start; padding-top: max(27svh, calc((5.5rem + var(--phone-top) - var(--title-h)) / 2)); }
+  /* Statisch (ohne JavaScript, reduzierte Bewegung): Unter dem Foto bleibt so viel Platz, wie das Phone hineinragt, damit "Let them compete" erst danach in der Mitte steht */
+  .hero-run { padding-bottom: max(0px, calc(var(--phone-top) + 643.55px - 100svh)); }
+  .phone { position: absolute; z-index: 1; top: var(--phone-top); left: 0; right: 0; margin-inline: auto; height: 643.55px; width: calc(643.55px * 675 / 1380); }
+  .phone__inner { position: absolute; inset: 0; }
+  @media (prefers-reduced-motion: no-preference) {
+    /* Das Phone scrollt mit dem Hero, JS schiebt es am Ende schneller hinaus (--py). Der Versatz beim Intro läuft über die eigene Eigenschaft "translate". */
+    html.js .hero-run { padding-bottom: 0; }
+    html.js .phone { transform: translateY(var(--py, 0px)); translate: 0 calc(100svh - var(--phone-top) + 80px); transition: translate 1.2s cubic-bezier(.2, .7, .2, 1); will-change: transform; }
+    html.js .hero.is-phone .phone { translate: none; }
+    html.js .hero__title { opacity: 0; }
+    html.js .hero.is-title .hero__title { opacity: 1; animation: fade-blur 1s cubic-bezier(.2, .7, .2, 1) backwards; }
+  }
+  /* leichte Neigung zum Zeiger (JS setzt --rx/--ry) */
+  [data-tilt] { transform: perspective(1100px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) ; transition: transform .2s cubic-bezier(.2, .7, .2, 1); }
+  [data-tilt].is-leaving { transition-duration: .6s; }
+  @media (prefers-reduced-motion: reduce) { [data-tilt] { transform: none; } }
+  .phone__screen {
+  position: absolute; left: 5.33%; top: 2.5%; width: 89.4%; height: 95.07%; overflow: hidden;
+  border-radius: 12.4% / 5.7%; background: #fff;
+  display: grid; grid-template-columns: repeat(3, 1fr); grid-auto-rows: calc((100% - 1.4px * 6) / 7); gap: 1.4px;
 }
-.device-slot { flex: 1 1 0; min-height: 0; width: 100%; display: grid; place-items: center; container-type: size; }
-/* Web-Edition: breiter Desktop-Platzhalter, iOS-Edition: iPhone. Skaliert mit dem verfügbaren Platz, Seitenverhältnis bleibt. */
-.device {
-  width: min(100cqw, calc(100cqh * 9 / 19.5)); aspect-ratio: 9 / 19.5;
-  display: grid; place-content: center; text-align: center; padding: 1rem;
-  border: 2px solid currentColor; border-radius: clamp(1.5rem, 4vh, 3rem);
-}
-[data-edition='web'] .device { width: min(100cqw, calc(100cqh * 16 / 10)); aspect-ratio: 16 / 10; border-radius: .75rem; }
-.device__label { display: block; }
-.features__steps { display: none; }
-@media (min-height: 34rem) {
-  /* Bühne (1 Screen) + Scrollstrecke (4 Schritte à --step): Die Bühne klebt, solange man die
-     4 Schritte durchscrollt, und wird danach normal losgelassen. Die Schritte liegen unsichtbar darüber. */
-  html.js .features { position: relative; height: calc(var(--screen) + 4 * var(--step)); }
-  html.js .features__stage { position: sticky; top: 0; height: var(--screen); display: grid; }
-  html.js .feature { grid-area: 1 / 1; opacity: 0; visibility: hidden; }
-  html.js .feature.is-active { opacity: 1; visibility: visible; }
-  html.js .features__steps { display: block; position: absolute; top: 0; left: 0; right: 0; pointer-events: none; }
-  html.js .features__steps > div { height: var(--step); }
-}
-/* Überblenden nur ohne reduzierte Bewegung; sonst wechselt der Text sofort. */
-@media (min-height: 34rem) and (prefers-reduced-motion: no-preference) {
-  html.js .feature { transition: opacity .25s, visibility .25s; }
+.phone__screen img { width: 100%; height: 100%; object-fit: cover; border-radius: 2px; display: block; }
+.phone__bezel { position: absolute; inset: 0; width: 100%; height: 100%; }
+
+  /* ---------- Features: eine Bühne, Schritte wechseln beim Scrollen ---------- */
+  .features { position: relative; overflow-x: clip; }
+  /* Erst schrumpfen die Abstände (von 135 px auf 40 px), erst danach das Phone. 696 px = 634 px Phone + 62 px Text. */
+  .feature { --a: max(calc(100svh - 696px), 40px); --pad-top: min(60px, calc(var(--a) * .44)); --gap: min(35px, calc(var(--a) * .26)); --pad-bottom: min(40px, calc(var(--a) * .3));
+    --ph: min(634px, calc(100svh - var(--pad-top) - 62px - var(--gap) - var(--pad-bottom)));
+    /* Text + Phone stehen immer mittig im Fenster */
+    display: flex; flex-direction: column; align-items: center; gap: var(--gap); height: 100svh; padding: calc((100svh - 62px - var(--gap) - var(--ph)) / 2) 1rem 0; text-align: center; }
+  .feature__text { position: relative; z-index: 3; display: flex; flex-direction: column; align-items: center; color: #1a1a1a; }
+  /* Phone-Screenshot: 634 px hoch wie im Figma, nur auf niedrigen Fenstern kleiner, damit der Abschnitt nie über die Fensterhöhe wächst */
+  .device-shot { position: relative; flex: none; height: var(--ph); aspect-ratio: 1404 / 1902; }
+  .device-shot::before { content: ''; position: absolute; left: 50%; top: 50%; height: 91.5%; aspect-ratio: 1; transform: translate(-50%, -50%); background: url('./img/feature-glow.webp') center / contain no-repeat; }
+  .device-shot > img { position: relative; width: 100%; height: 100%; object-fit: contain; }
+  @media (prefers-reduced-motion: reduce) { .device-shot::before { display: none; } }
+  /* Mit JavaScript: Bühne bleibt n x 85 svh lang stehen, JS blendet Text und Phone je nach Scrollposition über (--o, --b, --y) */
+  html.js .features { height: calc(100svh + var(--steps, 4) * 85svh); }
+  html.js .features__stage { position: sticky; top: 0; height: 100svh; display: grid; }
+  html.js .feature { grid-area: 1 / 1; --o: 0; --to: 0; }
+  html.js .feature:first-child { --o: 1; --to: 1; }
+  html.js .feature__text { opacity: var(--to); filter: blur(var(--b, 0px)); transform: translateY(var(--y, 0px)); }
+  html.js .device-shot { opacity: var(--o); filter: blur(var(--pb, 0px)); }
+
+  /* "How?" mit Glas-Popover, mittig unter dem Link */
+  .tip { position: relative; display: inline-block; }
+  .tip__trigger { padding: 0; border: 0; background: none; cursor: help; color: var(--color-accent); }
+  /* Weiße Sprechblase wie der Try-Web-Button, kleiner Radius, runder Pfeil auf "How?" */
+  .tip__bubble {
+    position: absolute; z-index: 5; top: calc(100% + .625rem); left: 50%; width: min(18.5rem, calc(100vw - 2rem)); margin-left: calc(min(18.5rem, calc(100vw - 2rem)) / -2);
+    padding: .625rem .875rem; text-align: left; font-size: 13px; line-height: 18px; color: #222; background: #fff; border-radius: 24px; box-shadow: 0 4px 16px rgb(0 0 0 / .06);
+    visibility: hidden; opacity: 0; transform: translateY(-.4rem) scale(.96); transform-origin: 50% 0; pointer-events: none;
+    transition: opacity .2s, visibility .2s, transform .25s cubic-bezier(.2, .7, .2, 1);
+  }
+  .tip__bubble::after { content: ''; position: absolute; left: 50%; top: -4px; width: 10px; height: 10px; margin-left: -5px; background: #fff; border-radius: 3px 0 0 0; transform: rotate(45deg); }
+  .tip__bubble::before { content: ''; position: absolute; left: 0; right: 0; top: -.75rem; height: .75rem; }
+  .tip:hover .tip__bubble, .tip:focus-within .tip__bubble, .tip.is-open .tip__bubble { visibility: visible; opacity: 1; pointer-events: auto; transform: none; }
+
+  /* ---------- Sprachwahl im Footer: Klick auf die Sprache öffnet die Liste darüber (gleiche Schrift) ---------- */
+  .lang { position: relative; }
+  .lang button { padding: 0; border: 0; background: none; cursor: pointer; text-align: left; }
+  .lang__list { position: absolute; bottom: 100%; left: 0; display: flex; flex-direction: column; align-items: flex-start; margin-bottom: .25rem; }
+  .lang__list[hidden] { display: none; }
+
+  /* ---------- Platzhalter-Seiten (Terms, Privacy, Imprint, Contact) ---------- */
+  .legal { max-width: 48rem; margin: 0 auto; padding: 2rem 1rem 5rem; line-height: 1.6; }
+  .legal h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 1.5rem; }
+  .legal p { margin: 0 0 1em; }
+
+  /* ---------- Kontaktformular: Felder mit 1-px-Strich wie der Try-Web-Button ---------- */
+  .contact h1 { font-size: 2.5rem; line-height: 1.1; margin-bottom: .5rem; }
+  .contact__sub { font-size: 1.25rem; color: color-mix(in srgb, var(--color-label) 65%, white); margin-bottom: 2rem !important; }
+  .form { display: grid; gap: 1.25rem; max-width: 32rem; }
+  .field { display: grid; gap: .375rem; }
+  .field label { font-size: 13px; line-height: 18px; font-weight: 600; }
+  .field input, .field select, .field textarea {
+    width: 100%; padding: 11px 21px; font: inherit; font-size: 17px; line-height: 22px; color: #222; background: #fff;
+    border: 0; border-radius: 980px; box-shadow: inset 0 0 0 1px #000; appearance: none; transition: box-shadow .2s ease;
+  }
+  .field textarea { border-radius: 24px; resize: vertical; min-height: 9rem; }
+  .field select { background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none' stroke='%23000' stroke-width='1.5'%3E%3Cpath d='m1 1 5 5 5-5'/%3E%3C/svg%3E") right 21px center no-repeat; padding-right: 48px; }
+  .field input:focus-visible, .field select:focus-visible, .field textarea:focus-visible { outline: 0; box-shadow: inset 0 0 0 2px var(--color-accent); }
+  .field [aria-invalid='true'] { box-shadow: inset 0 0 0 2px #d70015; }
+  .form .btn { justify-self: start; }
+  .form .btn[disabled] { opacity: .5; cursor: default; }
+  .form__note { font-size: 13px; line-height: 18px; color: color-mix(in srgb, var(--color-label) 65%, white); margin: 0 !important; }
+  .form__status { font-size: 15px; font-weight: 600; margin: 0 !important; }
+  .form__status[hidden] { display: none; }
+  .hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
 }
 
-/* "How?"-Bubble: an der (zentrierten) Textzeile verankert, damit sie auch auf schmalen Fenstern im Bild bleibt. */
-.feature .body-text { position: relative; }
-.tip { display: inline-block; }
-.tip__trigger { font: inherit; padding: 0; border: 0; background: none; text-decoration: underline; cursor: help; color: inherit; }
-.tip__bubble {
-  position: absolute; bottom: calc(100% + .6rem); left: 50%; transform: translateX(-50%);
-  width: min(20rem, calc(100vw - 2rem)); padding: .75rem 1rem; text-align: left;
-  line-height: 1.4; color: CanvasText; background: Canvas;
-  border: 1px solid currentColor; border-radius: .6rem; box-shadow: 0 .25rem 1rem rgb(0 0 0 / .2);
-  visibility: hidden; opacity: 0; transition: opacity .15s, visibility .15s; pointer-events: none;
-}
-.tip:hover .tip__bubble, .tip:focus-within .tip__bubble, .tip.is-open .tip__bubble { visibility: visible; opacity: 1; pointer-events: auto; }
-
-.store-badge { width: 12rem; height: 4rem; cursor: default; }
-
-/* ---------- Letzter Screen: CTA mittig, Footer liegt unten darüber ---------- */
-.last-screen { position: relative; }
-.site-footer {
-  position: absolute; left: 0; right: 0; bottom: 0;
-  display: grid; grid-template-columns: 1fr auto 1fr; align-items: end; gap: 1rem;
-  padding: 1.25rem var(--gutter);
-}
-.footer__links { margin: 0; padding: 0; list-style: none; }
-.footer__links a { text-decoration: none; }
-.footer__copy { margin: 0; text-align: center; opacity: .8; }
-.footer__social { justify-self: end; display: flex; gap: .5rem; }
-.icon-placeholder {
-  display: grid; place-items: center; width: 2.25rem; height: 2.25rem;
-  text-decoration: none; border: 1px solid currentColor; border-radius: 50%;
-}
-@media (max-width: 40rem) {
-  .site-footer { grid-template-columns: 1fr; justify-items: center; text-align: center; gap: .6rem; padding: .75rem var(--gutter); }
-  .footer__links { display: flex; flex-wrap: wrap; justify-content: center; gap: .25rem 1.25rem; }
-  .footer__social { justify-self: center; }
-}
-
-/* ---------- Platzhalter-Seiten (Terms, Privacy, Imprint) ---------- */
-.legal { max-width: 42rem; margin: 0 auto; padding: calc(var(--header-h) + 2rem) var(--gutter) 4rem; }
+@keyframes fade-blur { from { opacity: 0; filter: blur(12px); transform: translateY(1.75rem); } to { opacity: 1; filter: none; transform: none; } }
