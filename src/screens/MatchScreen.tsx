@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { ConfirmSheet, Sheet } from '../components/Sheet';
 import { ZoomStage, type ZoomStageHandle, type FitFillButton } from '../components/ZoomStage';
 import type { ImageId, Matchup, TournamentImage } from '../tournament/types';
@@ -14,6 +14,11 @@ interface MatchScreenProps {
   onRemove: (id: ImageId) => void;
   /** Close: alles verwerfen, zurück zum Intro. */
   onClose: () => void;
+  /** Einstufiges Undo der letzten Entscheidung. */
+  canUndo: boolean;
+  onUndo: () => void;
+  /** Nach Undo: dieses Bild (gewählt bzw. entfernt) wird angezeigt. */
+  focus: { id: ImageId; token: number } | null;
 }
 
 /** Seitenverhältnis fürs CSS (Fill-Größe wird dort aus --ar berechnet). */
@@ -37,6 +42,9 @@ export function MatchScreen({
   onChoose,
   onRemove,
   onClose,
+  canUndo,
+  onUndo,
+  focus,
 }: MatchScreenProps) {
   // Die Auswahl gehört zu einem bestimmten Duell; bei einem neuen Duell gilt wieder Bild A.
   const matchKey = match.join('|');
@@ -45,6 +53,10 @@ export function MatchScreen({
     index: 0,
   });
   const activeIndex = selection.matchKey === matchKey ? selection.index : 0;
+  // Nach Undo das Bild zeigen, bei dem entschieden wurde (vor dem Paint, damit nichts aufblitzt).
+  useLayoutEffect(() => {
+    if (focus && match.includes(focus.id)) setSelection({ matchKey, index: match[0] === focus.id ? 0 : 1 });
+  }, [focus?.token]); // eslint-disable-line react-hooks/exhaustive-deps
   const activeId = match[activeIndex];
 
   // Jedes Foto startet im zuletzt gewählten Modus (zuerst Fit, Bild komplett sichtbar); der Zoom selbst gilt nur für ein Duell.
@@ -72,6 +84,35 @@ export function MatchScreen({
 
   // Nur diese (max. 4) Bilder sind im DOM: beide des aktuellen Duells (für den Instant-Toggle)
   // plus die des Folgeduells. Key = Bild-ID, damit beim Weiterschalten nichts neu geladen wird.
+  // Tastenkürzel: Enter = Choose, Pfeil links/rechts = zum anderen Foto, Strg/Cmd+Z = Undo.
+  // Enter bleibt bei fokussierten Buttons und Eingaben deren eigene Aktion.
+  const keys = useRef({ activeIndex, activeId, matchKey, canUndo, onUndo, onChoose, blocked: false });
+  keys.current = { activeIndex, activeId, matchKey, canUndo, onUndo, onChoose, blocked: closeOpen || helpOpen };
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      const k = keys.current;
+      if (k.blocked || e.defaultPrevented) return;
+      const target = e.target as HTMLElement;
+      const typing = !!target.closest('input, select, textarea');
+      if ((e.ctrlKey || e.metaKey) && !e.altKey && !e.shiftKey && e.key.toLowerCase() === 'z') {
+        if (typing) return;
+        e.preventDefault();
+        if (k.canUndo) k.onUndo();
+        return;
+      }
+      if (e.ctrlKey || e.metaKey || e.altKey || e.shiftKey || e.repeat || typing) return;
+      if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+        e.preventDefault();
+        setSelection({ matchKey: k.matchKey, index: k.activeIndex === 0 ? 1 : 0 });
+      } else if (e.key === 'Enter' && !(target.closest('button, a, [role="dialog"]') && !target.closest('.stage'))) {
+        e.preventDefault();
+        k.onChoose(k.activeId);
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, []);
+
   const mountedIds = [...new Set([...match, ...preloadIds])];
 
   return (
@@ -124,9 +165,14 @@ export function MatchScreen({
         >
           {completedMatches} / {totalMatches}
         </progress>
-        <button type="button" onClick={() => setCloseOpen(true)}>
-          Close
-        </button>
+        <div className="toolbar-group">
+          <button type="button" disabled={!canUndo} aria-label="Undo last decision (Ctrl/Cmd+Z)" onClick={onUndo}>
+            Undo
+          </button>
+          <button type="button" onClick={() => setCloseOpen(true)}>
+            Close
+          </button>
+        </div>
       </header>
 
       <footer className="bar bar--bottom">
@@ -162,7 +208,7 @@ export function MatchScreen({
           </button>
         }
       >
-        <p>Click the photo to switch between the two candidates. Pinch or scroll to zoom, drag to move. Choose the one you prefer.</p>
+        <p>Click the photo or press the left/right arrow key to switch between the two candidates. Pinch or scroll to zoom, drag to move. Choose the one you prefer (Enter). Undo (Ctrl/Cmd+Z) takes back the last decision.</p>
       </Sheet>
     </div>
   );

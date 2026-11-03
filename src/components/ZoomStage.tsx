@@ -38,7 +38,7 @@ interface ZoomStageProps {
   resetKey: string;
   activeId: ImageId;
   otherId: ImageId;
-  /** Tap/Klick ohne Verschieben (auch Enter/Space). */
+  /** Tap/Klick ohne Verschieben (auch Leertaste). */
   onTap: () => void;
   onButtonChange: (button: FitFillButton) => void;
   label: string;
@@ -345,7 +345,7 @@ export const ZoomStage = forwardRef<ZoomStageHandle, ZoomStageProps>(function Zo
   };
 
   const onKeyDown = (e: KeyboardEvent) => {
-    if (e.key === 'Enter' || e.key === ' ') {
+    if (e.key === ' ') { // Enter wählt das Foto (MatchScreen)
       e.preventDefault();
       onTap();
     }

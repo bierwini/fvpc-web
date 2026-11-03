@@ -1,9 +1,22 @@
-import { useCallback, useEffect, useMemo, useReducer, useState } from 'react';
+import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
 import { BlobRegistry } from './blobRegistry';
 import { createInitialState, getCurrentMatch, tournamentReducer } from './engine';
 import { computeRanking } from './ranking';
 import { getStartOrder } from './shuffle';
-import { MAX_FILE_BYTES, MAX_IMAGES, type AddFilesResult, type ImageId, type TournamentImage } from './types';
+import {
+  MAX_FILE_BYTES,
+  MAX_IMAGES,
+  type AddFilesResult,
+  type ImageId,
+  type TournamentImage,
+  type TournamentState,
+} from './types';
+
+/** Zustand vor der letzten Entscheidung (einstufiges Undo) und das Bild, das danach angezeigt wird (gewählt bzw. entfernt). */
+interface UndoSnapshot {
+  state: TournamentState;
+  shownId: ImageId;
+}
 
 export function useTournament() {
   const [state, dispatch] = useReducer(tournamentReducer, undefined, createInitialState);
@@ -57,25 +70,41 @@ export function useTournament() {
     dispatch({ type: 'START_TOURNAMENT', order: getStartOrder(state.imageOrder, shuffleEnabled) });
   }, [state.imageOrder, shuffleEnabled]);
 
-  const pickWinner = useCallback(
-    (winnerId: ImageId) => dispatch({ type: 'PICK_WINNER', winnerId }),
-    [],
-  );
+  // Undo: Der Reducer ist unveränderlich, also genügt der vorige Zustand. Blobs werden während des Duells nie freigegeben.
+  const stateRef = useRef(state);
+  stateRef.current = state;
+  const [undoSnapshot, setUndoSnapshot] = useState<UndoSnapshot | null>(null);
+  /** Nach Undo: welches Bild des Duells angezeigt werden soll; token zählt hoch, damit auch dasselbe Bild erneut wirkt. */
+  const [undoFocus, setUndoFocus] = useState<{ id: ImageId; token: number } | null>(null);
 
-  const excludeCurrentImage = useCallback(
-    (imageId: ImageId) => dispatch({ type: 'EXCLUDE_IMAGE', imageId }),
-    [],
-  );
+  const pickWinner = useCallback((winnerId: ImageId) => {
+    setUndoSnapshot({ state: stateRef.current, shownId: winnerId });
+    dispatch({ type: 'PICK_WINNER', winnerId });
+  }, []);
+
+  const excludeCurrentImage = useCallback((imageId: ImageId) => {
+    setUndoSnapshot({ state: stateRef.current, shownId: imageId });
+    dispatch({ type: 'EXCLUDE_IMAGE', imageId });
+  }, []);
+
+  const undo = useCallback(() => {
+    if (!undoSnapshot) return;
+    dispatch({ type: 'RESTORE', state: undoSnapshot.state });
+    setUndoFocus({ id: undoSnapshot.shownId, token: (undoFocus?.token ?? 0) + 1 });
+    setUndoSnapshot(null);
+  }, [undoSnapshot, undoFocus]);
 
   /** Close im Match/Ranking: gibt ALLE Blobs frei, zurück zum Intro. */
   const resetTournament = useCallback(() => {
     blobs.revokeAll();
+    setUndoSnapshot(null);
     dispatch({ type: 'RESET', view: 'intro' });
   }, [blobs]);
 
   /** Next Game: gibt ALLE Blobs frei, direkt zum Upload. */
   const startNewTournament = useCallback(() => {
     blobs.revokeAll();
+    setUndoSnapshot(null);
     dispatch({ type: 'RESET', view: 'upload' });
   }, [blobs]);
 
@@ -90,7 +119,11 @@ export function useTournament() {
     currentMatch,
     ranking,
     shuffleEnabled,
+    /** Undo gibt es nur im Duell; die letzte Entscheidung führt direkt ins Ranking und kann nicht zurückgenommen werden. */
+    canUndo: undoSnapshot !== null && state.view === 'match',
+    undoFocus,
     actions: {
+      undo,
       goToUpload,
       addFiles,
       removeImage,
