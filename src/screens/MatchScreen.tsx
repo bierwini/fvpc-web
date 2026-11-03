@@ -84,7 +84,7 @@ export function MatchScreen({
 
   // Nur diese (max. 4) Bilder sind im DOM: beide des aktuellen Duells (für den Instant-Toggle)
   // plus die des Folgeduells. Key = Bild-ID, damit beim Weiterschalten nichts neu geladen wird.
-  // Tastenkürzel: Enter = Choose, Pfeil links/rechts = zum anderen Foto, Strg/Cmd+Z = Undo.
+  // Tastenkürzel: Enter = Choose, Pfeil links/rechts und Leertaste = zum anderen Foto, Strg/Cmd+Z = Undo.
   // Enter bleibt bei fokussierten Buttons und Eingaben deren eigene Aktion.
   const keys = useRef({ activeIndex, activeId, matchKey, canUndo, onUndo, onChoose, blocked: false });
   keys.current = { activeIndex, activeId, matchKey, canUndo, onUndo, onChoose, blocked: closeOpen || helpOpen };
@@ -101,10 +101,11 @@ export function MatchScreen({
         return;
       }
       if (e.ctrlKey || e.metaKey || e.altKey || e.shiftKey || e.repeat || typing) return;
-      if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+      const onControl = !!target.closest('button, a, [role="dialog"]') && !target.closest('.stage');
+      if (e.key === 'ArrowLeft' || e.key === 'ArrowRight' || (e.key === ' ' && !onControl)) {
         e.preventDefault();
         setSelection({ matchKey: k.matchKey, index: k.activeIndex === 0 ? 1 : 0 });
-      } else if (e.key === 'Enter' && !(target.closest('button, a, [role="dialog"]') && !target.closest('.stage'))) {
+      } else if (e.key === 'Enter' && !onControl) {
         e.preventDefault();
         k.onChoose(k.activeId);
       }
@@ -116,7 +117,11 @@ export function MatchScreen({
   const mountedIds = [...new Set([...match, ...preloadIds])];
 
   return (
-    <div className="screen screen--match">
+    <div
+      className="screen screen--match"
+      // Nach einem Mausklick den Fokus vom Button nehmen, sonst löst Leertaste/Enter ihn erneut aus statt Foto wechseln/wählen.
+      onClick={(e) => e.detail > 0 && (e.target as HTMLElement).closest<HTMLElement>('button')?.blur()}
+    >
       <ZoomStage
         ref={stageRef}
         resetKey={matchKey}
