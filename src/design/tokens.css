@@ -1,0 +1,54 @@
+/* Design-Tokens aus Figma (Apple iOS Library, Seite "Landing Page"), als Tailwind-4-Theme.
+   Namen sind semantisch (wie die Variablen in Figma), nicht Figma-CSS 1:1. Gemeinsam genutzt von Landingpage und Web-App.
+   iOS später: dieselben Werte als Asset-Katalog (Farben) und Swift-Datei (Textstile). */
+@import '@fontsource-variable/inter';
+
+@theme {
+  /* Schrift: SF Pro auf Apple-Geräten (-apple-system), sonst Inter (selbst gehostet, kein externer Request). */
+  --font-sans: -apple-system, BlinkMacSystemFont, 'Inter Variable', system-ui, sans-serif;
+
+  /* Farben (Figma: Labels, Backgrounds, Fills, Accents) */
+  --color-label: #000000;
+  --color-label-vibrant: #1a1a1a;
+  --color-background: #ffffff;
+  --color-fill: #78788033;
+  --color-fill-tertiary: #7676801f;
+  --color-accent: #0088ff;
+  --color-segment-selected: #ffffff;
+
+  /* Textstile (Figma: Size / Leading / Letter spacing). Display = Hero-Headline auf der Landingpage. */
+  --text-display: 70px;
+  --text-display--line-height: 1.2;
+  --text-display--letter-spacing: 0.4px;
+  --text-hero-title: 65px;
+  --text-hero-title--line-height: 78px;
+  --text-hero-title--letter-spacing: 0px;
+  --text-wordmark: 28px;
+  --text-wordmark--line-height: 1;
+  --text-wordmark--letter-spacing: 0px;
+  --text-large-title: 34px;
+  --text-large-title--line-height: 41px;
+  --text-large-title--letter-spacing: 0.4px;
+  --text-body: 17px;
+  --text-body--line-height: 22px;
+  --text-body--letter-spacing: -0.43px;
+  --text-title-1: 28px;
+  --text-title-1--line-height: 34px;
+  --text-title-1--letter-spacing: 0.38px;
+  --text-title-2: 22px;
+  --text-title-2--line-height: 28px;
+  --text-title-2--letter-spacing: -0.26px;
+  --text-subheadline: 15px;
+  --text-subheadline--line-height: 20px;
+  --text-subheadline--letter-spacing: -0.23px;
+  --text-caption-1: 12px;
+  --text-caption-1--line-height: 16px;
+
+  /* Liquid Glass (Figma: Liquid Glass/*), als CSS-Näherung mit backdrop-filter */
+  --glass-fill: rgb(255 255 255 / 0.25);
+  --glass-blur: 12px;
+  --shadow-glass: 0 2px 12px rgb(0 0 0 / 0.12), inset 0 1px 0 rgb(255 255 255 / 0.6);
+
+  /* Regenbogen-Verlauf (Logo, prominenter Button). Näherung nach Screenshot, Figma liefert keinen Zahlenwert. */
+  --gradient-rainbow: linear-gradient(90deg, #e060c8, #a46af0, #4fa8f5, #5fd08a, #e8c640);
+}

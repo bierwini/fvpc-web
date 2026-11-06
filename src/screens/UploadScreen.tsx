@@ -1,4 +1,4 @@
-import { useRef, useState, type DragEvent } from 'react';
+import { useEffect, useRef, useState, type DragEvent } from 'react';
 import { LegalCaption } from '../components/LegalCaption';
 import {
   MAX_FILE_BYTES,
@@ -44,6 +44,21 @@ export function UploadScreen({
   const inputRef = useRef<HTMLInputElement>(null);
   const [dragging, setDragging] = useState(false);
   const [notice, setNotice] = useState('');
+  // Enter startet das Turnier (ab 2 Bildern). Bei fokussierten Buttons und Eingaben bleibt Enter deren eigene Aktion.
+  const start = useRef({ ready: images.length >= 2, onStart });
+  start.current = { ready: images.length >= 2, onStart };
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== 'Enter' || e.repeat || e.defaultPrevented || e.ctrlKey || e.metaKey || e.altKey || e.shiftKey) return;
+      if ((e.target as HTMLElement).closest('button, a, input, select, textarea, [role="switch"], [role="dialog"]')) return;
+      if (!start.current.ready) return;
+      e.preventDefault();
+      start.current.onStart();
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, []);
+
   const openPicker = () => inputRef.current?.click();
 
   const addFiles = (files: File[]) => setNotice(describeResult(onAddFiles(files)));

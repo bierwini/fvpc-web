@@ -176,6 +176,9 @@ export function tournamentReducer(
       return resolveCurrentMatch(state, winnerId, action.imageId, 'excluded');
     }
 
+    case 'RESTORE':
+      return action.state;
+
     case 'RESET':
       return { ...createInitialState(), view: action.view };
   }

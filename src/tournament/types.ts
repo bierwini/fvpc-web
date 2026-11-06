@@ -58,6 +58,8 @@ export type TournamentAction =
   | { type: 'START_TOURNAMENT'; order: ImageId[] }
   | { type: 'PICK_WINNER'; winnerId: ImageId }
   | { type: 'EXCLUDE_IMAGE'; imageId: ImageId }
+  /** Undo: stellt einen früheren Zustand wieder her (die Blobs sind dabei noch alle vorhanden). */
+  | { type: 'RESTORE'; state: TournamentState }
   /** Zurück zum Startzustand. Die Blobs gibt der Aufrufer vorher frei. */
   | { type: 'RESET'; view: 'intro' | 'upload' };
 
