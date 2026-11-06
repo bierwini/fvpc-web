@@ -1,7 +1,7 @@
 {
   // Statische Website (Vite-Build) auf Cloudflare: `npm run build` erzeugt ./dist,
   // `npx wrangler deploy` lädt es hoch. Der Feedback-Worker liegt separat in feedback-worker/.
-  "name": "favopic-web",
+  "name": "fvpc-web",
   "compatibility_date": "2025-11-01",
   "assets": {
     "directory": "./dist",
