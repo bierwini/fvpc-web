@@ -1,0 +1,52 @@
+# Favopic Feedback-Worker – Cloudflare Worker (Free Tier)
+# Empfängt Feedback/Bug-Reports der iOS-App und leitet sie per E-Mail an dich weiter.
+
+name = "favopic-feedback"
+main = "src/index.ts"
+compatibility_date = "2025-11-01"
+
+# Nur über api.favopic.de erreichbar, nicht über *.workers.dev.
+workers_dev = false
+preview_urls = false
+
+# Custom Domain: Wrangler legt beim Deploy den DNS-Eintrag + das TLS-Zertifikat
+# für api.favopic.de selbst an (Zone favopic.de muss bei Cloudflare liegen und
+# es darf noch keinen DNS-Eintrag "api" geben).
+routes = [
+  { pattern = "api.favopic.de", custom_domain = true }
+]
+
+# Absichtlich AUS: Workers Logs würden Request-Metadaten (u. a. IP-Adressen)
+# speichern. Der Worker loggt selbst nur Statuscode und Größen
+# (live ansehbar mit `npx wrangler tail`).
+[observability]
+enabled = false
+
+# --- Nicht geheime Einstellungen ------------------------------------------------
+[vars]
+# Absenderadresse der Mails. Muss auf einer Domain liegen, für die Cloudflare
+# Email Routing aktiv ist (also @favopic.de). Das Postfach muss nicht existieren.
+MAIL_FROM = "feedback@favopic.de"
+# Rate Limit pro Client-IP: max. N gültige Einsendungen pro Zeitfenster.
+RATE_LIMIT_MAX = "5"
+RATE_LIMIT_WINDOW_SECONDS = "600"
+
+# --- E-Mail-Versand (Email Routing "send_email"-Binding) --------------------------
+# Sendet nur an bestätigte Zieladressen (Email Routing -> Destination addresses).
+[[send_email]]
+name = "EMAIL"
+
+# --- Rate Limiter (Durable Object mit SQLite-Speicher, im Free Tier enthalten) ----
+# Das eingebaute "Rate Limiting"-Binding erlaubt nur Fenster von 10 oder 60 Sekunden,
+# daher wird "5 pro 10 Minuten" mit einem kleinen Durable Object umgesetzt.
+[[durable_objects.bindings]]
+name = "RATE_LIMITER"
+class_name = "RateLimiter"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["RateLimiter"]
+
+# Secrets (NICHT hier eintragen, siehe README):
+#   FAVOPIC_KEY   – Wert für den Header X-Favopic-Key
+#   FEEDBACK_TO   – deine Ziel-E-Mail-Adresse (muss bei Email Routing bestätigt sein)
