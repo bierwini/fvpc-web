@@ -184,5 +184,6 @@
 
 @keyframes fade-blur { from { opacity: 0; filter: blur(12px); transform: translateY(1.75rem); } to { opacity: 1; filter: none; transform: none; } }
 
-/* Eingebettet (?embed=1): ohne Header/Footer */
-.embed .site-header, .embed .site-footer { display: none; }
+/* Eingebettet (?embed=1): ohne Footer, Logo nicht klickbar */
+.embed .site-footer { display: none; }
+.embed .site-header .logo { cursor: default; }
