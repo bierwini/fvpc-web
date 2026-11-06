@@ -9,6 +9,10 @@
     <link rel="apple-touch-icon" href="../landing/img/apple-touch-icon.png" />
     <meta name="robots" content="index,follow" />
     <meta name="theme-color" content="#ffffff" />
+    <script>
+      // ?embed=1 (z. B. in der iOS-App): Header/Footer ausblenden, damit man nicht wegnavigieren kann
+      if (new URLSearchParams(location.search).has('embed')) document.documentElement.classList.add('embed');
+    </script>
     <link rel="stylesheet" href="../landing/landing.css" />
     <script type="module" src="../landing/i18n.js"></script>
   </head>
